@@ -1,0 +1,39 @@
+package com.treffpunktprojectgroup.treffpunkt.controller;
+
+import com.treffpunktprojectgroup.treffpunkt.dto.RequestLogin;
+import com.treffpunktprojectgroup.treffpunkt.entity.User;
+import com.treffpunktprojectgroup.treffpunkt.service.LoginServiceImpl;
+import com.treffpunktprojectgroup.treffpunkt.service.UserServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/auth")
+public class LoginController {
+
+    @Autowired
+    private LoginServiceImpl loginService;
+
+    @Autowired
+    private UserServiceImpl userService;
+
+    @PostMapping("/login")
+    public ResponseEntity<User> login (@RequestBody RequestLogin requestLogin) {
+        User user = loginService.login((requestLogin));
+        if(user != null ) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody User user) {
+        System.out.println("/auth/register endpoint called with user: " + user.getName());
+        User savedUser = userService.register(user);
+        System.out.println("User saved successfully, returning response");
+        return ResponseEntity.ok(savedUser);
+    }
+}
