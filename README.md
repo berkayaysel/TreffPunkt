@@ -1,90 +1,70 @@
-# Software_Project
-Bu il ödev için gereken yerler
-# Hausaufgabe 1 - Gruppenbildung & Projektidee
-
-**Eine Abgabe pro Gruppe ist genug.**
+### Software_Project
 
 ---
 
-## Erklärung
-Im Laufe des Semesters arbeitet ihr an einem Projekt.
-Das ist eine **Gruppenarbeit**.  
-
-In dieser Aufgabe sollt ihr:  
-1. Eine Gruppe bilden,  
-2. Eine Projektidee finden.  
-
-Denkt euch etwas aus, das euch Spaß macht - ihr arbeitet das ganze Semester daran!
-
----
-
-## Gruppe
--= ToDo: Bildet eine Gruppe mit 5 bis 7 Studierenden und schreibt die Namen hier auf. =-
 
 ### Mitglieder
-1. Alpar Mirza Özkan, e230503069@stud.tau.edu.tr 
-2. Berkay Sefer , e220503028@stud.tau.edu.tr  
-3. Berkay Aysel , e210503021@stud.tau.edu.tr
-4. Suden Çelik , e220503032@stud.tau.edu.tr
-5. Name, Vorname, E-Mail-Adresse  
-6. Name, Vorname, E-Mail-Adresse  
-7. Name, Vorname, E-Mail-Adresse  
-
+1. Alpar Mirza Özkan, e230503069@stud.tau.edu.tr  
+2. Berkay Sefer, e220503028@stud.tau.edu.tr
+3. Berkay Aysel, e210503021@stud.tau.edu.tr
+4. Furkan Nas, e220503075@stud.tau.edu.tr
+5. Suden Çelik, e220503032@stud.tau.edu.tr 
+6. Fatma Hepsen Çakır, e230503067@stud.tau.edu.tr
 
 ---
-
-## Projekt
--= ToDo: Überlegt euch eine Projektidee und einen Projektnamen. =-  
--= ToDo: Beschreibt euer Projekt **kurz** (so, dass es in 3 Minuten erklärt ist). =-
 
 **Projektname:**  
-*Etkinlik Kataloğu
+Treffpunkt 
 
 **Beschreibung:**  
-Bu projedeki amacımız insanların kluplerin şirketlerin kendi etkinliklerini herkesin görebildiği bir platformda paylaşması ve yakınındaki insanların bunları görüp ona göre katılmak isterlerse katılım için onaylaması.Bu web sitenin amacı aslında kendi kendine istediği alanlarda veya uğraşlarda bir grubun parçası olmak isteyenlerin ve bir etkinlik paylaşmak isteyenlerin kendilerine bir uğraş bulması ve grup şeklinde yapılmasının kolaylaştırılımasıdır. 
+Ziel unseres Projekts ist es, dass Menschen, Vereine und Unternehmen ihre Veranstaltungen auf einer Plattform teilen können, die für alle sichtbar ist. So können Personen in der Nähe diese Veranstaltungen sehen und, wenn sie möchten, ihre Teilnahme bestätigen. Der Zweck dieser Webseite besteht eigentlich darin, Menschen, die Teil einer Gruppe in ihren gewünschten Bereichen oder Hobbys sein möchten, sowie diejenigen, die eine Veranstaltung teilen wollen, zusammenzubringen. Auf diese Weise soll es erleichtert werden, gemeinsame Aktivitäten und Gruppenerlebnisse zu organisieren.
 
 ---
 
-## Grober Projektplan
--= ToDo: Erstellt einen **groben** Plan für euer Projekt. =-  
-- Was müsst ihr machen?  
-- Wie lange dauert es ungefähr?  
-- Welche Probleme könnten auftreten?  
+
+**Aufgabe 1 – Projektgrundlage erstellen**  
+- **Beschreibung:** Grundstruktur für Spring Boot Backend und HTML/CSS/JS Frontend wird erstellt.
+- **Dauer:** 1 Woche
+- **Problem:** Abhängigkeiten müssen korrekt eingerichtet werden, Strukturentscheidungen können Zeit kosten.
 
 ---
 
-### Beispiel (Projekt: „Pizza machen“)
-
-**Aufgabe 1 – Teig vorbereiten**  
-- **Beschreibung:** Ich mache einen Teig aus Wasser, Mehl, Salz, Hefe und Öl.  
-- **Dauer:** 10 Minuten  
-- **Problem:** Es könnte zu wenig Mehl da sein.  
+**Aufgabe 2 – Datenbank & Backend-Modelle**  
+- **Beschreibung:** Datenmodelle für Benutzer, Events und Gruppen werden entworfen. Verbindung zur Datenbank mit Spring JPA wird implementiert.  
+- **Dauer:** 2 Wochen
+- **Problem:** Wenn das Datenmodell falsch geplant wird, muss es später angepasst werden.
 
 ---
 
-**Aufgabe 2 – Teig gehen lassen**  
-- **Beschreibung:** Der Teig muss an einem warmen Ort ruhen. Die Schüssel ist abgedeckt. Die Hefe macht den Teig luftig.  
-- **Dauer:** 45 Minuten  
+**Aufgabe 3 – Backend-APIs entwickeln**  
+- **Beschreibung:** REST-API Endpunkte für CRUD-Operationen werden implementiert (z. B. Event hinzufügen, aktualisieren, Gruppe beitreten). 
+- **Dauer:** 2 Wochen
+- **Problem:** Authentication und Fehlerbehandlung können komplex werden.
 
 ---
 
-**Aufgabe 3 – Teig ausrollen & belegen**  
-- **Beschreibung:** Ich teile den Teig, rolle ihn aus und belege ihn mit Tomatensauce, Salami und Käse.  
-- **Dauer:** 15 Minuten  
-- **Problem:** Wir müssen uns einigen, welche Zutaten wir nehmen.  
+**Aufgabe 4 – Frontend-Struktur & Grundseiten**  
+- **Beschreibung:** Mit HTML/CSS/JS werden Grundseiten erstellt: Startseite, Event-Liste, Gruppendetailseite.
+- **Dauer:** 1,5 Wochen 
+- **Problem:** Responsive Design und User Experience können zeitaufwendig sein.  
 
 ---
 
-**Aufgabe 4 – Pizza backen & essen**  
-- **Beschreibung:** Der Teig kommt auf ein Blech in den Ofen. Backzeit: 10–15 Minuten bei 180 °C. Danach wird die Pizza gegessen.  
-- **Dauer:** 10–15 Minuten  
-- **Problem:** Die Pizza ist sehr heiß. Wir müssen kurz warten.  
+**Aufgabe 5 – Integration Frontend & Backend**  
+- **Beschreibung:** Frontend wird über fetch/AJAX mit den Backend-APIs verbunden. Events anzeigen und Teilnahme-Funktion werden implementiert.
+- **Dauer:** 1,5 Wochen  
+- **Problem:** CORS-Probleme oder Inkompatibilitäten im JSON-Datenformat sind möglich. 
 
 ---
 
-## Hinweise
-- Bilder könnt ihr z. B. bei [imgur](https://www.imgur.com) hochladen und verlinken.  
-  Beispiel: [Ein Bild einer Pizza](https://i.imgur.com/PmEODOY.jpg)  
+**Aufgabe 6 – Testen & Deployment**  
+- **Beschreibung:** Funktionen werden getestet, Bugs behoben. Anschließend wird das Projekt deployed (z. B. Heroku, AWS o. Ä.).
+- **Dauer:** 1 Woche
+- **Problem:** Beim Deployment können Konfigurations- und Zugriffsfehler auftreten.
 
-- Mehr Informationen zu Markdown findet ihr hier:  
-  [Markdown Basic Syntax](https://www.markdownguide.org/basic-syntax/)
+---
+
+Gesamt: ca. 8 Wochen (2 Monate)
+Woche 1–3 → Grundaufbau + Datenbank
+Woche 4–6 → APIs + Frontend-Entwicklung
+Woche 7–8 → Integration + Test + Deployment
