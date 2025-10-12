@@ -20,11 +20,29 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    public User(String name, String surname, String password, Integer id) {
+    @Column(name = "age")
+    private Integer age;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "address", length = 100)
+    private String address;
+
+    public User(String name,
+                String surname,
+                String password,
+                Integer id,
+                Integer age,
+                String email,
+                String address) {
         this.name = name;
         this.surname = surname;
         this.password = password;
         this.id = id;
+        this.age = age;
+        this.email = email;
+        this.address = address;
     }
 
     public String getName() {
@@ -57,6 +75,30 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public User() {

@@ -17,7 +17,8 @@ public class SecurityConfig {
 
                 // hangi endpoint’lerin serbest olduğunu tanımla
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // /auth/login ve /auth/register serbest
+                        .requestMatchers("/auth/**").permitAll()// /auth/login ve /auth/register serbest
+                        .requestMatchers("/user-dashboard/change-password").permitAll()
                         .anyRequest().authenticated() // diğer her şey login ister
                 )
 
