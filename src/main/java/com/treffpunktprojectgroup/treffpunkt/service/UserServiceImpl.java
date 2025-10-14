@@ -1,5 +1,6 @@
 package com.treffpunktprojectgroup.treffpunkt.service;
 
+import com.treffpunktprojectgroup.treffpunkt.dto.RequestRegister;
 import com.treffpunktprojectgroup.treffpunkt.entity.User;
 import com.treffpunktprojectgroup.treffpunkt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +19,18 @@ public class UserServiceImpl {
     @Autowired
     private UserRepository userRepository;
 
-    public User register(User user) {
-        System.out.println("register method called.");
+    public User register(RequestRegister requestRegister) {
+        User user = new User();
+        user.setName(requestRegister.getName());
+        user.setSurname(requestRegister.getSurname());
+        user.setAddress(requestRegister.getAddress());
+        user.setAge(requestRegister.getAge());
+        user.setEmail(requestRegister.getEmail());
+        user.setGender(requestRegister.getGender());
 
-        List<User> allUsers = userRepository.findAll();
-        System.out.println("existing users count: " + allUsers.size());
-
-        for(User existingUser: allUsers) {
-            if(passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-                throw new RuntimeException("Password already in use! Please choose a different Password");
-            }
-        }
-
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        String encodedPassword = passwordEncoder.encode(requestRegister.getPassword());
         user.setPassword(encodedPassword);
+
         return userRepository.save(user);
     }
 
@@ -49,4 +48,6 @@ public class UserServiceImpl {
         }
         return false;
     }
+
+
 }

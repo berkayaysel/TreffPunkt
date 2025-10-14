@@ -1,53 +1,32 @@
-package com.treffpunktprojectgroup.treffpunkt.entity;
+package com.treffpunktprojectgroup.treffpunkt.dto;
 
 import com.treffpunktprojectgroup.treffpunkt.enums.Gender;
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "users")
-public class User {
+public class RequestRegister {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "surname")
     private String surname;
-
-    @Column(name = "password")
     private String password;
-
-    @Column(name = "age")
     private Integer age;
-
-    @Column(name = "email")
     private String email;
-
-    @Column(name = "address", length = 100)
     private String address;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
     private Gender gender;
 
-    public User(String name,
-                String surname,
-                String password,
-                Integer id,
-                Integer age,
-                String email,
-                String address) {
+
+    public RequestRegister(String name,
+                           String surname,
+                           String password,
+                           Integer age,
+                           String email,
+                           String address,
+                           Gender gender) {
         this.name = name;
         this.surname = surname;
         this.password = password;
-        this.id = id;
         this.age = age;
         this.email = email;
         this.address = address;
+        this.gender = gender;
     }
 
     public String getName() {
@@ -64,14 +43,6 @@ public class User {
 
     public void setSurname(String surname) {
         this.surname = surname;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getPassword() {
@@ -110,8 +81,10 @@ public class User {
         return gender;
     }
 
-    public void setGender(Gender gender) { this.gender = gender; }
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
 
-    public User() {
+    public RequestRegister() {
     }
 }
