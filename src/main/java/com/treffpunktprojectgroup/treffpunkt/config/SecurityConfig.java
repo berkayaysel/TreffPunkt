@@ -18,12 +18,14 @@ public class SecurityConfig {
                 // hangi endpoint’lerin serbest olduğunu tanımla
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()// /auth/login ve /auth/register serbest
-                        .requestMatchers("/user-dashboard/change-password").permitAll()
+                        .requestMatchers("/user-dashboard/**").permitAll()
                         .anyRequest().authenticated() // diğer her şey login ister
                 )
 
+                .httpBasic(Customizer.withDefaults());
+
                 // default login formu (şu an engel olmaması için aktif kalabilir)
-                .formLogin(Customizer.withDefaults());
+                // .formLogin(Customizer.withDefaults());
 
         return http.build();
     }
