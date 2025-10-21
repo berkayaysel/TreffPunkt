@@ -12,7 +12,8 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "id")
+    private Integer activityId;
 
     @Column(name = "name")
     private String name;
@@ -34,9 +35,9 @@ public class Activity {
                     String location,
                     LocalDate startDate,
                     LocalTime startTime,
-                    Integer id,
+                    Integer activityId,
                     Integer capacity) {
-        this.id = id;
+        this.activityId = activityId;
         this.name = name;
         this.location = location;
         this.startDate = startDate;
@@ -44,12 +45,12 @@ public class Activity {
         this.startTime = startTime;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getActivityId() {
+        return activityId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setActivityId(Integer activityId) {
+        this.activityId = activityId;
     }
 
     public String getName() {

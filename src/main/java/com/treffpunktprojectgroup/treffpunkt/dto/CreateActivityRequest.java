@@ -3,7 +3,7 @@ package com.treffpunktprojectgroup.treffpunkt.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class CreateActivityRequestDto {
+public class CreateActivityRequest {
 
     private String name;
     private String location;
@@ -11,11 +11,11 @@ public class CreateActivityRequestDto {
     private LocalDate startDate;
     private LocalTime startTime;
 
-    public CreateActivityRequestDto(String name,
-                                    String location,
-                                    Integer capacity,
-                                    LocalDate startDate,
-                                    LocalTime startTime) {
+    public CreateActivityRequest(String name,
+                                 String location,
+                                 Integer capacity,
+                                 LocalDate startDate,
+                                 LocalTime startTime) {
         this.name = name;
         this.location = location;
         this.capacity = capacity;
@@ -63,6 +63,6 @@ public class CreateActivityRequestDto {
         this.startTime = startTime;
     }
 
-    public CreateActivityRequestDto() {
+    public CreateActivityRequest() {
     }
 }

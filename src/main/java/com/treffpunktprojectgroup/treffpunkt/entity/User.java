@@ -34,13 +34,17 @@ public class User {
     @Column(name = "gender")
     private Gender gender;
 
+    @Column(name = "rank")
+    private Integer rank;
+
     public User(String name,
                 String surname,
                 String password,
                 Integer id,
                 Integer age,
                 String email,
-                String address) {
+                String address,
+                Integer rank) {
         this.name = name;
         this.surname = surname;
         this.password = password;
@@ -48,6 +52,7 @@ public class User {
         this.age = age;
         this.email = email;
         this.address = address;
+        this.rank = rank;
     }
 
     public String getName() {
@@ -111,6 +116,14 @@ public class User {
     }
 
     public void setGender(Gender gender) { this.gender = gender; }
+
+    public Integer getRank() {
+        return rank;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
+    }
 
     public User() {
     }

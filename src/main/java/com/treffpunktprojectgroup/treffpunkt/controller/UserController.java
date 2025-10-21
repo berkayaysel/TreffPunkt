@@ -1,7 +1,8 @@
 package com.treffpunktprojectgroup.treffpunkt.controller;
 
 
-import com.treffpunktprojectgroup.treffpunkt.dto.CreateActivityRequestDto;
+import com.treffpunktprojectgroup.treffpunkt.dto.CreateActivityRequest;
+import com.treffpunktprojectgroup.treffpunkt.dto.JoinActivityRequest;
 import com.treffpunktprojectgroup.treffpunkt.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +42,9 @@ public class UserController {
     }
 
     @PostMapping(path = "/new-activity")
-    public ResponseEntity<String> createActivity(@RequestBody CreateActivityRequestDto createActivityRequestDto) {
-        userService.createActivity(createActivityRequestDto);
+    public ResponseEntity<String> createActivity(@RequestBody CreateActivityRequest createActivityRequest) {
+        userService.createActivity(createActivityRequest);
         return ResponseEntity.ok("Aktivite başarıyla oluşturuldu.");
     }
+
 }
