@@ -1,6 +1,8 @@
 package com.treffpunktprojectgroup.treffpunkt.controller;
 
 
+import com.treffpunktprojectgroup.treffpunkt.dto.CreateActivityRequest;
+import com.treffpunktprojectgroup.treffpunkt.dto.JoinActivityRequest;
 import com.treffpunktprojectgroup.treffpunkt.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,4 +40,11 @@ public class UserController {
             return ResponseEntity.status(400).body("Mevcut şifre yanlış");
         }
     }
+
+    @PostMapping(path = "/new-activity")
+    public ResponseEntity<String> createActivity(@RequestBody CreateActivityRequest createActivityRequest) {
+        userService.createActivity(createActivityRequest);
+        return ResponseEntity.ok("Aktivite başarıyla oluşturuldu.");
+    }
+
 }

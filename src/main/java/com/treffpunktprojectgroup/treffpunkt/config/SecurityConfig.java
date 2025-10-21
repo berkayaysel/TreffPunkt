@@ -17,11 +17,14 @@ public class SecurityConfig {
 
                 // hangi endpoint’lerin serbest olduğunu tanımla
                 .authorizeHttpRequests(auth -> auth
+                        
                         .requestMatchers("/**").permitAll()
                 )
 
+                .httpBasic(Customizer.withDefaults());
+
                 // default login formu (şu an engel olmaması için aktif kalabilir)
-                .formLogin(Customizer.withDefaults());
+                // .formLogin(Customizer.withDefaults());
 
         return http.build();
     }
