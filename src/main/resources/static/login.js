@@ -21,12 +21,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // 4. Backend'e göndermek için veriyi hazırla (JSON objesi)
         const loginData = {
-            email: email,
+            id: id,
             password: password
         };
 
         // 5. fetch API kullanarak Spring Backend'e POST isteği gönder
-        fetch('/treffpunkt/login', { 
+        fetch('/treffpunkt/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
