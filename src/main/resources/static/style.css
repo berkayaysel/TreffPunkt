@@ -1,0 +1,152 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+
+.login-container {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box; /* Padding'in genişliği etkilememesi için */
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+/* Formun kendisi */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Etiket ve Input Grupları */
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+    font-weight: bold;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Padding'in genişliği etkilememesi için */
+}
+
+/* Giriş Butonu */
+.login-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
+
+/* Hata Mesajı Stili */
+.error-message {
+    color: #d93025; /* Kırmızı */
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    /* Başlangıçta gizli olması için boş bırakılır */
+}
+
+/* Kayıt Ol Linki */
+.register-link {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.register-link p {
+    color: #555;
+}
+
+.register-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+.profile-container {
+    padding-top: 2.5rem;
+}
+
+.profile-info {
+    margin-bottom: 2rem;
+}
+
+.profile-info p {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+
+.profile-info span {
+    font-weight: bold;
+    color: #007bff; 
+}
+
+
+.loading-placeholder {
+    display: inline-block;
+    background-color: #eee;
+    color: #eee; 
+    border-radius: 4px;
+    width: 120px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% { background-color: #eee; }
+    50% { background-color: #e0e0e0; }
+    100% { background-color: #eee; }
+}
+
+
+/* Çıkış Yap Butonu (Kırmızı) */
+.logout-button {
+    background-color: #d93025; /* Kırmızı */
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Diğer butonla aynı genişlikte olsun */
+}
+
+.logout-button:hover {
+    background-color: #a5251d; /* Koyu kırmızı */
+}
