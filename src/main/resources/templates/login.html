@@ -1,39 +1,37 @@
 <!DOCTYPE html>
-<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giriş Yap</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-        <h2>Giriş Yap</h2>
-
-        <div th:if="${param.error}" class="message error">
-            Kullanıcı adı veya şifre hatalı.
-        </div>
-        
-        <div th:if="${param.success}" class="message success">
-            Kayıt başarılı! Lütfen giriş yapın.
-        </div>
-
-        <form th:action="@{/login}" method="post">
-            <div class="form-group">
-                <label for="username">Kullanıcı Adı:</label>
-                <input type="text" id="username" name="username" required>
+    <div class="login-container">
+        <form id="loginForm">
+            <h2>Giriş Yap</h2>
+            
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
             </div>
-            <div class="form-group">
-                <label for="password">Şifre:</label>
+            
+            <div class="input-group">
+                <label for="password">Şifre</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn">Giriş Yap</button>
+            
+            <button type="submit" class="login-button">Giriş Yap</button>
+            
+            <p id="error-message" class="error-message"></p>
+            
+            <div class="register-link">
+                <p>Hesabınız yok mu? <a href="/register.html">Kayıt Ol</a></p>
+            </div>
         </form>
-
-        <div class="form-link">
-            <p>Hesabın yok mu? <a th:href="@{/register}">Kayıt Ol</a></p>
-        </div>
     </div>
 
+    <script src="script.js"></script>
 </body>
 </html>
