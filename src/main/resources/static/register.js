@@ -2,11 +2,15 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // HTML'deki ilgili elemanları seçiyoruz
     const registerForm = document.getElementById("registerForm");
-    const usernameInput = document.getElementById("username");
+    const nameInput = document.getElementById("name");
+    const surnameInput = document.getElementById("surname");
+    const addressInput = document.getElementById("address");
+    const ageInput = document.getElementById("age")
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
     const errorMessage = document.getElementById("error-message");
+    
 
     // Forma "submit" olayı eklendiğinde çalışacak fonksiyon
     registerForm.addEventListener("submit", function(event) {
@@ -14,7 +18,10 @@ document.addEventListener("DOMContentLoaded", function() {
         event.preventDefault(); // Sayfayı yenilemeyi engelle
 
         // Input'lardaki değerleri al
-        const username = usernameInput.value;
+        const name = nameInput.value;
+        const surname =surname.value;
+        const address= address.value;
+        const age = age.value;
         const email = emailInput.value;
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
@@ -31,7 +38,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Backend'e göndermek için veriyi hazırla
         const registerData = {
-            username: username,
+            name: name,
+            surname:surname,
+            address:address,
+            age:age,
             email: email,
             password: password
         };
