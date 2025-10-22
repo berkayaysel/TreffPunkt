@@ -1,28 +1,26 @@
-document.addEventListener("DOMContentLoaded", function() {
-
-    // HTML'deki elemanları seç
-    const usernameSpan = document.getElementById("profile-username");
+document.addEventListener('DOMContentLoaded', function() {
+    // HTML elemanlarını seçme
+    const nameSpan = document.getElementById("profile-name"); // profile-username yerine profile-name kullanıldı
+    const surnameSpan = document.getElementById("profile-surname"); // Yeni
     const emailSpan = document.getElementById("profile-email");
+    const ageSpan = document.getElementById("profile-age"); // Yeni
+    const addressSpan = document.getElementById("profile-address"); // Yeni
     const logoutButton = document.getElementById("logoutButton");
 
     // Ana fonksiyon: Kullanıcının giriş durumunu kontrol et ve verileri getir
     function checkLoginStatusAndFetchProfile() {
         
-       
-        
         fetch('/api/profile/me', { // <-- Java controller'ınızdaki adres
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-               
             },
-         
             credentials: 'include' 
         })
         .then(response => {
             
             if (response.status === 401 || response.status === 403) {
-                
+                // Eğer oturum yoksa, giriş sayfasına yönlendir.
                 throw new Error('Yetkisiz erişim. Giriş sayfasına yönlendiriliyor.');
             }
             
@@ -33,45 +31,47 @@ document.addEventListener("DOMContentLoaded", function() {
             return response.json();
         })
         .then(data => {
-            
-            usernameSpan.textContent = data.username;
+            // Gelen verileri DOM'a yerleştir
+            nameSpan.textContent = data.name;
+            surnameSpan.textContent = data.surname; // Yeni alan
             emailSpan.textContent = data.email;
+            ageSpan.textContent = data.age; // Yeni alan
+            addressSpan.textContent = data.address; // Yeni alan
             
-            
-            usernameSpan.classList.remove('loading-placeholder');
+            // Yükleniyor Placeholder'larını kaldır
+            nameSpan.classList.remove('loading-placeholder');
+            surnameSpan.classList.remove('loading-placeholder');
             emailSpan.classList.remove('loading-placeholder');
+            ageSpan.classList.remove('loading-placeholder');
+            addressSpan.classList.remove('loading-placeholder');
         })
         .catch(error => {
-           
+            
             console.error('Profil yüklenirken hata oluştu:', error.message);
             
-            
-            window.location.href = 'index.html';
+            // Hata oluşursa (özellikle 401/403) kullanıcıyı giriş sayfasına yönlendir
+            window.location.href = 'index.html'; // veya 'login.html'
         });
     }
 
-    // 6. ÇIKIŞ YAP (LOGOUT) BUTONU (Komple Değişti)
+    // ÇIKIŞ YAP (LOGOUT) BUTONU
     logoutButton.addEventListener('click', function() {
-        
-        // (DEĞİŞİKLİK) Token silmek yerine, backend'deki
-        // oturum sonlandırma endpoint'ine (genellikle /logout)
-        // bir POST isteği atarız.
         
         fetch('/logout', { // <-- Spring Security'nin varsayılan logout adresi
             method: 'POST',
             credentials: 'include' 
         })
         .then(response => {
-           
+            // Oturum sonlandırma isteği genellikle 302 veya 200 döner.
             console.log('Oturum sonlandırma isteği gönderildi.');
         })
         .catch(error => {
             console.error('Logout hatası:', error);
+            // Hata olsa bile yönlendirme yap.
         })
         .finally(() => {
-            // Her durumda (başarılı veya hatalı) kullanıcıyı
-            // giriş sayfasına yönlendir.
-            window.location.href = 'login.html';
+            // Her durumda kullanıcıyı giriş sayfasına yönlendir.
+            window.location.href = 'login.html'; // Veya hangi sayfanız varsa
         });
     });
 
