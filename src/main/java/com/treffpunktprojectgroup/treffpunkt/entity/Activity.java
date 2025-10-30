@@ -1,10 +1,14 @@
 package com.treffpunktprojectgroup.treffpunkt.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "activity")
@@ -12,7 +16,7 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "activityId")
     private Integer activityId;
 
     @Column(name = "name")
@@ -44,6 +48,14 @@ public class Activity {
         this.capacity = capacity;
         this.startTime = startTime;
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "activity_participants",
+            joinColumns = @JoinColumn(name = "activity_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> participants = new HashSet<>();
 
     public Integer getActivityId() {
         return activityId;
@@ -92,6 +104,12 @@ public class Activity {
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
+
+    public Set<User> getParticipants() { return participants; }
+
+    public void addParticipant(User user) { this.participants.add(user); }
+
+    public void removeParticipant(User user) { this.participants.remove(user); }
 
     public Activity() {
     }

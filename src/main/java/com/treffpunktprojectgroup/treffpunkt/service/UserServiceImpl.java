@@ -1,5 +1,6 @@
 package com.treffpunktprojectgroup.treffpunkt.service;
 
+import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
 import com.treffpunktprojectgroup.treffpunkt.dto.CreateActivityRequest;
 import com.treffpunktprojectgroup.treffpunkt.dto.RequestRegister;
 import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
@@ -11,7 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -32,6 +37,9 @@ public class UserServiceImpl implements UserService{
         user.setAge(requestRegister.getAge());
         user.setEmail(requestRegister.getEmail());
         user.setGender(requestRegister.getGender());
+
+        long userCount = userRepository.count();
+        user.setRank((int) userCount + 1);
 
         String encodedPassword = passwordEncoder.encode(requestRegister.getPassword());
         user.setPassword(encodedPassword);
@@ -64,4 +72,19 @@ public class UserServiceImpl implements UserService{
 
         activityRepository.save(activity);
     }
+
+    @Override
+    public List<ActivityResponse> getUserActivities(Integer userId) {
+        List<Activity> activities = activityRepository.findByParticipants_UserId(userId);
+        return activities.stream()
+                .map(a -> new ActivityResponse(
+                        a.getName(),
+                        a.getLocation(),
+                        a.getStartDate(),
+                        a.getStartTime()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
 }

@@ -1,7 +1,11 @@
 package com.treffpunktprojectgroup.treffpunkt.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.treffpunktprojectgroup.treffpunkt.enums.Gender;
 import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -9,8 +13,8 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+    @Column(name = "userId")
+    private Integer userId;
 
     @Column(name = "name")
     private String name;
@@ -24,7 +28,7 @@ public class User {
     @Column(name = "age")
     private Integer age;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "address", length = 100)
@@ -40,7 +44,7 @@ public class User {
     public User(String name,
                 String surname,
                 String password,
-                Integer id,
+                Integer userId,
                 Integer age,
                 String email,
                 String address,
@@ -48,12 +52,15 @@ public class User {
         this.name = name;
         this.surname = surname;
         this.password = password;
-        this.id = id;
+        this.userId = userId;
         this.age = age;
         this.email = email;
         this.address = address;
         this.rank = rank;
     }
+
+    @ManyToMany(mappedBy = "participants")
+    private Set<Activity> activities = new HashSet<>();
 
     public String getName() {
         return name;
@@ -71,12 +78,12 @@ public class User {
         this.surname = surname;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getPassword() {
@@ -124,6 +131,8 @@ public class User {
     public void setRank(Integer rank) {
         this.rank = rank;
     }
+
+    public Set<Activity> getActivities() { return activities; }
 
     public User() {
     }
