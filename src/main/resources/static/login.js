@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Kullanıcıyı profil sayfasına yönlendir
             // **ÖNEMLİ**: Profil sayfanızın adının 'profil.html' olduğundan emin olun
-            window.location.href = '/profil.html'; 
+            window.location.href = '/profile.html';
         })
         .catch(error => {
             // 8. Hata durumunda (network hatası veya response.ok == false)

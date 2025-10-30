@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Input'lardaki değerleri al
         const name = nameInput.value;
-        const surname =surname.value;
-        const address= address.value;
-        const age = age.value;
+        const surname =surnameInput.value;
+        const address= addressInput.value;
+        const age = ageInput.value;
         const email = emailInput.value;
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;

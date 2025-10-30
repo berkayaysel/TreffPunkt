@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ana fonksiyon: Kullanıcının giriş durumunu kontrol et ve verileri getir
     function checkLoginStatusAndFetchProfile() {
         
-        fetch('/api/profile/me', { // <-- Java controller'ınızdaki adres
+        fetch('/user-dashboard/userService', { // <-- Java controller'ınızdaki adres
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Profil yüklenirken hata oluştu:', error.message);
             
             // Hata oluşursa (özellikle 401/403) kullanıcıyı giriş sayfasına yönlendir
-            window.location.href = 'index.html'; // veya 'login.html'
+            window.location.href = 'profile.html'; // veya 'login.html'
         });
     }
 
