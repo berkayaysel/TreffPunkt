@@ -20,10 +20,10 @@ public class LoginServiceImpl implements LoginService{
 
     @Override
     public User login(RequestLogin requestLogin) {
-        Optional<User> userOptional = userRepository.findById(requestLogin.getId());
+        Optional<User> userOptional = userRepository.findByEmail(requestLogin.getEmail());
 
         if(userOptional.isEmpty()) {
-            return null;
+            throw new RuntimeException("Kullanıcı bulunamadı!");
         }
 
         User userFromDb = userOptional.get();
@@ -31,7 +31,7 @@ public class LoginServiceImpl implements LoginService{
         if(passwordEncoder.matches(requestLogin.getPassword(), userFromDb.getPassword())) {
             return userFromDb;
         } else {
-            return null;
+            throw new RuntimeException("Şifre yanlış!");
         }
     }
 

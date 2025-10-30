@@ -2,20 +2,20 @@ package com.treffpunktprojectgroup.treffpunkt.dto;
 
 public class RequestLogin {
 
-    private Integer id;
+    private String email;
     private String password;
 
-    public RequestLogin(Integer id, String password) {
-        this.id = id;
+    public RequestLogin(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
-    public Integer getId() {
-        return id;
+    public String getEmail() {
+        return email;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

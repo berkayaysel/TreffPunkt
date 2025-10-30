@@ -1,17 +1,19 @@
 package com.treffpunktprojectgroup.treffpunkt.controller;
 
 
+import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
 import com.treffpunktprojectgroup.treffpunkt.dto.CreateActivityRequest;
 import com.treffpunktprojectgroup.treffpunkt.dto.JoinActivityRequest;
+import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
+import com.treffpunktprojectgroup.treffpunkt.service.UserService;
 import com.treffpunktprojectgroup.treffpunkt.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -19,7 +21,7 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    UserServiceImpl userService;
+    private UserService userService;
 
     @GetMapping
     public String getUserService() {
@@ -45,6 +47,12 @@ public class UserController {
     public ResponseEntity<String> createActivity(@RequestBody CreateActivityRequest createActivityRequest) {
         userService.createActivity(createActivityRequest);
         return ResponseEntity.ok("Aktivite başarıyla oluşturuldu.");
+    }
+
+    @GetMapping("/{userId}/activities")
+    public ResponseEntity<List<ActivityResponse>> getUserActivities(@PathVariable Integer userId) {
+        List<ActivityResponse> activities = userService.getUserActivities(userId);
+        return ResponseEntity.ok(activities);
     }
 
 }
