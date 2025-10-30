@@ -27,15 +27,13 @@ document.addEventListener("DOMContentLoaded", function() {
         };
 
         // 5. fetch API kullanarak Spring Backend'e POST isteği gönder
-        fetch('/treffpunkt/login', {
+        fetch('/auth/login', { 
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginData), // JavaScript objesini JSON string'ine çevir
-            
-            // !!!! EKLENDİ: Spring Security'nin session cookie'sini alabilmek için bu GEREKLİ !!!!
-            credentials: 'include' 
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData), // JavaScript objesini JSON string'ine çevir
+        credentials: 'include' 
         })
         .then(response => {
             // 6. Cevabı kontrol et
