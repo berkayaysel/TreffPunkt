@@ -20,8 +20,9 @@ document.addEventListener("DOMContentLoaded", function() {
         errorMessage.textContent = "";
 
         // 4. Backend'e göndermek için veriyi hazırla (JSON objesi)
+        //    !!!! HATA BURADAYDI: 'id' yerine 'email' kullanılmalı !!!!
         const loginData = {
-            id: id,
+            email: email,
             password: password
         };
 
@@ -31,7 +32,10 @@ document.addEventListener("DOMContentLoaded", function() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(loginData) // JavaScript objesini JSON string'ine çevir
+            body: JSON.stringify(loginData), // JavaScript objesini JSON string'ine çevir
+            
+            // !!!! EKLENDİ: Spring Security'nin session cookie'sini alabilmek için bu GEREKLİ !!!!
+            credentials: 'include' 
         })
         .then(response => {
             // 6. Cevabı kontrol et
@@ -40,20 +44,21 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Hata fırlat, bu .catch() bloğunu tetikleyecektir.
                 throw new Error('Giriş başarısız');
             }
-            // Cevap başarılıysa (200 OK), JSON verisini işle
-            return response.json();
+
+            // Başarılıysa (genellikle 200 OK), backend'in
+            // 'Set-Cookie' header'ını tarayıcı otomatik olarak işleyecek.
+            // Cevap gövdesini (data) kullanmamıza gerek yok, ama yine de işleyebiliriz.
+            return response.json(); 
         })
         .then(data => {
             // 7. Başarılı giriş sonrası
             console.log('Giriş başarılı:', data);
             
-            // Backend'den gelen token'ı (varsa) localStorage'a kaydet
-            // Spring Security JWT ile genelde bir "token" veya "jwt" alanı döner
-            if (data.token) {
-                localStorage.setItem('authToken', data.token);
-            }
+            // !!!! KALDIRILDI: 'localStorage.setItem' JWT içindir, biz session cookie kullanıyoruz.
+            // Bu yüzden bu satıra gerek yok.
 
             // Kullanıcıyı profil sayfasına yönlendir
+            // **ÖNEMLİ**: Profil sayfanızın adının 'profil.html' olduğundan emin olun
             window.location.href = '/profil.html'; 
         })
         .catch(error => {
