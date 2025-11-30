@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TreffPunkt Dashboard</title>
+    
+    <link rel="stylesheet" href="../static/dashboard.css">
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/treffpunkt/new-activity" class="nav-btn">+</a>
+
+        <a href="/treffpunkt/profile" class="nav-btn profile-btn">Profil</a>
+    </div>
+
+    <div class="container" id="activity-container">
+        
+        <div id="loading-msg" style="text-align:center; color:#666; margin-top:20px;">
+            Aktiviteler yükleniyor...
+        </div>
+
+        <div class="empty-message" id="no-activity-msg" style="display: none;">
+            Henüz hiç aktivite yok. <br>
+            Yukarıdaki <b>+</b> butonuna basarak ilk aktiviteyi sen oluştur!
+        </div>
+
+        </div>
+
+    <script>
+        // Sayfa tamamen yüklendiğinde çalışır
+        window.onload = function() {
+            fetchActivities();
+        };
+
+        function fetchActivities() {
+            // BURASI ÖNEMLİ: Backend'de tüm aktiviteleri getiren endpoint adresi.
+            // Eğer ActivityController içinde @GetMapping("/all") yazdıysan adres budur:
+            // (Henüz yazmadıysan backend tarafında eklemen gerekir)
+            const url = 'http://localhost:8080/user-dashboard/all'; 
+
+            fetch(url)
+                .then(response => {
+                    // Yükleniyor yazısını gizle
+                    document.getElementById('loading-msg').style.display = 'none';
+
+                    if (!response.ok) {
+                        throw new Error('Veri çekilemedi veya Backend kapalı');
+                    }
+                    return response.json();
+                })
+                .then(activities => {
+                    const container = document.getElementById('activity-container');
+                    const emptyMsg = document.getElementById('no-activity-msg');
+
+                    // Eğer gelen liste doluysa
+                    if (activities && activities.length > 0) {
+                        emptyMsg.style.display = 'none';
+
+                        // Her aktivite için döngü
+                        activities.forEach(activity => {
+                            // Backend'den gelen verileri HTML'e gömüyoruz
+                            // activity.id, activity.title, activity.date gibi isimler
+                            // senin DTO veya Entity sınıfındaki isimlerle AYNI olmalı!
+                            const cardHTML = `
+                                <div class="activity-card">
+                                    <div class="activity-title">${activity.title || 'Başlıksız Aktivite'}</div>
+                                    <div class="activity-info">📅 ${formatDate(activity.date)}</div>
+                                    <div class="activity-info">📍 ${activity.location || 'Konum yok'}</div>
+                                    
+                                    <a href="/treffpunkt/activity-detail?id=${activity.id}" class="detail-btn">Detay</a>
+                                </div>
+                            `;
+                            // Kartı listeye ekle
+                            container.innerHTML += cardHTML;
+                        });
+                    } else {
+                        // Liste boşsa "Yok" mesajını göster
+                        emptyMsg.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.log("Hata:", error);
+                    document.getElementById('loading-msg').style.display = 'none';
+                    // Hata durumunda da boş mesajı gösterelim ki sayfa bozuk durmasın
+                    document.getElementById('no-activity-msg').style.display = 'block';
+                });
+        }
+
+        // Tarih formatını düzeltmek için küçük bir yardımcı fonksiyon
+        // Gelen tarih: "2025-12-10T14:30:00" -> Çıkan: "10.12.2025 14:30"
+        function formatDate(dateString) {
+            if (!dateString) return "";
+            const date = new Date(dateString);
+            return date.toLocaleDateString('tr-TR') + ' ' + date.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+        }
+    </script>
+
+</body>
+</html>
