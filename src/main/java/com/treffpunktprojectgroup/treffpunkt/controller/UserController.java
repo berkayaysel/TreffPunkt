@@ -24,8 +24,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public String getUserService() {
-        return "/userService";
+    public String showDashboardPage() {
+        return "dashboard";
     }
 
     @PostMapping(path = "/change-password")

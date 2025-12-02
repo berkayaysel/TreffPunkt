@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // 2 saniye bekledikten sonra GİRİŞ sayfasına yönlendir
             setTimeout(() => {
-                window.location.href = 'login.html'; // Giriş sayfasının adı
+                window.location.href = '/treffpunkt/login'; // Giriş sayfasının adı
             }, 2000); 
         })
         .catch(error => {

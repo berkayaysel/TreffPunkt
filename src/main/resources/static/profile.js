@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .finally(() => {
             // Her durumda kullanıcıyı giriş sayfasına yönlendir.
-            window.location.href = 'login.html'; // Veya hangi sayfanız varsa
+            window.location.href = '/user-dashboard/dashboard'; // Veya hangi sayfanız varsa
         });
     });
 
