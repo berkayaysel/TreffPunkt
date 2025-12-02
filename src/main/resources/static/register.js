@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
     const errorMessage = document.getElementById("error-message");
-    
+    const genderInput = document.getElementById("gender");
 
     // Forma "submit" olayı eklendiğinde çalışacak fonksiyon
     registerForm.addEventListener("submit", function(event) {
@@ -23,9 +23,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const address= addressInput.value;
         const age = ageInput.value;
         const email = emailInput.value;
+        const genderValue = genderInput.value;
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
-
+        if (!genderValue) {
+            errorMessage.textContent = "Lütfen cinsiyet seçiniz.";
+            return;}
         // Hata mesajını temizle
         errorMessage.textContent = "";
         errorMessage.classList.remove("success-message"); 
@@ -41,7 +44,8 @@ document.addEventListener("DOMContentLoaded", function() {
             name: name,
             surname:surname,
             address:address,
-            age:age,
+            age:parseInt(age),
+            gender: genderValue,
             email: email,
             password: password
         };
