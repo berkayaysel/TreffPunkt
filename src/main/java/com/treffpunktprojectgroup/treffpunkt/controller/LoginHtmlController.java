@@ -12,4 +12,9 @@ public class LoginHtmlController {
     public String showLoginPage() {
         return "login";
     }
+
+    @GetMapping(path = "/register")
+    public String showRegisterPage() {
+        return "register";
+    }
 }

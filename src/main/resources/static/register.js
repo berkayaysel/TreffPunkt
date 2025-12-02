@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
             name: name,
             surname:surname,
             address:address,
-            age:age,
+            age:parseInt(age),
             email: email,
             password: password
         };
