@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Kullanıcıyı profil sayfasına yönlendir
             // **ÖNEMLİ**: Profil sayfanızın adının 'profil.html' olduğundan emin olun
-            window.location.href = '/user-dashboard';
+            window.location.href = '/treffpunkt/dashboard';
         })
         .catch(error => {
             // 8. Hata durumunda (network hatası veya response.ok == false)

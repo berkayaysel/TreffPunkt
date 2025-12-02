@@ -23,11 +23,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public String showDashboardPage() {
-        return "dashboard";
-    }
-
     @PostMapping(path = "/change-password")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body) {
         Integer id = Integer.parseInt(body.get("id"));

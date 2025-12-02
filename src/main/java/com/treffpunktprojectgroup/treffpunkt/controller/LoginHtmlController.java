@@ -17,4 +17,14 @@ public class LoginHtmlController {
     public String showRegisterPage() {
         return "register";
     }
+
+    @GetMapping(path = "/dashboard")
+    public String showDashboardPage() {
+        return "dashboard";
+    }
+
+    @GetMapping(path = "/profile")
+    public String showProfilePage() {
+        return "profile";
+    }
 }

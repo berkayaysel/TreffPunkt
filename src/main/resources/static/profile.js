@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Profil yüklenirken hata oluştu:', error.message);
             
             // Hata oluşursa (özellikle 401/403) kullanıcıyı giriş sayfasına yönlendir
-            window.location.href = 'profile.html'; // veya 'login.html'
+            window.location.href = '/treffpunkt/dashboard'; // veya 'login.html'
         });
     }
 
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .finally(() => {
             // Her durumda kullanıcıyı giriş sayfasına yönlendir.
-            window.location.href = '/user-dashboard/dashboard'; // Veya hangi sayfanız varsa
+            window.location.href = '/treffpunkt/profile'; // Veya hangi sayfanız varsa
         });
     });
 
