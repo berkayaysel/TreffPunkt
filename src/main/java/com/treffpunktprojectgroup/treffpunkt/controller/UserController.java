@@ -50,4 +50,17 @@ public class UserController {
         return ResponseEntity.ok(activities);
     }
 
+    @GetMapping(/profile-info)
+    public ResponseEntity<UserProfileResponse>  getProfileInfo(Principal principal){
+
+        if (principal == null){
+            return ResponseEntity.status(401).build();
+        }
+
+        String email = principal.getName();
+        UserProfileResponse response = userService.getUserProfileByEmail(email);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

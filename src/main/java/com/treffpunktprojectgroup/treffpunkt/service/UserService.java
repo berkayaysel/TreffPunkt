@@ -13,4 +13,5 @@ public interface UserService {
     User register(RequestRegister requestRegister);
     void createActivity(CreateActivityRequest createActivityRequest);
     List<ActivityResponse> getUserActivities(Integer userId);
+    UserProfileResponse getUserProfileByEmail(String email);
 }
