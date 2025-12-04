@@ -86,5 +86,20 @@ public class UserServiceImpl implements UserService{
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public UserProfileResponse getUserProfileByEmail(String email) {
+        // Find the user or throw an error
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        // Convert User Entity to UserProfileResponse DTO
+        return new UserProfileResponse(
+                user.getName(),
+                user.getSurname(),
+                user.getEmail(),
+                user.getAge(),
+                user.getAddress()
+        );
+    }
 
 }
