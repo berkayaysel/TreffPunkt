@@ -1,0 +1,89 @@
+/* Genel Sayfa Düzeni */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f9;
+}
+
+/* Ana Kutu (Çizimdeki dış çerçeve) */
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 450px;
+    border: 2px solid #333; 
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Geri Tuşu Stili */
+.back-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-link span {
+    border: 2px solid #333;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+}
+
+/* Form Elemanları */
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input {
+    padding: 10px;
+    border: 2px solid #333; /* Çizimdeki kutu stili */
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.form-group input:focus {
+    background-color: #f0f8ff;
+    border-color: #0056b3;
+}
+
+/* Create Butonu */
+.btn-create {
+    width: 150px;
+    padding: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    background-color: transparent;
+    border: 2px solid #333;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+}
+
+.btn-create:hover {
+    background-color: #333;
+    color: #fff;
+}
