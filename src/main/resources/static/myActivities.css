@@ -9,7 +9,7 @@ body {
 
 .main-container {
     width: 90%;
-    max-width: 500px; /* Mobil görünüm hissi için daralttım */
+    max-width: 1000px;
     background-color: white;
     border: 2px solid #333;
     border-radius: 10px;
@@ -55,9 +55,34 @@ body {
 
 /* Kart Listesi */
 .activities-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* İki bölüm: oluşturduklarım / katıldıklarım */
+.section {
+    border: 1px dashed #ddd;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff;
+}
+.section h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.05rem;
+    color: #222;
+    border-bottom: 1px solid #efefef;
+    padding-bottom: 8px;
+}
+
+@media (min-width: 800px) {
+    .activities-grid {
+        grid-template-columns: 1fr 1fr; /* İki sütun */
+    }
+
+    .main-container {
+        padding: 28px;
+    }
 }
 
 /* Tekil Aktivite Kartı */

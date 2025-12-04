@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- ANA FONKSİYON: Doğrudan Aktiviteleri İste ---
     function fetchActivities() {
         // URL'de artık ID yok! Backend kim olduğumuzu Cookie'den biliyor.
-        fetch('/user-dashboard/my-activities', {
+        // Backend controller: ActivityController.getMyActivities -> GET /activities/my-activities
+        fetch('/activities/my-activities', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include' // Oturum bilgisini (Cookie) gönder
@@ -25,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            renderActivities(data);
+            // Beklenen cevap: { created: [...], joined: [...] }
+            renderActivities(data.created || [], data.joined || []);
         })
         .catch(error => {
             console.error('Hata:', error);
@@ -36,34 +38,78 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Aktiviteleri Ekrana Basan Fonksiyon (Burası aynı kaldı)
-    function renderActivities(activities) {
-        listContainer.innerHTML = ''; 
+    function renderActivities(created, joined) {
+        listContainer.innerHTML = '';
 
-        if (!activities || activities.length === 0) {
-            listContainer.innerHTML = '<p style="text-align:center;">Henüz kayıtlı bir aktiviteniz yok.</p>';
-            return;
+        const createSection = document.createElement('div');
+        createSection.classList.add('section');
+        const joinedSection = document.createElement('div');
+        joinedSection.classList.add('section');
+
+        const createdTitle = document.createElement('h3');
+        createdTitle.textContent = 'Oluşturduğum Aktiviteler';
+        createSection.appendChild(createdTitle);
+
+        if (!created || created.length === 0) {
+            const p = document.createElement('p');
+            p.style.textAlign = 'center';
+            p.textContent = 'Henüz oluşturduğunuz bir aktivite yok.';
+            createSection.appendChild(p);
+        } else {
+            created.forEach(activity => {
+                const card = document.createElement('div');
+                card.classList.add('activity-card');
+                card.innerHTML = `
+                    <div class="card-info">
+                        <h4>${activity.name}</h4>
+                        <p>${activity.startDate} | ${activity.location}</p>
+                    </div>
+                    <button class="btn-detail" 
+                        data-id="${activity.activityId}" 
+                        data-name="${activity.name}"
+                        data-loc="${activity.location}"
+                        data-date="${activity.startDate}"
+                        data-time="${activity.startTime}">
+                        Detay
+                    </button>
+                `;
+                createSection.appendChild(card);
+            });
         }
 
-        activities.forEach(activity => {
-            const card = document.createElement('div');
-            card.classList.add('activity-card');
-            
-            card.innerHTML = `
-                <div class="card-info">
-                    <h3>${activity.name}</h3>
-                    <p>${activity.startDate} | ${activity.location}</p>
-                </div>
-                <button class="btn-detail" 
-                    data-id="${activity.activityId}" 
-                    data-name="${activity.name}"
-                    data-loc="${activity.location}"
-                    data-date="${activity.startDate}"
-                    data-time="${activity.startTime}">
-                    Detay
-                </button>
-            `;
-            listContainer.appendChild(card);
-        });
+        const joinedTitle = document.createElement('h3');
+        joinedTitle.textContent = 'Katıldığım Aktiviteler';
+        joinedSection.appendChild(joinedTitle);
+
+        if (!joined || joined.length === 0) {
+            const p = document.createElement('p');
+            p.style.textAlign = 'center';
+            p.textContent = 'Henüz katıldığınız bir aktivite yok.';
+            joinedSection.appendChild(p);
+        } else {
+            joined.forEach(activity => {
+                const card = document.createElement('div');
+                card.classList.add('activity-card');
+                card.innerHTML = `
+                    <div class="card-info">
+                        <h4>${activity.name}</h4>
+                        <p>${activity.startDate} | ${activity.location}</p>
+                    </div>
+                    <button class="btn-detail" 
+                        data-id="${activity.activityId}" 
+                        data-name="${activity.name}"
+                        data-loc="${activity.location}"
+                        data-date="${activity.startDate}"
+                        data-time="${activity.startTime}">
+                        Detay
+                    </button>
+                `;
+                joinedSection.appendChild(card);
+            });
+        }
+
+        listContainer.appendChild(createSection);
+        listContainer.appendChild(joinedSection);
 
         // Butonlara tıklama olayını ekle
         document.querySelectorAll('.btn-detail').forEach(btn => {
