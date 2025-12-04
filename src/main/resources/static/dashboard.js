@@ -30,9 +30,11 @@ function fetchActivities() {
                     // Backend'den gelen veri isimlerine dikkat (title, date vs.)
                     const cardHTML = `
                         <div class="activity-card">
-                            <div class="activity-title">${activity.title || 'Başlıksız Aktivite'}</div>
-                            <div class="activity-info">📅 ${formatDate(activity.date)}</div>
+                            <div class="activity-title">${activity.name || 'Başlıksız Aktivite'}</div>
+                            <div class="activity-info">📅 ${formatDate(activity.startDate)}</div>
                             <div class="activity-info">📍 ${activity.location || 'Konum yok'}</div>
+                            <div class="activity-info">📝 ${activity.description || 'Açıklama yok'}</div>
+                            <div class="activity-info">👥 ${activity.numberOfParticipants || 0} katılımcı</div>
                             <a href="/treffpunkt/activity-detail?id=${activity.id}" class="detail-btn">Detay</a>
                         </div>
                     `;

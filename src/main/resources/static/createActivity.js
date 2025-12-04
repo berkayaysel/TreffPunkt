@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 2. Formdaki verileri topla
         const name = document.getElementById('name').value;
         const location = document.getElementById('location').value;
+        const description = document.getElementById('description').value;
         const capacity = document.getElementById('capacity').value;
         const startDate = document.getElementById('startDate').value;
         const startTime = document.getElementById('startTime').value;
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const activityData = {
             name: name,
             location: location,
+            description: description,
             capacity: parseInt(capacity), // Integer'a çevir
             startDate: startDate, // "YYYY-MM-DD" formatında string gider
             startTime: startTime // "HH:MM" formatında string gider
