@@ -11,21 +11,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // CSRF korumasını devre dışı bırak (Postman ile test için)
-                .csrf(csrf -> csrf.disable())
 
-                // hangi endpoint’lerin serbest olduğunu tanımla
+        http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        
                         .requestMatchers("/**").permitAll()
                 )
-
-                .httpBasic(Customizer.withDefaults());
-
-                // default login formu (şu an engel olmaması için aktif kalabilir)
-                // .formLogin(Customizer.withDefaults());
+                .formLogin(login -> login.disable())   // login zorlamasını kapat
+                .httpBasic(basic -> basic.disable()); // Basic Auth ZORLAMASINI kapat
 
         return http.build();
     }
+
 }

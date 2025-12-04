@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .finally(() => {
             // Her durumda kullanıcıyı giriş sayfasına yönlendir.
-            window.location.href = '/treffpunkt/profile'; // Veya hangi sayfanız varsa
+            window.location.href = '/treffpunkt/login'; // Veya hangi sayfanız varsa
         });
     });
 

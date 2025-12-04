@@ -27,4 +27,9 @@ public class LoginHtmlController {
     public String showProfilePage() {
         return "profile";
     }
+
+    @GetMapping(path = "/createActivity")
+    public String showCreateActivityPage() {
+        return "createActivity";
+    }
 }
