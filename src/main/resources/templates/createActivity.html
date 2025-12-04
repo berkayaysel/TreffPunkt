@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Activity</title>
+    
+    <link rel="stylesheet" href="createActivity.css">
+</head>
+<body>
+
+    <div class="container">
+        <a href="/treffpunkt/dashboard" class="back-link">
+            <span>←</span> geri tuşu
+        </a>
+        
+        <form id="createActivityForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Activity Name">
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" required placeholder="Place">
+            </div>
+
+            <div class="form-group">
+                <label for="capacity">Capacity</label>
+                <input type="number" id="capacity" name="capacity" min="1" required placeholder="Max participants">
+            </div>
+
+            <div class="form-group">
+                <label for="startDate">Start-Date</label>
+                <input type="date" id="startDate" name="startDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="startTime">Start-Time</label>
+                <input type="time" id="startTime" name="startTime" required>
+            </div>
+
+            <button type="submit" class="btn-create">create</button>
+        </form>
+    </div>
+
+    <script src="createActivity.js"></script>
+</body>
+</html>
