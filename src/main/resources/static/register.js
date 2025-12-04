@@ -12,6 +12,35 @@ document.addEventListener("DOMContentLoaded", function() {
     const errorMessage = document.getElementById("error-message");
     const genderInput = document.getElementById("gender");
 
+    // Gender toggle butonlarının davranışını ayarla (HTML'de butonlar mevcutsa)
+    const genderButtons = document.querySelectorAll('.gender-toggle button');
+    if (genderButtons && genderButtons.length > 0) {
+        genderButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // hidden input'u güncelle
+                const val = btn.getAttribute('data-value');
+                genderInput.value = val;
+
+                // active sınıfı ve aria-pressed ayarla
+                genderButtons.forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-pressed', 'false');
+                });
+                btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
+            });
+        });
+        // Eğer önceden seçilmiş bir value varsa butonları senkronize et
+        if (genderInput.value) {
+            genderButtons.forEach(b => {
+                if (b.getAttribute('data-value') === genderInput.value) {
+                    b.classList.add('active');
+                    b.setAttribute('aria-pressed', 'true');
+                }
+            });
+        }
+    }
+
     // Forma "submit" olayı eklendiğinde çalışacak fonksiyon
     registerForm.addEventListener("submit", function(event) {
         

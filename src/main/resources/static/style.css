@@ -52,6 +52,50 @@ form {
     box-sizing: border-box; /* Padding'in genişliği etkilememesi için */
 }
 
+/* Stil: select / form-control (ör. register cinsiyet seçimi) */
+.form-control,
+.input-group select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #333;
+    box-sizing: border-box;
+    appearance: none; /* Tarayıcı varsayılan okunu gizle (destekleyenlerde) */
+    background-image: linear-gradient(45deg, transparent 50%, #999 50%),
+                      linear-gradient(135deg, #999 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(1rem + 2px), calc(100% - 13px) calc(1rem + 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+.input-group select:focus,
+.form-control:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.08);
+}
+
+/* Alternatif: cinsiyeti yatay butonlara çevirmek isterseniz bu sınıf kullanılabilir */
+.gender-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+.gender-toggle button {
+    flex: 1 1 0;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.gender-toggle button.active {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
 /* Giriş Butonu */
 .login-button {
     background-color: #007bff;
