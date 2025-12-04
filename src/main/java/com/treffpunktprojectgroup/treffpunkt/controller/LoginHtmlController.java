@@ -32,4 +32,9 @@ public class LoginHtmlController {
     public String showCreateActivityPage() {
         return "createActivity";
     }
+
+    @GetMapping(path = "/myActivities")
+    public String showMyActivitiesPage() {
+        return "myActivities";
+    }
 }
