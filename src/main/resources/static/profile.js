@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ana fonksiyon: Kullanıcının giriş durumunu kontrol et ve verileri getir
     function checkLoginStatusAndFetchProfile() {
         
-        fetch('/user-dashboard/userService', { // <-- Java controller'ınızdaki adres
+        fetch('/user-dashboard/profile-info', { // <-- Java controller'ınızdaki adres
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
