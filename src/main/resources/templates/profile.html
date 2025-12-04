@@ -13,7 +13,8 @@
     <div class="login-container profile-container">
         <h2>Profilim</h2>
         
-        <div class="profile-info">
+        <!-- GÖRÜNTÜLEME MODU -->
+        <div id="viewMode" class="profile-info">
             <p>
                 Adınız: <span id="profile-name" class="loading-placeholder">...</span>
             </p>
@@ -29,7 +30,35 @@
             <p>
                 Adresiniz: <span id="profile-address" class="loading-placeholder">...</span>
             </p>
+            <button id="editBtn" class="login-button" style="margin-top: 15px;">Düzenle</button>
         </div>
+
+        <!-- DÜZENLEME MODU -->
+        <form id="editMode" style="display: none;">
+            <div class="input-group">
+                <label for="edit-name">Adınız</label>
+                <input type="text" id="edit-name" name="name" required>
+            </div>
+            <div class="input-group">
+                <label for="edit-surname">Soyadınız</label>
+                <input type="text" id="edit-surname" name="surname" required>
+            </div>
+            <div class="input-group">
+                <label for="edit-email">Email</label>
+                <input type="email" id="edit-email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="edit-age">Yaş</label>
+                <input type="number" id="edit-age" name="age" required>
+            </div>
+            <div class="input-group">
+                <label for="edit-address">Adres</label>
+                <input type="text" id="edit-address" name="address" required>
+            </div>
+            <button type="submit" class="login-button">Kaydet</button>
+            <button type="button" id="cancelBtn" class="login-button" style="background-color: #999; margin-top: 10px;">İptal</button>
+            <p id="error-message" class="error-message"></p>
+        </form>
         
         <button id="logoutButton" class="logout-button">Çıkış Yap</button>
         
