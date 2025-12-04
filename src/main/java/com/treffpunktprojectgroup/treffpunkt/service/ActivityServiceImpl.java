@@ -1,6 +1,7 @@
 package com.treffpunktprojectgroup.treffpunkt.service;
 
 import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
+import com.treffpunktprojectgroup.treffpunkt.dto.MyActivitiesResponse;
 import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
 import com.treffpunktprojectgroup.treffpunkt.entity.User;
 import com.treffpunktprojectgroup.treffpunkt.repository.ActivityRepository;
@@ -32,6 +33,7 @@ public class ActivityServiceImpl implements ActivityService{
             if(activity.getCapacity() > 0 && !activity.getParticipants().contains(user)) {
                 activity.getParticipants().add(user);
                 activity.setCapacity(activity.getCapacity() - 1);
+                activity.setNumberOfParticipant(activity.getNumberOfParticipant() + 1);
                 activityRepository.save(activity);
                 return true;
             }
@@ -52,6 +54,7 @@ public class ActivityServiceImpl implements ActivityService{
             if(activity.getParticipants().contains(user)) {
                 activity.getParticipants().remove(user);
                 activity.setCapacity(activity.getCapacity() + 1);
+                activity.setNumberOfParticipant(activity.getNumberOfParticipant() - 1);
                 activityRepository.save(activity);
                 return true;
             }
@@ -71,5 +74,30 @@ public class ActivityServiceImpl implements ActivityService{
                         a.getStartTime()
                 ))
                 .toList();
+    }
+
+    @Override
+    public MyActivitiesResponse getMyActivities(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+
+        // KULLANICININ OLUŞTURDUĞU AKTİVİTELER
+        List<Activity> createdActivities = activityRepository.findByCreator(user);
+
+        // KULLANICININ KATILDIĞI AKTİVİTELER
+        List<Activity> joinedActivities = activityRepository.findByParticipantsContains(user);
+
+        List<ActivityResponse> createdDTO =
+                createdActivities.stream()
+                        .map(a -> new ActivityResponse(a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime()))
+                        .toList();
+
+        List<ActivityResponse> joinedDTO =
+                joinedActivities.stream()
+                        .map(a -> new ActivityResponse(a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime()))
+                        .toList();
+
+        return new MyActivitiesResponse(createdDTO, joinedDTO);
     }
 }
