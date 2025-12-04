@@ -11,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import com.treffpunktprojectgroup.treffpunkt.dto.UserProfileResponse;
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.security.Principal; 
 
 @Controller
 @RequestMapping(path ="/user-dashboard")
@@ -50,7 +53,7 @@ public class UserController {
         return ResponseEntity.ok(activities);
     }
 
-    @GetMapping(/profile-info)
+    @GetMapping("/profile-info")
     public ResponseEntity<UserProfileResponse>  getProfileInfo(Principal principal){
 
         if (principal == null){

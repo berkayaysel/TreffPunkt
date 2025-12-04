@@ -5,6 +5,7 @@ import com.treffpunktprojectgroup.treffpunkt.dto.CreateActivityRequest;
 import com.treffpunktprojectgroup.treffpunkt.dto.RequestRegister;
 import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
 import com.treffpunktprojectgroup.treffpunkt.entity.User;
+import com.treffpunktprojectgroup.treffpunkt.dto.UserProfileResponse;
 
 import java.util.List;
 
