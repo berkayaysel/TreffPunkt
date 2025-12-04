@@ -1,17 +1,15 @@
 package com.treffpunktprojectgroup.treffpunkt.controller;
 
 
-import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
-import com.treffpunktprojectgroup.treffpunkt.dto.CreateActivityRequest;
-import com.treffpunktprojectgroup.treffpunkt.dto.JoinActivityRequest;
+import com.treffpunktprojectgroup.treffpunkt.dto.*;
 import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
+import com.treffpunktprojectgroup.treffpunkt.entity.User;
 import com.treffpunktprojectgroup.treffpunkt.service.UserService;
 import com.treffpunktprojectgroup.treffpunkt.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import com.treffpunktprojectgroup.treffpunkt.dto.UserProfileResponse;
 
 
 import java.util.ArrayList;
@@ -64,6 +62,20 @@ public class UserController {
         UserProfileResponse response = userService.getUserProfileByEmail(email);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/profile/update")
+    public ResponseEntity<?> updateProfile(
+            @RequestBody ProfileUpdateRequest request,
+            Principal principal) {
+
+        if (principal == null) {
+            return ResponseEntity.status(401).body("Yetkisiz işlem");
+        }
+
+        String email = principal.getName(); // Şu an giriş yapmış kullanıcının emaili
+        User updatedUser = userService.updateUserProfile(email, request);
+        return ResponseEntity.ok(updatedUser);
     }
 
 }

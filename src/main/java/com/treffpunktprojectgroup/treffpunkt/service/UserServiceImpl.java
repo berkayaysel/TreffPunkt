@@ -1,17 +1,15 @@
 package com.treffpunktprojectgroup.treffpunkt.service;
 
-import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
-import com.treffpunktprojectgroup.treffpunkt.dto.CreateActivityRequest;
-import com.treffpunktprojectgroup.treffpunkt.dto.RequestRegister;
+import com.treffpunktprojectgroup.treffpunkt.dto.*;
 import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
 import com.treffpunktprojectgroup.treffpunkt.entity.User;
 import com.treffpunktprojectgroup.treffpunkt.repository.ActivityRepository;
 import com.treffpunktprojectgroup.treffpunkt.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.treffpunktprojectgroup.treffpunkt.dto.UserProfileResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,5 +100,47 @@ public class UserServiceImpl implements UserService{
                 user.getAddress()
         );
     }
+
+    @Override
+    @Transactional
+    public User updateUserProfile(String loggedInEmail, ProfileUpdateRequest request) {
+
+        User user = userRepository.findByEmail(loggedInEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 1) Name
+        if (request.getName() != null && !request.getName().equals(user.getName())) {
+            user.setName(request.getName());
+        }
+
+        // 2) Surname
+        if (request.getSurname() != null && !request.getSurname().equals(user.getSurname())) {
+            user.setSurname(request.getSurname());
+        }
+
+        // 3) Email (değişebilir)
+        if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
+
+            // email başka kullanıcıda var mı kontrol et
+            if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new RuntimeException("Bu email zaten kullanılıyor");
+            }
+
+            user.setEmail(request.getEmail());
+        }
+
+        // 4) Age
+        if (request.getAge() != null && !request.getAge().equals(user.getAge())) {
+            user.setAge(request.getAge());
+        }
+
+        // 5) Address
+        if (request.getAddress() != null && !request.getAddress().equals(user.getAddress())) {
+            user.setAddress(request.getAddress());
+        }
+
+        return userRepository.save(user);
+    }
+
 
 }
