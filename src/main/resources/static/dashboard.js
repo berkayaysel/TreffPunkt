@@ -5,7 +5,7 @@ window.onload = function() {
 
 function fetchActivities() {
     // Backend adresi (Controller'a göre güncellemeyi unutma)
-    const url = 'http://localhost:8080/treffpunkt/dashboard';
+    const url = '/activities/all';
 
     fetch(url)
         .then(response => {
