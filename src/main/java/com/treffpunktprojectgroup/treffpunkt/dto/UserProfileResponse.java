@@ -8,7 +8,6 @@ public class UserProfileResponse {
     private Integer age;
     private String address;
 
-    // Constructor
     public UserProfileResponse(String name, String surname, String email, Integer age, String address) {
         this.name = name;
         this.surname = surname;
@@ -17,11 +16,9 @@ public class UserProfileResponse {
         this.address = address;
     }
 
-    // Default Constructor (needed for some JSON parsers)
     public UserProfileResponse() {
     }
 
-    // Getters and Setters
     public String getName() {
         return name;
     }

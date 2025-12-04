@@ -2,6 +2,7 @@ package com.treffpunktprojectgroup.treffpunkt.controller;
 
 import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
 import com.treffpunktprojectgroup.treffpunkt.dto.JoinActivityRequest;
+import com.treffpunktprojectgroup.treffpunkt.dto.MyActivitiesResponse;
 import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
 import com.treffpunktprojectgroup.treffpunkt.service.ActivityService;
 import com.treffpunktprojectgroup.treffpunkt.service.ActivityServiceImpl;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -45,5 +47,18 @@ public class ActivityController {
     @GetMapping("/all")
     public ResponseEntity<List<ActivityResponse>> getAllActivities() {
         return ResponseEntity.ok(activityService.getAllActivities());
+    }
+
+    @GetMapping("/my-activities")
+    public ResponseEntity<MyActivitiesResponse> getMyActivities(Principal principal) {
+
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String email = principal.getName();
+        MyActivitiesResponse response = activityService.getMyActivities(email);
+
+        return ResponseEntity.ok(response);
     }
 }

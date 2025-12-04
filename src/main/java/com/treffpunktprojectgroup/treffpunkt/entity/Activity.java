@@ -34,19 +34,34 @@ public class Activity {
     @Column(name = "kapasite")
     private Integer capacity;
 
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "numberOfParticipant")
+    private Integer numberOfParticipant;
+
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
     public Activity(String name,
                     String location,
                     LocalDate startDate,
                     LocalTime startTime,
                     Integer activityId,
-                    Integer capacity) {
+                    Integer capacity,
+                    Integer numberOfParticipant,
+                    String description,
+                    User creator) {
         this.activityId = activityId;
         this.name = name;
         this.location = location;
         this.startDate = startDate;
         this.capacity = capacity;
         this.startTime = startTime;
+        this.numberOfParticipant = numberOfParticipant;
+        this.description = description;
+        this.creator = creator;
     }
 
     @ManyToMany
@@ -110,6 +125,30 @@ public class Activity {
     public void addParticipant(User user) { this.participants.add(user); }
 
     public void removeParticipant(User user) { this.participants.remove(user); }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getNumberOfParticipant() {
+        return numberOfParticipant;
+    }
+
+    public void setNumberOfParticipant(Integer numberOfParticipant) {
+        this.numberOfParticipant = numberOfParticipant;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
 
     public Activity() {
     }
