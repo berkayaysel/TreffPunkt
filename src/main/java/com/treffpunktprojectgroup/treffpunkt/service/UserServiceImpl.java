@@ -83,10 +83,14 @@ public class UserServiceImpl implements UserService{
         List<Activity> activities = activityRepository.findByParticipants_UserId(userId);
         return activities.stream()
                 .map(a -> new ActivityResponse(
+                        a.getActivityId(),
                         a.getName(),
                         a.getLocation(),
                         a.getStartDate(),
-                        a.getStartTime()
+                        a.getStartTime(),
+                        a.getDescription(),
+                        a.getNumberOfParticipant(),
+                        a.getCapacity()
                 ))
                 .collect(Collectors.toList());
     }
