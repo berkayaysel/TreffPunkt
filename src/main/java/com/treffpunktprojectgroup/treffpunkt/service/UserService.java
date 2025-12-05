@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface UserService {
-    boolean changePassword(Integer userId, String oldPassword, String newPassword);
+    boolean changePassword(String email, String oldPassword, String newPassword);
     User register(RequestRegister requestRegister);
     void createActivity(CreateActivityRequest createActivityRequest);
     List<ActivityResponse> getUserActivities(Integer userId);

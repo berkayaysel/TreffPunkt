@@ -27,17 +27,20 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body) {
-        Integer userId = Integer.parseInt(body.get("userId"));
+    public ResponseEntity<?> changePassword(
+            @RequestBody Map<String, String> body,
+            Principal principal
+    ) {
+        String email = principal.getName(); // Login olan kullanıcı
         String oldPassword = body.get("oldPassword");
         String newPassword = body.get("newPassword");
 
-        boolean success = userService.changePassword(userId, oldPassword, newPassword);
+        boolean success = userService.changePassword(email, oldPassword, newPassword);
 
-        if(success) {
+        if (success) {
             return ResponseEntity.ok("Şifre başarıyla değiştirildi.");
         } else {
-            return ResponseEntity.status(400).body("Mevcut şifre yanlış");
+            return ResponseEntity.status(400).body("Mevcut şifre yanlış!");
         }
     }
 

@@ -52,19 +52,20 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(user);
     }
 
-    public boolean changePassword(Integer userId, String oldPassword, String newPassword) {
-        Optional<User> userOptional = userRepository.findById(userId);
+    @Override
+    public boolean changePassword(String email, String oldPassword, String newPassword) {
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
-            if (passwordEncoder.matches(oldPassword, user.getPassword())) {
-                user.setPassword(passwordEncoder.encode(newPassword));
-                userRepository.save(user);
-                return true;
-            }
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return false;
         }
-        return false;
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return true;
     }
 
     public void createActivity(CreateActivityRequest createActivityRequest) {
