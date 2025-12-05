@@ -37,6 +37,18 @@ form {
     margin-bottom: 1rem;
 }
 
+/* form-group: register sayfasındaki select gibi alanları için aynı boşluk ve etiket stili */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+    font-weight: bold;
+}
+
 .input-group label {
     display: block;
     margin-bottom: 0.5rem;

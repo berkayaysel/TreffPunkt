@@ -21,25 +21,26 @@ body {
 }
 
 /* Geri Tuşu Stili */
-.back-link {
-    text-decoration: none;
+
+/* Geri Tuşu Stili: myActivities ile uyumlu icon-btn */
+.icon-btn {
+    font-size: 1.1rem;
     color: #333;
-    font-weight: bold;
-    font-size: 1.2rem;
+    text-decoration: none;
+    border: 2px solid #333;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     display: inline-flex;
+    justify-content: center;
     align-items: center;
+    transition: background 0.3s;
     margin-bottom: 20px;
 }
 
-.back-link span {
-    border: 2px solid #333;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 8px;
+.icon-btn:hover {
+    background-color: #333;
+    color: white;
 }
 
 /* Form Elemanları */
@@ -61,6 +62,23 @@ body {
     border-radius: 5px;
     font-size: 1rem;
     outline: none;
+}
+
+/* Description textarea'ının inputlarla aynı görünüme sahip olması için */
+.form-group textarea {
+    padding: 10px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+    min-height: 100px; /* Yeterli dikey alan */
+    resize: vertical; /* Kullanıcı dikey olarak yeniden boyutlandırabilir */
+    box-sizing: border-box;
+}
+
+.form-group textarea:focus {
+    background-color: #f0f8ff;
+    border-color: #0056b3;
 }
 
 .form-group input:focus {

@@ -69,7 +69,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         data-name="${activity.name}"
                         data-loc="${activity.location}"
                         data-date="${activity.startDate}"
-                        data-time="${activity.startTime}">
+                        data-time="${activity.startTime}"
+                        data-desc="${activity.description || ''}"
+                        data-capacity="${activity.capacity || ''}"
+                        data-number="${activity.numberOfParticipants || ''}">
                         Detay
                     </button>
                 `;
@@ -100,7 +103,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         data-name="${activity.name}"
                         data-loc="${activity.location}"
                         data-date="${activity.startDate}"
-                        data-time="${activity.startTime}">
+                        data-time="${activity.startTime}"
+                        data-desc="${activity.description || ''}"
+                        data-capacity="${activity.capacity || ''}"
+                        data-number="${activity.numberOfParticipants || ''}">
                         Detay
                     </button>
                 `;
@@ -124,12 +130,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const loc = btn.getAttribute('data-loc');
         const date = btn.getAttribute('data-date');
         const time = btn.getAttribute('data-time');
+        const desc = btn.getAttribute('data-desc') || '';
+        const capacity = btn.getAttribute('data-capacity') || '-';
+        const number = btn.getAttribute('data-number') || '-';
         currentActivityId = btn.getAttribute('data-id');
 
         document.getElementById('modal-title').textContent = name;
         document.getElementById('modal-location').textContent = loc;
         document.getElementById('modal-date').textContent = date;
         document.getElementById('modal-time').textContent = time;
+        document.getElementById('modal-description').textContent = desc || '(Yok)';
+        document.getElementById('modal-capacity').textContent = capacity;
+        document.getElementById('modal-number').textContent = number;
 
         modal.style.display = 'flex';
     }

@@ -88,10 +88,14 @@ public class ActivityServiceImpl implements ActivityService{
         return activityRepository.findAll()
                 .stream()
                 .map(a -> new ActivityResponse(
+                        a.getActivityId(),
                         a.getName(),
                         a.getLocation(),
                         a.getStartDate(),
-                        a.getStartTime()
+                        a.getStartTime(),
+                        a.getDescription(),
+                        a.getNumberOfParticipant(),
+                        a.getCapacity()
                 ))
                 .toList();
     }
@@ -110,12 +114,12 @@ public class ActivityServiceImpl implements ActivityService{
 
         List<ActivityResponse> createdDTO =
                 createdActivities.stream()
-                        .map(a -> new ActivityResponse(a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime()))
+                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity()))
                         .toList();
 
         List<ActivityResponse> joinedDTO =
                 joinedActivities.stream()
-                        .map(a -> new ActivityResponse(a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime()))
+                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity()))
                         .toList();
 
         return new MyActivitiesResponse(createdDTO, joinedDTO);

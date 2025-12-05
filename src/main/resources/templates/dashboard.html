@@ -10,7 +10,7 @@
 <body>
 
     <div class="navbar">
-        <a href="/treffpunkt/myActivities" class="nav-btn">+</a>
+        <a href="/treffpunkt/myActivities" class="nav-btn">Benim Aktivitelerim</a>
 
         <a href="/treffpunkt/profile" class="nav-btn profile-btn">Profil</a>
     </div>
@@ -27,8 +27,27 @@
         </div>
 
     </div>
+
+    <!-- ACTIVITY DETAIL MODAL -->
+    <div id="activityDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="detailClose">&times;</span>
+            <h2 id="detail-title">Aktivite Detay</h2>
+            <div class="modal-body">
+                <p><strong>Konum:</strong> <span id="detail-location"></span></p>
+                <p><strong>Tarih:</strong> <span id="detail-date"></span></p>
+                <p><strong>Saat:</strong> <span id="detail-time"></span></p>
+                <p><strong>Açıklama:</strong> <span id="detail-description">(Yok)</span></p>
+                <p><strong>Kapasite:</strong> <span id="detail-capacity">-</span></p>
+                <p><strong>Katılımcı Sayısı:</strong> <span id="detail-number">-</span></p>
+            </div>
+            <div class="modal-footer">
+                <button id="joinBtn" class="btn-detail">Katıl</button>
+            </div>
+        </div>
+    </div>
+
     </div> <script src="/dashboard.js"></script>
-    
 
 </body>
 </html>
