@@ -37,8 +37,8 @@ public class Activity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "numberOfParticipant")
-    private Integer numberOfParticipant;
+    @Column(name = "numberOfParticipant", nullable = false)
+    private Integer numberOfParticipant = 0;
 
     @ManyToOne
     @JoinColumn(name = "creator_id")
