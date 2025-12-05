@@ -10,7 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,8 +52,8 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(user);
     }
 
-    public boolean changePassword(Integer id, String oldPassword, String newPassword) {
-        Optional<User> userOptional = userRepository.findById(id);
+    public boolean changePassword(Integer userId, String oldPassword, String newPassword) {
+        Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -68,7 +74,7 @@ public class UserServiceImpl implements UserService{
         activity.setName(createActivityRequest.getName());
         activity.setStartTime(createActivityRequest.getStartTime());
         activity.setStartDate(createActivityRequest.getStartDate());
-
+        activity.setDescription(createActivityRequest.getDescription());
         activityRepository.save(activity);
     }
 
@@ -142,5 +148,29 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(user);
     }
 
+    @Override
+    public void saveProfileImage(String email, MultipartFile file) {
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        try {
+            String folder = "uploads/profile-images/";
+            File directory = new File(folder);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String fileName = "user_" + user.getUserId() + ".png";
+            Path path = Paths.get(folder + fileName);
+
+            Files.write(path, file.getBytes());
+
+            user.setProfileImage("/" + folder + fileName);
+            userRepository.save(user);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Profil resmi kaydedilirken hata oluştu", e);
+        }
+    }
 }

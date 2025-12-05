@@ -7,8 +7,8 @@ import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
 import java.util.List;
 
 public interface ActivityService {
-    boolean joinActivity(Integer userId, Integer activityId);
-    boolean leaveActivity(Integer userId, Integer activityId);
+    boolean joinActivity(String email, Integer activityId);
+    boolean leaveActivity(String email, Integer activityId);
     List<ActivityResponse> getAllActivities();
     MyActivitiesResponse getMyActivities(String email);
 }

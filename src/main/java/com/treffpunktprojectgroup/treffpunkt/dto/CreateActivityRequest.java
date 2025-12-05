@@ -10,17 +10,20 @@ public class CreateActivityRequest {
     private Integer capacity;
     private LocalDate startDate;
     private LocalTime startTime;
+    private String description;
 
     public CreateActivityRequest(String name,
                                  String location,
                                  Integer capacity,
                                  LocalDate startDate,
-                                 LocalTime startTime) {
+                                 LocalTime startTime,
+                                 String description) {
         this.name = name;
         this.location = location;
         this.capacity = capacity;
         this.startDate = startDate;
         this.startTime = startTime;
+        this.description = description;
     }
 
     public String getName() {
@@ -61,6 +64,14 @@ public class CreateActivityRequest {
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public CreateActivityRequest() {

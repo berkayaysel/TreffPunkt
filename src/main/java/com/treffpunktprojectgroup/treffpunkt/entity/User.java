@@ -41,6 +41,9 @@ public class User {
     @Column(name = "rank")
     private Integer rank;
 
+    @Column(name = "profileImage")
+    private String profileImage;
+
     public User(String name,
                 String surname,
                 String password,
@@ -48,7 +51,8 @@ public class User {
                 Integer age,
                 String email,
                 String address,
-                Integer rank) {
+                Integer rank,
+                String profileImage) {
         this.name = name;
         this.surname = surname;
         this.password = password;
@@ -57,6 +61,7 @@ public class User {
         this.email = email;
         this.address = address;
         this.rank = rank;
+        this.profileImage = profileImage;
     }
 
     @ManyToMany(mappedBy = "participants")
@@ -133,6 +138,18 @@ public class User {
     }
 
     public Set<Activity> getActivities() { return activities; }
+
+    public void setActivities(Set<Activity> activities) {
+        this.activities = activities;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 
     public User() {
     }

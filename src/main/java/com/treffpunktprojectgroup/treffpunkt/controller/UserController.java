@@ -8,8 +8,10 @@ import com.treffpunktprojectgroup.treffpunkt.service.UserService;
 import com.treffpunktprojectgroup.treffpunkt.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.ArrayList;
@@ -26,11 +28,11 @@ public class UserController {
 
     @PostMapping(path = "/change-password")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body) {
-        Integer id = Integer.parseInt(body.get("id"));
+        Integer userId = Integer.parseInt(body.get("userId"));
         String oldPassword = body.get("oldPassword");
         String newPassword = body.get("newPassword");
 
-        boolean success = userService.changePassword(id, oldPassword, newPassword);
+        boolean success = userService.changePassword(userId, oldPassword, newPassword);
 
         if(success) {
             return ResponseEntity.ok("Şifre başarıyla değiştirildi.");
@@ -76,6 +78,18 @@ public class UserController {
         String email = principal.getName(); // Şu an giriş yapmış kullanıcının emaili
         User updatedUser = userService.updateUserProfile(email, request);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @PostMapping("/upload-profile")
+    public ResponseEntity<?> uploadProfileImage(@RequestParam("email") String email,
+                                                @RequestParam("file") MultipartFile file) {
+
+        try {
+            userService.saveProfileImage(email, file);
+            return ResponseEntity.ok("Profil resmi başarıyla güncellendi.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Resim yüklenirken hata oluştu.");
+        }
     }
 
 }

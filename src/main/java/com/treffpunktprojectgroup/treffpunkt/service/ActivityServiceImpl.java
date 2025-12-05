@@ -22,18 +22,28 @@ public class ActivityServiceImpl implements ActivityService{
     private UserRepository userRepository;
 
     @Override
-    public boolean joinActivity(Integer userId, Integer activityId) {
+    public boolean joinActivity(String email, Integer activityId) {
+        // Kullanıcıyı email ile buluyoruz
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        // Aktiviteyi getir
         Optional<Activity> activityOptional = activityRepository.findById(activityId);
-        Optional<User> userOptional = userRepository.findById(userId);
 
-        if(activityOptional.isPresent() && userOptional.isPresent()) {
+        if (activityOptional.isPresent()) {
             Activity activity = activityOptional.get();
-            User user = userOptional.get();
 
-            if(activity.getCapacity() > 0 && !activity.getParticipants().contains(user)) {
+            // Zaten katılmış mı?
+            if (activity.getParticipants().contains(user)) {
+                return false;
+            }
+
+            // Kapasite var mı?
+            if (activity.getCapacity() > 0) {
                 activity.getParticipants().add(user);
                 activity.setCapacity(activity.getCapacity() - 1);
                 activity.setNumberOfParticipant(activity.getNumberOfParticipant() + 1);
+
                 activityRepository.save(activity);
                 return true;
             }
@@ -43,19 +53,29 @@ public class ActivityServiceImpl implements ActivityService{
     }
 
     @Override
-    public boolean leaveActivity(Integer userId, Integer activityId) {
+    public boolean leaveActivity(String email, Integer activityId) {
+
+        // Kullanıcıyı email ile bul
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        // Aktiviteyi bul
         Optional<Activity> activityOptional = activityRepository.findById(activityId);
-        Optional<User> userOptional = userRepository.findById(userId);
 
-        if(activityOptional.isPresent() && userOptional.isPresent()) {
+        if (activityOptional.isPresent()) {
             Activity activity = activityOptional.get();
-            User user = userOptional.get();
 
-            if(activity.getParticipants().contains(user)) {
+            // Kullanıcı gerçekten aktivitede mi?
+            if (activity.getParticipants().contains(user)) {
+
+                // Aktiviteden çıkar
                 activity.getParticipants().remove(user);
+
                 activity.setCapacity(activity.getCapacity() + 1);
                 activity.setNumberOfParticipant(activity.getNumberOfParticipant() - 1);
+
                 activityRepository.save(activity);
+
                 return true;
             }
         }
