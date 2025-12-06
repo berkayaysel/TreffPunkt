@@ -7,13 +7,15 @@ public class UserProfileResponse {
     private String email;
     private Integer age;
     private String address;
+    private String profileImage;
 
-    public UserProfileResponse(String name, String surname, String email, Integer age, String address) {
+    public UserProfileResponse(String name, String surname, String email, Integer age, String address, String profileImage) {
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.age = age;
         this.address = address;
+        this.profileImage = profileImage;
     }
 
     public UserProfileResponse() {
@@ -57,5 +59,13 @@ public class UserProfileResponse {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }

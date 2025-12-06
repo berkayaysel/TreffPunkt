@@ -25,7 +25,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/auth")
 public class LoginController {
-
     @Autowired
     private LoginService loginService;
 
@@ -33,34 +32,31 @@ public class LoginController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody RequestLogin requestLogin, HttpServletRequest request) { // <-- HttpServletRequest eklendi
+    public ResponseEntity<?> login(@RequestBody RequestLogin requestLogin, HttpServletRequest request) {
+        try {
+            User user = loginService.login(requestLogin);
 
-        // 1. Senin servisin kullanıcıyı ve şifreyi kontrol ediyor
-        User user = loginService.login(requestLogin);
+            if (user != null) {
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        user.getEmail(),
+                        null,
+                        new ArrayList<>()
+                );
 
-        if (user != null) {
-            // 2. KULLANICI BULUNDU, ŞİMDİ SPRING SECURITY'YE HABER VERELİM
+                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                securityContext.setAuthentication(authentication);
+                SecurityContextHolder.setContext(securityContext);
 
-            // Basit bir kimlik doğrulama nesnesi oluşturuyoruz (Email'i kimlik olarak kullanıyoruz)
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    user.getEmail(), // Principal (Kullanıcı adı/email)
-                    null,            // Credentials (Şifre - güvenlik için null geçebiliriz veya user.getPassword())
-                    new ArrayList<>() // Yetkiler (Authorities - şimdilik boş)
-            );
+                HttpSession session = request.getSession(true);
+                session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 
-            // Güvenlik Bağlamını (Context) oluştur
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            securityContext.setAuthentication(authentication);
-            SecurityContextHolder.setContext(securityContext);
-
-            // 3. BU BİLGİYİ SESSION'A (OTURUMA) KAYDET
-            // Bu adım çok önemli, yoksa bir sonraki sayfada yine unutur.
-            HttpSession session = request.getSession(true);
-            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
-
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Hatalı email veya şifre");
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Hatalı email veya şifre");
+            }
+        } catch (RuntimeException ex) {
+            System.out.println("Login failed for email=" + (requestLogin != null ? requestLogin.getEmail() : "<null>") + " reason=" + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
         }
     }
 

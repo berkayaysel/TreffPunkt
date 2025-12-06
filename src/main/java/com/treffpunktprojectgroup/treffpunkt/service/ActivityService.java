@@ -11,4 +11,5 @@ public interface ActivityService {
     boolean leaveActivity(String email, Integer activityId);
     List<ActivityResponse> getAllActivities();
     MyActivitiesResponse getMyActivities(String email);
+    boolean deleteActivity(String email, Integer activityId);
 }

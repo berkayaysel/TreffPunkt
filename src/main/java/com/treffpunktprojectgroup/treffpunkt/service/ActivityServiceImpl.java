@@ -33,6 +33,11 @@ public class ActivityServiceImpl implements ActivityService{
         if (activityOptional.isPresent()) {
             Activity activity = activityOptional.get();
 
+            // Aktivite sahibi mi? Sahibi kendi aktivitesine katılamaz
+            if (activity.getCreator() != null && activity.getCreator().equals(user)) {
+                return false;
+            }
+
             // Zaten katılmış mı?
             if (activity.getParticipants().contains(user)) {
                 return false;
@@ -95,7 +100,8 @@ public class ActivityServiceImpl implements ActivityService{
                         a.getStartTime(),
                         a.getDescription(),
                         a.getNumberOfParticipant(),
-                        a.getCapacity()
+                        a.getCapacity(),
+                        a.getCreator() != null ? a.getCreator().getEmail() : null
                 ))
                 .toList();
     }
@@ -114,14 +120,31 @@ public class ActivityServiceImpl implements ActivityService{
 
         List<ActivityResponse> createdDTO =
                 createdActivities.stream()
-                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity()))
+                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null))
                         .toList();
 
         List<ActivityResponse> joinedDTO =
                 joinedActivities.stream()
-                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity()))
+                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null))
                         .toList();
 
         return new MyActivitiesResponse(createdDTO, joinedDTO);
+    }
+
+    @Override
+    public boolean deleteActivity(String email, Integer activityId) {
+        Optional<Activity> activityOptional = activityRepository.findById(activityId);
+
+        if (activityOptional.isPresent()) {
+            Activity activity = activityOptional.get();
+
+            if (activity.getCreator() != null && activity.getCreator().getEmail().equals(email)) {
+                // Delete activity
+                activityRepository.deleteById(activityId);
+                return true;
+            }
+        }
+
+        return false;
     }
 }

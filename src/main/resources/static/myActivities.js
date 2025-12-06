@@ -3,18 +3,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('activityModal');
     const closeModalBtn = document.querySelector('.close-modal');
     const deleteBtn = document.getElementById('deleteBtn');
+    const leaveBtn = document.getElementById('leaveBtn');
     
-    // Silme işlemi için seçili aktivitenin ID'sini tutacağız
     let currentActivityId = null;
+    let isCreatedActivity = false; // Created mi joined mi olduğunu tutacağız
 
-    // --- ANA FONKSİYON: Doğrudan Aktiviteleri İste ---
     function fetchActivities() {
-        // URL'de artık ID yok! Backend kim olduğumuzu Cookie'den biliyor.
-        // Backend controller: ActivityController.getMyActivities -> GET /activities/my-activities
         fetch('/activities/my-activities', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include' // Oturum bilgisini (Cookie) gönder
+            credentials: 'include'
         })
         .then(response => {
             if (response.status === 401 || response.status === 403) {
@@ -26,18 +24,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            // Beklenen cevap: { created: [...], joined: [...] }
             renderActivities(data.created || [], data.joined || []);
         })
         .catch(error => {
             console.error('Hata:', error);
             listContainer.innerHTML = `<p style="text-align:center; color:red;">${error.message}</p>`;
-            // İstersen burada login sayfasına yönlendirme yapabilirsin:
-            // if(error.message.includes("Oturum kapalı")) window.location.href = '/login.html';
         });
     }
 
-    // Aktiviteleri Ekrana Basan Fonksiyon (Burası aynı kaldı)
     function renderActivities(created, joined) {
         listContainer.innerHTML = '';
 
@@ -66,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <button class="btn-detail" 
                         data-id="${activity.activityId}" 
+                        data-type="created"
                         data-name="${activity.name}"
                         data-loc="${activity.location}"
                         data-date="${activity.startDate}"
@@ -100,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <button class="btn-detail" 
                         data-id="${activity.activityId}" 
+                        data-type="joined"
                         data-name="${activity.name}"
                         data-loc="${activity.location}"
                         data-date="${activity.startDate}"
@@ -117,13 +113,11 @@ document.addEventListener('DOMContentLoaded', function() {
         listContainer.appendChild(createSection);
         listContainer.appendChild(joinedSection);
 
-        // Butonlara tıklama olayını ekle
         document.querySelectorAll('.btn-detail').forEach(btn => {
             btn.addEventListener('click', openModal);
         });
     }
 
-    // Modalı Aç
     function openModal(event) {
         const btn = event.target;
         const name = btn.getAttribute('data-name');
@@ -134,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const capacity = btn.getAttribute('data-capacity') || '-';
         const number = btn.getAttribute('data-number') || '-';
         currentActivityId = btn.getAttribute('data-id');
+        isCreatedActivity = btn.getAttribute('data-type') === 'created';
 
         document.getElementById('modal-title').textContent = name;
         document.getElementById('modal-location').textContent = loc;
@@ -143,10 +138,18 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-capacity').textContent = capacity;
         document.getElementById('modal-number').textContent = number;
 
+        // Oluşturduğum aktivite ise Delete butonunu göster, katıldığım ise Leave butonunu göster
+        if (isCreatedActivity) {
+            deleteBtn.style.display = 'block';
+            leaveBtn.style.display = 'none';
+        } else {
+            deleteBtn.style.display = 'none';
+            leaveBtn.style.display = 'block';
+        }
+
         modal.style.display = 'flex';
     }
 
-    // Modalı Kapat
     closeModalBtn.addEventListener('click', () => {
         modal.style.display = 'none';
         currentActivityId = null;
@@ -158,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Silme İşlemi (Aktivite ID'si ile silme yapar, User ID gerekmez)
+    // Delete Activity (Oluşturduğum aktiviteyi sil)
     deleteBtn.addEventListener('click', function() {
         if(!currentActivityId) return;
 
@@ -171,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(response.ok) {
                     alert("Aktivite silindi!");
                     modal.style.display = 'none';
-                    fetchActivities(); // Listeyi yenile
+                    fetchActivities();
                 } else {
                     alert("Silme işlemi başarısız oldu.");
                 }
@@ -180,6 +183,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Sayfa Yüklendiğinde Başlat
+    // Leave Activity (Aktiviteden ayrıl)
+    leaveBtn.addEventListener('click', function() {
+        if(!currentActivityId) return;
+
+        if(confirm("Bu aktiviteden ayrılmak istediğinize emin misiniz?")) {
+            fetch(`/activities/${currentActivityId}/leave`, {
+                method: 'DELETE',
+                credentials: 'include'
+            })
+            .then(response => {
+                if(response.ok) {
+                    alert("Aktiviteden başarıyla ayrıldınız!");
+                    modal.style.display = 'none';
+                    fetchActivities();
+                } else {
+                    alert("Ayrılma işlemi başarısız oldu.");
+                }
+            })
+            .catch(error => {
+                console.error("Ayrılma hatası:", error);
+                alert("Hata: " + error.message);
+            });
+        }
+    });
+
     fetchActivities();
 });

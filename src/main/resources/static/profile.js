@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const editAddress = document.getElementById("edit-address");
 
     let currentUserData = {}; // Mevcut kullanıcı verilerini tutmak için
+    const profileImg = document.getElementById('profile-img');
+    const changeImageBtn = document.getElementById('changeImageBtn');
+    const profileFileInput = document.getElementById('profileFile');
 
     // Ana fonksiyon: Kullanıcının giriş durumunu kontrol et ve verileri getir
     function checkLoginStatusAndFetchProfile() {
@@ -51,6 +54,14 @@ document.addEventListener('DOMContentLoaded', function() {
             emailSpan.textContent = data.email;
             ageSpan.textContent = data.age;
             addressSpan.textContent = data.address;
+
+            // Profile image (if present) — add cache-buster to ensure immediate reload after upload
+            if (data.profileImage) {
+                const sep = data.profileImage.includes('?') ? '&' : '?';
+                profileImg.src = data.profileImage + sep + 't=' + new Date().getTime();
+            } else {
+                profileImg.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"></svg>';
+            }
             
             // Yükleniyor Placeholder'larını kaldır
             nameSpan.classList.remove('loading-placeholder');
@@ -167,4 +178,62 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Sayfa yüklendiğinde ana fonksiyonu çalıştır
     checkLoginStatusAndFetchProfile();
+
+    // Profil resmi değiştirme akışı
+    changeImageBtn.addEventListener('click', function() {
+        profileFileInput.click();
+    });
+
+    profileFileInput.addEventListener('change', function() {
+        const file = profileFileInput.files[0];
+        if (!file) return;
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/user-dashboard/upload-profile', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Resim yükleme başarısız.');
+            return response.text();
+        })
+        .then(text => {
+            let url = (text || '').trim();
+
+            // If server returned JSON (e.g. {"url": "/uploads/.."}) try to parse
+            if (url.startsWith('{') || url.startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(url);
+                    if (parsed.url) url = parsed.url;
+                    else if (parsed.publicUrl) url = parsed.publicUrl;
+                } catch (e) {
+                    // ignore parse error
+                }
+            }
+
+            // Strip surrounding quotes if present
+            if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+                url = url.slice(1, -1);
+            }
+
+            if (!url) throw new Error('Sunucudan geçerli bir resim URLsi dönmedi.');
+
+            const sep = url.includes('?') ? '&' : '?';
+            profileImg.src = url + sep + 't=' + new Date().getTime();
+            // Update local cached profile info
+            currentUserData.profileImage = url;
+            // As a fallback, reload the page once to ensure all UI reflects the new image
+            setTimeout(() => {
+                try { window.location.reload(); } catch (e) { /* ignore */ }
+            }, 600);
+        })
+        .catch(err => {
+            console.error('Resim yükleme hatası:', err);
+            alert('Resim yüklenirken hata oluştu.');
+        });
+    });
 });

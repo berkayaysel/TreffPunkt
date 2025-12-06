@@ -10,9 +10,9 @@ import java.util.List;
 public interface UserService {
     boolean changePassword(String email, String oldPassword, String newPassword);
     User register(RequestRegister requestRegister);
-    void createActivity(CreateActivityRequest createActivityRequest);
+    void createActivity(CreateActivityRequest createActivityRequest, String email);
     List<ActivityResponse> getUserActivities(Integer userId);
     UserProfileResponse getUserProfileByEmail(String email);
     User updateUserProfile(String loggendInEmail, ProfileUpdateRequest request);
-    void saveProfileImage(String email, MultipartFile file);
+    String saveProfileImage(String email, MultipartFile file);
 }

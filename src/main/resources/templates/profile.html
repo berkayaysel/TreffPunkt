@@ -10,11 +10,18 @@
 
     <a href="/treffpunkt/dashboard" class="back-button" aria-label="Dashboard'a dön">← Dashboard</a>
 
+    <!-- profile image will be shown inside the profile-info box -->
+
     <div class="login-container profile-container">
         <h2>Profilim</h2>
         
         <!-- GÖRÜNTÜLEME MODU -->
         <div id="viewMode" class="profile-info">
+            <div class="profile-avatar">
+                <img id="profile-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'></svg>" alt="Profil Resmi" />
+                <input type="file" id="profileFile" accept="image/*" style="display:none">
+                <button id="changeImageBtn" class="login-button small" title="Profil resmini değiştir">Düzenle</button>
+            </div>
             <p>
                 Adınız: <span id="profile-name" class="loading-placeholder">...</span>
             </p>

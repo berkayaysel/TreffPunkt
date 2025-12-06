@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private com.treffpunktprojectgroup.treffpunkt.service.ActivityService activityService;
 
     @PostMapping(path = "/change-password")
     public ResponseEntity<?> changePassword(
@@ -45,8 +50,12 @@ public class UserController {
     }
 
     @PostMapping(path = "/new-activity")
-    public ResponseEntity<String> createActivity(@RequestBody CreateActivityRequest createActivityRequest) {
-        userService.createActivity(createActivityRequest);
+    public ResponseEntity<String> createActivity(@RequestBody CreateActivityRequest createActivityRequest, Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body("Yetkisiz erişim. Lütfen giriş yapın.");
+        }
+        String email = principal.getName();
+        userService.createActivity(createActivityRequest, email);
         return ResponseEntity.ok("Aktivite başarıyla oluşturuldu.");
     }
 
@@ -83,13 +92,36 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    @DeleteMapping("/activities/{activityId}")
+    public ResponseEntity<?> deleteActivity(@PathVariable Integer activityId, Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body("Yetkisiz işlem");
+        }
+
+        String email = principal.getName();
+
+        boolean deleted = activityService.deleteActivity(email, activityId);
+
+        if (deleted) {
+            return ResponseEntity.ok("Aktivite başarıyla silindi.");
+        } else {
+            return ResponseEntity.status(403).body("Sadece aktivite sahibi silebilir veya aktivite bulunamadı.");
+        }
+    }
+
     @PostMapping("/upload-profile")
-    public ResponseEntity<?> uploadProfileImage(@RequestParam("email") String email,
+    public ResponseEntity<?> uploadProfileImage(Principal principal,
                                                 @RequestParam("file") MultipartFile file) {
 
+        if (principal == null) {
+            return ResponseEntity.status(401).body("Yetkisiz. Lütfen giriş yapın.");
+        }
+
+        String email = principal.getName();
+
         try {
-            userService.saveProfileImage(email, file);
-            return ResponseEntity.ok("Profil resmi başarıyla güncellendi.");
+            String publicUrl = userService.saveProfileImage(email, file);
+            return ResponseEntity.ok(publicUrl);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Resim yüklenirken hata oluştu.");
         }

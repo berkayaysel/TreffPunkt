@@ -68,7 +68,11 @@ public class UserServiceImpl implements UserService{
         return true;
     }
 
-    public void createActivity(CreateActivityRequest createActivityRequest) {
+    public void createActivity(CreateActivityRequest createActivityRequest, String email) {
+        // Creator'ı principal'dan al
+        User creator = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı: " + email));
+
         Activity activity = new Activity();
         activity.setCapacity(createActivityRequest.getCapacity());
         activity.setLocation(createActivityRequest.getLocation());
@@ -76,6 +80,9 @@ public class UserServiceImpl implements UserService{
         activity.setStartTime(createActivityRequest.getStartTime());
         activity.setStartDate(createActivityRequest.getStartDate());
         activity.setDescription(createActivityRequest.getDescription());
+        activity.setCreator(creator);
+        activity.setNumberOfParticipant(0);
+        
         activityRepository.save(activity);
     }
 
@@ -91,7 +98,8 @@ public class UserServiceImpl implements UserService{
                         a.getStartTime(),
                         a.getDescription(),
                         a.getNumberOfParticipant(),
-                        a.getCapacity()
+                        a.getCapacity(),
+                        a.getCreator() != null ? a.getCreator().getEmail() : null
                 ))
                 .collect(Collectors.toList());
     }
@@ -104,11 +112,12 @@ public class UserServiceImpl implements UserService{
 
         // Convert User Entity to UserProfileResponse DTO
         return new UserProfileResponse(
-                user.getName(),
-                user.getSurname(),
-                user.getEmail(),
-                user.getAge(),
-                user.getAddress()
+            user.getName(),
+            user.getSurname(),
+            user.getEmail(),
+            user.getAge(),
+            user.getAddress(),
+            user.getProfileImage()
         );
     }
 
@@ -154,13 +163,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void saveProfileImage(String email, MultipartFile file) {
+
+    public String saveProfileImage(String email, MultipartFile file) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
         try {
-            String folder = "uploads/profile-images/";
+            // Save uploaded images into the project's static resources so they are served
+            String folder = "src/main/resources/static/uploads/profile-images/";
             File directory = new File(folder);
             if (!directory.exists()) {
                 directory.mkdirs();
@@ -171,8 +182,11 @@ public class UserServiceImpl implements UserService{
 
             Files.write(path, file.getBytes());
 
-            user.setProfileImage("/" + folder + fileName);
+            // Public URL path served from classpath:/static
+            String publicPath = "/uploads/profile-images/" + fileName;
+            user.setProfileImage(publicPath);
             userRepository.save(user);
+            return publicPath;
 
         } catch (IOException e) {
             throw new RuntimeException("Profil resmi kaydedilirken hata oluştu", e);

@@ -13,8 +13,9 @@ public class ActivityResponse {
     private String description;
     private Integer numberOfParticipants;
     private Integer capacity;
+    private String creatorEmail;
 
-    public ActivityResponse(Integer activityId, String name, String location, LocalDate startDate, LocalTime startTime, String description, Integer numberOfParticipants, Integer capacity) {
+    public ActivityResponse(Integer activityId, String name, String location, LocalDate startDate, LocalTime startTime, String description, Integer numberOfParticipants, Integer capacity, String creatorEmail) {
         this.activityId = activityId;
         this.name = name;
         this.location = location;
@@ -23,6 +24,7 @@ public class ActivityResponse {
         this.description = description;
         this.numberOfParticipants = numberOfParticipants;
         this.capacity = capacity;
+        this.creatorEmail = creatorEmail;
     }
 
 
@@ -88,6 +90,14 @@ public class ActivityResponse {
 
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
+    }
+
+    public String getCreatorEmail() {
+        return creatorEmail;
+    }
+
+    public void setCreatorEmail(String creatorEmail) {
+        this.creatorEmail = creatorEmail;
     }
 
     public ActivityResponse() {

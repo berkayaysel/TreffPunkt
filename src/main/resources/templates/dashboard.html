@@ -6,15 +6,17 @@
     <title>TreffPunkt Dashboard</title>
     
     <link rel="stylesheet" href="/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
     <div class="navbar">
-        <a href="/treffpunkt/myActivities" class="nav-btn">Benim Aktivitelerim</a>
+        <a href="/treffpunkt/myActivities" class="nav-btn">My Activities</a>
 
-        <a href="/treffpunkt/profile" class="nav-btn profile-btn">Profil</a>
+        <a href="/treffpunkt/profile" class="nav-btn profile-btn">Profile</a>
     </div>
 
+    <!-- AKTİVİTE LİSTESİ -->
     <div class="container" id="activity-container">
         
         <div id="loading-msg" style="text-align:center; color:#666; margin-top:20px;">
@@ -22,18 +24,23 @@
         </div>
 
         <div class="empty-message" id="no-activity-msg" style="display: none;">
-            Henüz hiç aktivite yok. <br>
-            Yukarıdaki <b>+</b> butonuna basarak ilk aktiviteyi sen oluştur!
+            Henüz hiç aktivite yok.
         </div>
 
     </div>
 
-    <!-- ACTIVITY DETAIL MODAL -->
-    <div id="activityDetailModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" id="detailClose">&times;</span>
-            <h2 id="detail-title">Aktivite Detay</h2>
-            <div class="modal-body">
+    <!-- DETAY BÖLÜMÜ (inline gösterim) -->
+    <div id="detail-section" class="detail-section" style="display: none;">
+        <div class="detail-header">
+            <button id="backFromDetail" class="icon-btn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>Activity Details</h2>
+        </div>
+
+        <div class="detail-content">
+            <h2 id="detail-title">Aktivite Adı</h2>
+            <div class="detail-info">
                 <p><strong>Konum:</strong> <span id="detail-location"></span></p>
                 <p><strong>Tarih:</strong> <span id="detail-date"></span></p>
                 <p><strong>Saat:</strong> <span id="detail-time"></span></p>
@@ -41,13 +48,13 @@
                 <p><strong>Kapasite:</strong> <span id="detail-capacity">-</span></p>
                 <p><strong>Katılımcı Sayısı:</strong> <span id="detail-number">-</span></p>
             </div>
-            <div class="modal-footer">
-                <button id="joinBtn" class="btn-detail">Katıl</button>
+            <div class="detail-footer">
+                <button id="joinBtn" class="btn-join">Katıl</button>
             </div>
         </div>
     </div>
 
-    </div> <script src="/dashboard.js"></script>
+    <script src="/dashboard.js"></script>
 
 </body>
 </html>

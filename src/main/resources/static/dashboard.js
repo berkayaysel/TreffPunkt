@@ -1,15 +1,14 @@
 // Sayfa tamamen yüklendiğinde çalışır
 window.onload = function() {
     fetchActivities();
+    setupDetailBackButton();
 };
 
 function fetchActivities() {
-    // Backend adresi (Controller'a göre güncellemeyi unutma)
     const url = '/activities/all';
 
     fetch(url)
         .then(response => {
-            // Yükleniyor yazısını gizle
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.style.display = 'none';
 
@@ -22,14 +21,14 @@ function fetchActivities() {
             const container = document.getElementById('activity-container');
             const emptyMsg = document.getElementById('no-activity-msg');
 
-            // Eğer gelen liste doluysa
+            // Ensure container is cleared before rendering to avoid duplicate entries
+            if (container) container.innerHTML = '';
+
             if (activities && activities.length > 0) {
                 if(emptyMsg) emptyMsg.style.display = 'none';
 
                 activities.forEach(activity => {
-                    // Backend'den gelen veri isimlerine dikkat (title, date vs.)
-                    // activityId alanı farklı isimlerde gelebilir; öncelikle activity.activityId deneyelim
-                    const aid = activity.activityId || activity.id || activity.activityId;
+                    const aid = activity.activityId || activity.id;
                     const cardHTML = `
                         <div class="activity-card">
                             <div class="activity-title">${activity.name || 'Başlıksız Aktivite'}</div>
@@ -45,7 +44,8 @@ function fetchActivities() {
                                     data-time="${activity.startTime || ''}"
                                     data-desc="${escapeHtml(activity.description || '')}"
                                     data-capacity="${activity.capacity || ''}"
-                                    data-number="${activity.numberOfParticipants || ''}">
+                                    data-number="${activity.numberOfParticipants || ''}"
+                                    data-creator="${escapeHtml(activity.creatorEmail || '')}">
                                 Detay
                             </button>
                         </div>
@@ -53,11 +53,12 @@ function fetchActivities() {
                     container.innerHTML += cardHTML;
                 });
 
-                // Detay butonlarına tıklama olayını ekle
                 document.querySelectorAll('.detail-btn').forEach(btn => {
-                    btn.addEventListener('click', openDetailModal);
+                    btn.addEventListener('click', openDetailSection);
                 });
             } else {
+                // when no activities, ensure container is empty and show message
+                if (container) container.innerHTML = '';
                 if(emptyMsg) emptyMsg.style.display = 'block';
             }
         })
@@ -77,18 +78,17 @@ function formatDate(dateString) {
     return date.toLocaleDateString('tr-TR') + ' ' + date.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 }
 
-// helper: escape HTML for data attributes
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// MODAL: detay açma/kapatma ve katılma
-const detailModal = document.getElementById('activityDetailModal');
-const detailClose = document.getElementById('detailClose');
+// DETAY BÖLÜMÜ GÖSTERME
+const detailSection = document.getElementById('detail-section');
+const activityContainer = document.getElementById('activity-container');
 const joinBtn = document.getElementById('joinBtn');
 
-function openDetailModal(e) {
+function openDetailSection(e) {
     const btn = e.currentTarget;
     const id = btn.getAttribute('data-id');
     const name = btn.getAttribute('data-name') || '';
@@ -98,6 +98,7 @@ function openDetailModal(e) {
     const desc = btn.getAttribute('data-desc') || '';
     const capacity = btn.getAttribute('data-capacity') || '-';
     const number = btn.getAttribute('data-number') || '-';
+    const creatorEmail = btn.getAttribute('data-creator') || '';
 
     document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
     document.getElementById('detail-location').textContent = loc;
@@ -107,16 +108,46 @@ function openDetailModal(e) {
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
 
-    // store current id on join button
-    if (joinBtn) joinBtn.setAttribute('data-current-id', id);
+    if (joinBtn) {
+        joinBtn.setAttribute('data-current-id', id);
+        
+        // Kullanıcının email'ini principal'dan alalım
+        fetch('/user-dashboard/profile-info', { credentials: 'include' })
+            .then(r => r.json())
+            .then(profile => {
+                // Eğer bu aktivite kendi aktivitesiyse, Join butonunu gizle
+                if (creatorEmail === profile.email) {
+                    joinBtn.style.display = 'none';
+                } else {
+                    joinBtn.style.display = 'block';
+                }
+            })
+            .catch(err => {
+                console.error('Email kontrol hatası:', err);
+                joinBtn.style.display = 'block'; // Hata durumunda göster
+            });
+    }
 
-    if (detailModal) detailModal.style.display = 'flex';
+    // Aktivite listesini gizle, detayı göster
+    activityContainer.style.display = 'none';
+    detailSection.style.display = 'block';
+    
+    // Sayfanın üstüne git
+    window.scrollTo(0, 0);
 }
 
-if (detailClose) detailClose.addEventListener('click', () => { if (detailModal) detailModal.style.display = 'none'; });
-window.addEventListener('click', (e) => { if (e.target === detailModal) detailModal.style.display = 'none'; });
+function setupDetailBackButton() {
+    const backBtn = document.getElementById('backFromDetail');
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            detailSection.style.display = 'none';
+            activityContainer.style.display = 'block';
+            window.scrollTo(0, 0);
+        });
+    }
+}
 
-// Join işlemi: profile-info'dan userId alıp aktiviteye katılma
+// Join işlemi
 joinBtn && joinBtn.addEventListener('click', function() {
     const activityId = this.getAttribute('data-current-id');
     if (!activityId) {
@@ -124,8 +155,6 @@ joinBtn && joinBtn.addEventListener('click', function() {
         return;
     }
 
-    // Backend principal-based authentication kullanıyor, 
-    // bu nedenle boş body gönderin, backend session'dan user bilgisini çıkaracak
     fetch(`/activities/${activityId}/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -135,7 +164,8 @@ joinBtn && joinBtn.addEventListener('click', function() {
     .then(r => {
         if (r.ok) {
             alert('Aktiviteye katılma başarılı!');
-            if (detailModal) detailModal.style.display = 'none';
+            detailSection.style.display = 'none';
+            activityContainer.style.display = 'block';
             fetchActivities();
         } else if (r.status === 401) {
             alert('Yetkisiz erişim. Lütfen giriş yapın.');

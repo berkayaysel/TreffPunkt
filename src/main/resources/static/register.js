@@ -11,6 +11,24 @@ document.addEventListener("DOMContentLoaded", function() {
     const confirmPasswordInput = document.getElementById("confirmPassword");
     const errorMessage = document.getElementById("error-message");
     const genderInput = document.getElementById("gender");
+    const profileFileInput = document.getElementById('register-profile-file');
+    const registerPreview = document.getElementById('register-profile-preview');
+
+    // Show preview when a file is selected
+    if (profileFileInput) {
+        profileFileInput.addEventListener('change', function() {
+            const file = profileFileInput.files[0];
+            if (!file) {
+                registerPreview.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'></svg>";
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                registerPreview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 
     // Gender toggle butonlarının davranışını ayarla (HTML'de butonlar mevcutsa)
     const genderButtons = document.querySelectorAll('.gender-toggle button');
@@ -98,11 +116,49 @@ document.addEventListener("DOMContentLoaded", function() {
             // Başarılı kayıt sonrası
             errorMessage.textContent = "Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...";
             errorMessage.classList.add("success-message");
+            // If user selected a file, we'll auto-login then upload the image using authenticated session
+            const file = profileFileInput ? profileFileInput.files[0] : null;
 
-            // 2 saniye bekledikten sonra GİRİŞ sayfasına yönlendir
-            setTimeout(() => {
-                window.location.href = '/treffpunkt/login'; // Giriş sayfasının adı
-            }, 2000); 
+            if (file && data && data.email) {
+                // Auto-login to create session
+                fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ email: registerData.email, password: registerData.password })
+                })
+                .then(loginResp => {
+                    if (!loginResp.ok) {
+                        throw new Error('Auto-login failed after registration. Please login manually.');
+                    }
+                    // Now upload the file with session (credentials included)
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    return fetch('/user-dashboard/upload-profile', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include'
+                    });
+                })
+                .then(uploadResp => {
+                    // Redirect to dashboard or login regardless
+                    setTimeout(() => {
+                        window.location.href = '/treffpunkt/login';
+                    }, 1000);
+                })
+                .catch(err => {
+                    console.error('Auto-login or upload failed:', err);
+                    setTimeout(() => {
+                        window.location.href = '/treffpunkt/login';
+                    }, 1000);
+                });
+            } else {
+                // No file selected — just redirect
+                setTimeout(() => {
+                    window.location.href = '/treffpunkt/login'; // Giriş sayfasının adı
+                }, 2000);
+            }
         })
         .catch(error => {
             // Hata durumunda
