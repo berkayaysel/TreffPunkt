@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService{
         user.setName(requestRegister.getName());
         user.setSurname(requestRegister.getSurname());
         user.setAddress(requestRegister.getAddress());
-        user.setAge(requestRegister.getAge());
+        user.setBirthDate(requestRegister.getBirthDate());
         user.setEmail(requestRegister.getEmail());
         user.setGender(requestRegister.getGender());
 
@@ -91,15 +91,17 @@ public class UserServiceImpl implements UserService{
         List<Activity> activities = activityRepository.findByParticipants_UserId(userId);
         return activities.stream()
                 .map(a -> new ActivityResponse(
-                        a.getActivityId(),
-                        a.getName(),
-                        a.getLocation(),
-                        a.getStartDate(),
-                        a.getStartTime(),
-                        a.getDescription(),
-                        a.getNumberOfParticipant(),
-                        a.getCapacity(),
-                        a.getCreator() != null ? a.getCreator().getEmail() : null
+                    a.getActivityId(),
+                    a.getName(),
+                    a.getLocation(),
+                    a.getStartDate(),
+                    a.getStartTime(),
+                    a.getDescription(),
+                    a.getNumberOfParticipant(),
+                    a.getCapacity(),
+                    a.getCreator() != null ? a.getCreator().getEmail() : null,
+                    a.getCreator() != null ? a.getCreator().getName() : null,
+                    a.getCreator() != null ? a.getCreator().getSurname() : null
                 ))
                 .collect(Collectors.toList());
     }
@@ -115,9 +117,9 @@ public class UserServiceImpl implements UserService{
             user.getName(),
             user.getSurname(),
             user.getEmail(),
-            user.getAge(),
             user.getAddress(),
-            user.getProfileImage()
+            user.getProfileImage(),
+            user.getBirthDate()
         );
     }
 
@@ -149,9 +151,9 @@ public class UserServiceImpl implements UserService{
             user.setEmail(request.getEmail());
         }
 
-        // 4) Age
-        if (request.getAge() != null && !request.getAge().equals(user.getAge())) {
-            user.setAge(request.getAge());
+        // 4) Birth date
+        if (request.getBirthDate() != null && !request.getBirthDate().equals(user.getBirthDate())) {
+            user.setBirthDate(request.getBirthDate());
         }
 
         // 5) Address

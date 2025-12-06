@@ -93,15 +93,17 @@ public class ActivityServiceImpl implements ActivityService{
         return activityRepository.findAll()
                 .stream()
                 .map(a -> new ActivityResponse(
-                        a.getActivityId(),
-                        a.getName(),
-                        a.getLocation(),
-                        a.getStartDate(),
-                        a.getStartTime(),
-                        a.getDescription(),
-                        a.getNumberOfParticipant(),
-                        a.getCapacity(),
-                        a.getCreator() != null ? a.getCreator().getEmail() : null
+                    a.getActivityId(),
+                    a.getName(),
+                    a.getLocation(),
+                    a.getStartDate(),
+                    a.getStartTime(),
+                    a.getDescription(),
+                    a.getNumberOfParticipant(),
+                    a.getCapacity(),
+                    a.getCreator() != null ? a.getCreator().getEmail() : null,
+                    a.getCreator() != null ? a.getCreator().getName() : null,
+                    a.getCreator() != null ? a.getCreator().getSurname() : null
                 ))
                 .toList();
     }
@@ -120,12 +122,12 @@ public class ActivityServiceImpl implements ActivityService{
 
         List<ActivityResponse> createdDTO =
                 createdActivities.stream()
-                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null))
+                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
                         .toList();
 
         List<ActivityResponse> joinedDTO =
                 joinedActivities.stream()
-                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null))
+                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
                         .toList();
 
         return new MyActivitiesResponse(createdDTO, joinedDTO);

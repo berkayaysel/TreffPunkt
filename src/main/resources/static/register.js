@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const nameInput = document.getElementById("name");
     const surnameInput = document.getElementById("surname");
     const addressInput = document.getElementById("address");
-    const ageInput = document.getElementById("age")
+    const birthDateInput = document.getElementById("birthDate");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const name = nameInput.value;
         const surname =surnameInput.value;
         const address= addressInput.value;
-        const age = ageInput.value;
+        const birthDate = birthDateInput.value;
         const email = emailInput.value;
         const genderValue = genderInput.value;
         const password = passwordInput.value;
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
             name: name,
             surname:surname,
             address:address,
-            age:parseInt(age),
+            birthDate: birthDate,
             gender: genderValue,
             email: email,
             password: password

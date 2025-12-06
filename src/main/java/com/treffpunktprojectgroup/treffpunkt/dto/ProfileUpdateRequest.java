@@ -1,19 +1,21 @@
 package com.treffpunktprojectgroup.treffpunkt.dto;
 
+import java.time.LocalDate;
+
 public class ProfileUpdateRequest {
 
     private String name;
     private String surname;
     private String email;
-    private Integer age;
     private String address;
+    private LocalDate birthDate;
 
-    public ProfileUpdateRequest(String name, String surname, String email, Integer age, String address) {
+    public ProfileUpdateRequest(String name, String surname, String email, String address, LocalDate birthDate) {
         this.name = name;
         this.surname = surname;
         this.email = email;
-        this.age = age;
         this.address = address;
+        this.birthDate = birthDate;
     }
 
     public ProfileUpdateRequest() {
@@ -43,19 +45,19 @@ public class ProfileUpdateRequest {
         this.email = email;
     }
 
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
     public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
+    }
+    
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+    
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 }

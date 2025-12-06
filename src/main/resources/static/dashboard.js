@@ -29,27 +29,30 @@ function fetchActivities() {
 
                 activities.forEach(activity => {
                     const aid = activity.activityId || activity.id;
-                    const cardHTML = `
-                        <div class="activity-card">
-                            <div class="activity-title">${activity.name || 'Başlıksız Aktivite'}</div>
-                            <div class="activity-info">📅 ${formatDate(activity.startDate)}</div>
-                            <div class="activity-info">📍 ${activity.location || 'Konum yok'}</div>
-                            <div class="activity-info">📝 ${activity.description || 'Açıklama yok'}</div>
-                            <div class="activity-info">👥 ${activity.numberOfParticipants || 0} katılımcı</div>
-                            <button class="detail-btn" 
-                                    data-id="${aid}"
-                                    data-name="${escapeHtml(activity.name)}"
-                                    data-loc="${escapeHtml(activity.location)}"
-                                    data-date="${activity.startDate || ''}"
-                                    data-time="${activity.startTime || ''}"
-                                    data-desc="${escapeHtml(activity.description || '')}"
-                                    data-capacity="${activity.capacity || ''}"
-                                    data-number="${activity.numberOfParticipants || ''}"
-                                    data-creator="${escapeHtml(activity.creatorEmail || '')}">
-                                Detay
-                            </button>
-                        </div>
-                    `;
+                        const cardHTML = `
+                            <div class="activity-card">
+                                <div class="activity-title">${activity.name || 'Başlıksız Aktivite'}</div>
+                                <div class="activity-info">📅 ${formatDateOnly(activity.startDate)}</div>
+                                <div class="activity-info">⏰ ${formatTime(activity.startTime)}</div>
+                                <div class="activity-info">📍 ${activity.location || 'Konum yok'}</div>
+                                <div class="activity-info">👤 ${escapeHtml((activity.creatorName ? activity.creatorName : '') + ' ' + (activity.creatorSurname ? activity.creatorSurname : ''))}</div>
+                                <div class="activity-info">👥 ${activity.numberOfParticipants || 0} katılımcı</div>
+                                <button class="detail-btn" 
+                                        data-id="${aid}"
+                                        data-name="${escapeHtml(activity.name)}"
+                                        data-loc="${escapeHtml(activity.location)}"
+                                        data-date="${activity.startDate || ''}"
+                                        data-time="${activity.startTime || ''}"
+                                        data-desc="${escapeHtml(activity.description || '')}"
+                                        data-capacity="${activity.capacity || ''}"
+                                        data-number="${activity.numberOfParticipants || ''}"
+                                        data-creator-email="${escapeHtml(activity.creatorEmail || '')}"
+                                        data-creator-name="${escapeHtml(activity.creatorName || '')}"
+                                        data-creator-surname="${escapeHtml(activity.creatorSurname || '')}">
+                                    Detay
+                                </button>
+                            </div>
+                        `;
                     container.innerHTML += cardHTML;
                 });
 
@@ -78,6 +81,26 @@ function formatDate(dateString) {
     return date.toLocaleDateString('tr-TR') + ' ' + date.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 }
 
+function formatDateOnly(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('tr-TR');
+}
+
+function formatTime(timeString) {
+    if (!timeString) return "";
+    // timeString may be 'HH:mm:ss', 'HH:mm', or an ISO datetime
+    if (timeString.includes('T')) {
+        const d = new Date(timeString);
+        return d.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+    }
+    const parts = timeString.split(':');
+    if (parts.length >= 2) {
+        return parts[0].padStart(2,'0') + ':' + parts[1].padStart(2,'0');
+    }
+    return timeString;
+}
+
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -98,13 +121,16 @@ function openDetailSection(e) {
     const desc = btn.getAttribute('data-desc') || '';
     const capacity = btn.getAttribute('data-capacity') || '-';
     const number = btn.getAttribute('data-number') || '-';
-    const creatorEmail = btn.getAttribute('data-creator') || '';
+    const creatorEmail = btn.getAttribute('data-creator-email') || '';
+    const creatorName = btn.getAttribute('data-creator-name') || '';
+    const creatorSurname = btn.getAttribute('data-creator-surname') || '';
 
     document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
     document.getElementById('detail-location').textContent = loc;
     document.getElementById('detail-date').textContent = date;
     document.getElementById('detail-time').textContent = time;
     document.getElementById('detail-description').textContent = desc || '(Yok)';
+    document.getElementById('detail-creator').textContent = (creatorName || creatorEmail || '') + (creatorSurname ? (' ' + creatorSurname) : '');
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
 

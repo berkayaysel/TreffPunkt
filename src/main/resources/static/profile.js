@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const nameSpan = document.getElementById("profile-name");
     const surnameSpan = document.getElementById("profile-surname");
     const emailSpan = document.getElementById("profile-email");
-    const ageSpan = document.getElementById("profile-age");
+    const birthDateSpan = document.getElementById("profile-birthDate");
     const addressSpan = document.getElementById("profile-address");
     const logoutButton = document.getElementById("logoutButton");
     const editBtn = document.getElementById("editBtn");
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editName = document.getElementById("edit-name");
     const editSurname = document.getElementById("edit-surname");
     const editEmail = document.getElementById("edit-email");
-    const editAge = document.getElementById("edit-age");
+    const editBirthDate = document.getElementById("edit-birthDate");
     const editAddress = document.getElementById("edit-address");
 
     let currentUserData = {}; // Mevcut kullanıcı verilerini tutmak için
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nameSpan.textContent = data.name;
             surnameSpan.textContent = data.surname;
             emailSpan.textContent = data.email;
-            ageSpan.textContent = data.age;
+            birthDateSpan.textContent = data.birthDate ? data.birthDate : '';
             addressSpan.textContent = data.address;
 
             // Profile image (if present) — add cache-buster to ensure immediate reload after upload
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nameSpan.classList.remove('loading-placeholder');
             surnameSpan.classList.remove('loading-placeholder');
             emailSpan.classList.remove('loading-placeholder');
-            ageSpan.classList.remove('loading-placeholder');
+            birthDateSpan.classList.remove('loading-placeholder');
             addressSpan.classList.remove('loading-placeholder');
         })
         .catch(error => {
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
         editName.value = currentUserData.name || '';
         editSurname.value = currentUserData.surname || '';
         editEmail.value = currentUserData.email || '';
-        editAge.value = currentUserData.age || '';
+        editBirthDate.value = currentUserData.birthDate || '';
         editAddress.value = currentUserData.address || '';
         
         viewMode.style.display = 'none';
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
             name: editName.value,
             surname: editSurname.value,
             email: editEmail.value,
-            age: parseInt(editAge.value),
+            birthDate: editBirthDate.value,
             address: editAddress.value
         };
 
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 name: data.name,
                 surname: data.surname,
                 email: data.email,
-                age: data.age,
+                birthDate: data.birthDate,
                 address: data.address
             };
             

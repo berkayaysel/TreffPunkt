@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.treffpunktprojectgroup.treffpunkt.enums.Gender;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,9 +25,8 @@ public class User {
 
     @Column(name = "password")
     private String password;
-
-    @Column(name = "age")
-    private Integer age;
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -48,7 +48,6 @@ public class User {
                 String surname,
                 String password,
                 Integer userId,
-                Integer age,
                 String email,
                 String address,
                 Integer rank,
@@ -57,7 +56,6 @@ public class User {
         this.surname = surname;
         this.password = password;
         this.userId = userId;
-        this.age = age;
         this.email = email;
         this.address = address;
         this.rank = rank;
@@ -99,12 +97,13 @@ public class User {
         this.password = password;
     }
 
-    public Integer getAge() {
-        return age;
+
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getEmail() {

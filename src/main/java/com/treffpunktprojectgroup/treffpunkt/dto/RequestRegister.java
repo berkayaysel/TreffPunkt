@@ -1,13 +1,14 @@
 package com.treffpunktprojectgroup.treffpunkt.dto;
 
 import com.treffpunktprojectgroup.treffpunkt.enums.Gender;
+import java.time.LocalDate;
 
 public class RequestRegister {
 
     private String name;
     private String surname;
     private String password;
-    private Integer age;
+    private LocalDate birthDate;
     private String email;
     private String address;
     private Gender gender;
@@ -16,17 +17,17 @@ public class RequestRegister {
     public RequestRegister(String name,
                            String surname,
                            String password,
-                           Integer age,
                            String email,
                            String address,
-                           Gender gender) {
+                           Gender gender,
+                           LocalDate birthDate) {
         this.name = name;
         this.surname = surname;
         this.password = password;
-        this.age = age;
         this.email = email;
         this.address = address;
         this.gender = gender;
+        this.birthDate = birthDate;
     }
 
     public String getName() {
@@ -53,13 +54,7 @@ public class RequestRegister {
         this.password = password;
     }
 
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
+    
 
     public String getEmail() {
         return email;
@@ -83,6 +78,14 @@ public class RequestRegister {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public RequestRegister() {

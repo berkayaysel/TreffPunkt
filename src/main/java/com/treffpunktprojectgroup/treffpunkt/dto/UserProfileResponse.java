@@ -5,17 +5,16 @@ public class UserProfileResponse {
     private String name;
     private String surname;
     private String email;
-    private Integer age;
     private String address;
     private String profileImage;
-
-    public UserProfileResponse(String name, String surname, String email, Integer age, String address, String profileImage) {
+    private java.time.LocalDate birthDate;
+    public UserProfileResponse(String name, String surname, String email, String address, String profileImage, java.time.LocalDate birthDate) {
         this.name = name;
         this.surname = surname;
         this.email = email;
-        this.age = age;
         this.address = address;
         this.profileImage = profileImage;
+        this.birthDate = birthDate;
     }
 
     public UserProfileResponse() {
@@ -45,14 +44,6 @@ public class UserProfileResponse {
         this.email = email;
     }
 
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
     public String getAddress() {
         return address;
     }
@@ -67,5 +58,12 @@ public class UserProfileResponse {
 
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
+    }
+    public java.time.LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(java.time.LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 }
