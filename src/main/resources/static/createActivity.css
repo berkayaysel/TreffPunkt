@@ -64,6 +64,15 @@ body {
     outline: none;
 }
 
+.form-group select {
+    padding: 10px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+    background: #fff;
+}
+
 /* Description textarea'ının inputlarla aynı görünüme sahip olması için */
 .form-group textarea {
     padding: 10px;

@@ -57,11 +57,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card-info">
                         <h4>${activity.name}</h4>
                         <p>${activity.startDate} | ${activity.location}</p>
+                        <p>Kategori: ${activity.category || 'Diğer'}</p>
                     </div>
                     <button class="btn-detail" 
                         data-id="${activity.activityId}" 
                         data-type="created"
                         data-name="${activity.name}"
+                        data-category="${activity.category || ''}"
                         data-loc="${activity.location}"
                         data-date="${activity.startDate}"
                         data-time="${activity.startTime}"
@@ -92,11 +94,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card-info">
                         <h4>${activity.name}</h4>
                         <p>${activity.startDate} | ${activity.location}</p>
+                        <p>Kategori: ${activity.category || 'Diğer'}</p>
                     </div>
                     <button class="btn-detail" 
                         data-id="${activity.activityId}" 
                         data-type="joined"
                         data-name="${activity.name}"
+                        data-category="${activity.category || ''}"
                         data-loc="${activity.location}"
                         data-date="${activity.startDate}"
                         data-time="${activity.startTime}"
@@ -121,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function openModal(event) {
         const btn = event.target;
         const name = btn.getAttribute('data-name');
+            const category = btn.getAttribute('data-category') || '';
         const loc = btn.getAttribute('data-loc');
         const date = btn.getAttribute('data-date');
         const time = btn.getAttribute('data-time');
@@ -134,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-location').textContent = loc;
         document.getElementById('modal-date').textContent = date;
         document.getElementById('modal-time').textContent = time;
+        document.getElementById('modal-category').textContent = category || '(Belirtilmemiş)';
         document.getElementById('modal-description').textContent = desc || '(Yok)';
         document.getElementById('modal-capacity').textContent = capacity;
         document.getElementById('modal-number').textContent = number;

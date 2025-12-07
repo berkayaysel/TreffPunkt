@@ -16,6 +16,7 @@ public class ActivityResponse {
     private String creatorEmail;
     private String creatorName;
     private String creatorSurname;
+    private String category;
 
     public ActivityResponse(Integer activityId, String name, String location, LocalDate startDate, LocalTime startTime, String description, Integer numberOfParticipants, Integer capacity, String creatorEmail, String creatorName, String creatorSurname) {
         this.activityId = activityId;
@@ -118,6 +119,14 @@ public class ActivityResponse {
 
     public void setCreatorSurname(String creatorSurname) {
         this.creatorSurname = creatorSurname;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public ActivityResponse() {

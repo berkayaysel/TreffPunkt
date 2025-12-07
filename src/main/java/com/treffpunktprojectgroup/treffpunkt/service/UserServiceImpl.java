@@ -80,6 +80,11 @@ public class UserServiceImpl implements UserService{
         activity.setStartTime(createActivityRequest.getStartTime());
         activity.setStartDate(createActivityRequest.getStartDate());
         activity.setDescription(createActivityRequest.getDescription());
+        // set category, default to "Diğer" when not provided
+        String cat = createActivityRequest.getCategory();
+        // Map incoming label to enum (default to DIGER)
+        com.treffpunktprojectgroup.treffpunkt.enums.Category catEnum = com.treffpunktprojectgroup.treffpunkt.enums.Category.fromLabel(cat);
+        activity.setCategory(catEnum == null ? com.treffpunktprojectgroup.treffpunkt.enums.Category.DIGER : catEnum);
         activity.setCreator(creator);
         activity.setNumberOfParticipant(0);
         
@@ -103,6 +108,7 @@ public class UserServiceImpl implements UserService{
                     a.getCreator() != null ? a.getCreator().getName() : null,
                     a.getCreator() != null ? a.getCreator().getSurname() : null
                 ))
+                .peek(ar -> ar.setCategory(activities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .collect(Collectors.toList());
     }
 

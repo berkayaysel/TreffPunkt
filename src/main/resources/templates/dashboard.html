@@ -16,17 +16,60 @@
         <a href="/treffpunkt/profile" class="nav-btn profile-btn">Profile</a>
     </div>
 
-    <!-- AKTİVİTE LİSTESİ -->
-    <div class="container" id="activity-container">
-        
-        <div id="loading-msg" style="text-align:center; color:#666; margin-top:20px;">
-            Aktiviteler yükleniyor...
-        </div>
+    <div class="page-wrapper">
+        <aside class="filter-sidebar" id="filter-sidebar">
+            <h3>Filtreler</h3>
 
-        <div class="empty-message" id="no-activity-msg" style="display: none;">
-            Henüz hiç aktivite yok.
-        </div>
+            <div class="filter-group">
+                <label for="filter-category">Kategori</label>
+                <select id="filter-category">
+                    <option value="">Tümü</option>
+                    <option>Sports & Fitness</option>
+                    <option>Social & Fun</option>
+                    <option>Arts & Culture</option>
+                    <option>Gastronomy & Cooking</option>
+                    <option>Nature & Adventure</option>
+                    <option>Arts, Crafts & DIY</option>
+                    <option>Technology & Innovation</option>
+                    <option>Volunteering & Community</option>
+                    <option>Wellness & Spirituality</option>
+                    <option>Gaming & Competition</option>
+                    <option>Music & Performance</option>
+                    <option>Family & Kids</option>
+                    <option>Shopping & Sustainability</option>
+                    <option>Diğer</option>
+                </select>
+            </div>
 
+            <div class="filter-group">
+                <label>
+                    <input type="checkbox" id="filter-remaining" /> Sadece boş kontenjan olanlar
+                </label>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-date">Tarih Sırala</label>
+                <select id="filter-date">
+                    <option value="asc">En yakın → En uzak</option>
+                    <option value="desc">En uzak → En yakın</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button id="applyFilters" class="btn-apply">Uygula</button>
+                <button id="clearFilters" class="btn-clear">Temizle</button>
+            </div>
+        </aside>
+
+        <main class="container" id="activity-container">
+            <div id="loading-msg" style="text-align:center; color:#666; margin-top:20px;">
+                Aktiviteler yükleniyor...
+            </div>
+
+            <div class="empty-message" id="no-activity-msg" style="display: none;">
+                Henüz hiç aktivite yok.
+            </div>
+        </main>
     </div>
 
     <!-- DETAY BÖLÜMÜ (inline gösterim) -->
@@ -44,6 +87,7 @@
                 <p><strong>Konum:</strong> <span id="detail-location"></span></p>
                 <p><strong>Tarih:</strong> <span id="detail-date"></span></p>
                 <p><strong>Saat:</strong> <span id="detail-time"></span></p>
+                <p><strong>Kategori:</strong> <span id="detail-category"></span></p>
                 <p><strong>Oluşturan:</strong> <span id="detail-creator">(Bilinmiyor)</span></p>
                 <p><strong>Açıklama:</strong> <span id="detail-description">(Yok)</span></p>
                 <p><strong>Kapasite:</strong> <span id="detail-capacity">-</span></p>

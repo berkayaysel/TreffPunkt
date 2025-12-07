@@ -57,6 +57,15 @@ public class ActivityController {
         return ResponseEntity.ok(activityService.getAllActivities());
     }
 
+    @GetMapping("")
+    public ResponseEntity<List<ActivityResponse>> getFilteredActivities(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Boolean available,
+            @RequestParam(required = false) String dateOrder
+    ) {
+        return ResponseEntity.ok(activityService.getFilteredActivities(category, available, dateOrder));
+    }
+
     @GetMapping("/my-activities")
     public ResponseEntity<MyActivitiesResponse> getMyActivities(Principal principal) {
 

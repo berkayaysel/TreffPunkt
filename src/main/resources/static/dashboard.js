@@ -2,7 +2,46 @@
 window.onload = function() {
     fetchActivities();
     setupDetailBackButton();
+    setupFilterHandlers();
 };
+
+let allActivities = [];
+
+function setupFilterHandlers() {
+    document.getElementById('applyFilters').addEventListener('click', applyFilters);
+    document.getElementById('clearFilters').addEventListener('click', () => {
+        document.getElementById('filter-category').value = '';
+        document.getElementById('filter-remaining').checked = false;
+        document.getElementById('filter-date').value = 'asc';
+        renderActivities(allActivities);
+    });
+}
+
+function applyFilters() {
+    const cat = document.getElementById('filter-category').value;
+    const onlyRemaining = document.getElementById('filter-remaining').checked;
+    const dateOrder = document.getElementById('filter-date').value || 'asc';
+
+    // Build query string and request server-side filtered results
+    const params = new URLSearchParams();
+    if (cat && cat !== '') params.set('category', cat);
+    if (onlyRemaining) params.set('available', 'true');
+    if (dateOrder) params.set('dateOrder', dateOrder);
+
+    fetch('/activities?' + params.toString())
+        .then(r => {
+            if (!r.ok) throw new Error('Filtrelenmiş aktiviteler alınamadı');
+            return r.json();
+        })
+        .then(list => {
+            allActivities = list || [];
+            renderActivities(allActivities);
+        })
+        .catch(err => {
+            console.error('Filter error', err);
+            alert('Filtre uygulanırken hata oluştu');
+        });
+}
 
 function fetchActivities() {
     const url = '/activities/all';
@@ -18,47 +57,17 @@ function fetchActivities() {
             return response.json();
         })
         .then(activities => {
+            // cache full list for filtering
+            allActivities = activities || [];
             const container = document.getElementById('activity-container');
             const emptyMsg = document.getElementById('no-activity-msg');
 
             // Ensure container is cleared before rendering to avoid duplicate entries
             if (container) container.innerHTML = '';
 
-            if (activities && activities.length > 0) {
+            if (allActivities && allActivities.length > 0) {
                 if(emptyMsg) emptyMsg.style.display = 'none';
-
-                activities.forEach(activity => {
-                    const aid = activity.activityId || activity.id;
-                        const cardHTML = `
-                            <div class="activity-card">
-                                <div class="activity-title">${activity.name || 'Başlıksız Aktivite'}</div>
-                                <div class="activity-info">📅 ${formatDateOnly(activity.startDate)}</div>
-                                <div class="activity-info">⏰ ${formatTime(activity.startTime)}</div>
-                                <div class="activity-info">📍 ${activity.location || 'Konum yok'}</div>
-                                <div class="activity-info">👤 ${escapeHtml((activity.creatorName ? activity.creatorName : '') + ' ' + (activity.creatorSurname ? activity.creatorSurname : ''))}</div>
-                                <div class="activity-info">👥 ${activity.numberOfParticipants || 0} katılımcı</div>
-                                <button class="detail-btn" 
-                                        data-id="${aid}"
-                                        data-name="${escapeHtml(activity.name)}"
-                                        data-loc="${escapeHtml(activity.location)}"
-                                        data-date="${activity.startDate || ''}"
-                                        data-time="${activity.startTime || ''}"
-                                        data-desc="${escapeHtml(activity.description || '')}"
-                                        data-capacity="${activity.capacity || ''}"
-                                        data-number="${activity.numberOfParticipants || ''}"
-                                        data-creator-email="${escapeHtml(activity.creatorEmail || '')}"
-                                        data-creator-name="${escapeHtml(activity.creatorName || '')}"
-                                        data-creator-surname="${escapeHtml(activity.creatorSurname || '')}">
-                                    Detay
-                                </button>
-                            </div>
-                        `;
-                    container.innerHTML += cardHTML;
-                });
-
-                document.querySelectorAll('.detail-btn').forEach(btn => {
-                    btn.addEventListener('click', openDetailSection);
-                });
+                renderActivities(allActivities);
             } else {
                 // when no activities, ensure container is empty and show message
                 if (container) container.innerHTML = '';
@@ -73,6 +82,52 @@ function fetchActivities() {
             const emptyMsg = document.getElementById('no-activity-msg');
             if(emptyMsg) emptyMsg.style.display = 'block';
         });
+}
+
+function renderActivities(list) {
+    const container = document.getElementById('activity-container');
+    const emptyMsg = document.getElementById('no-activity-msg');
+    if (container) container.innerHTML = '';
+    if (!list || list.length === 0) {
+        if (emptyMsg) emptyMsg.style.display = 'block';
+        return;
+    }
+    emptyMsg && (emptyMsg.style.display = 'none');
+
+    list.forEach(activity => {
+        const aid = activity.activityId || activity.id;
+        const cardHTML = `
+            <div class="activity-card">
+                <div class="activity-title">${activity.name || 'Başlıksız Aktivite'}</div>
+                <div class="activity-info">Kategori: ${escapeHtml(activity.category || 'Diğer')}</div>
+                <div class="activity-info">📅 ${formatDateOnly(activity.startDate)}</div>
+                <div class="activity-info">⏰ ${formatTime(activity.startTime)}</div>
+                <div class="activity-info">📍 ${activity.location || 'Konum yok'}</div>
+                <div class="activity-info">👤 ${escapeHtml((activity.creatorName ? activity.creatorName : '') + ' ' + (activity.creatorSurname ? activity.creatorSurname : ''))}</div>
+                <div class="activity-info">👥 ${activity.numberOfParticipants || 0} katılımcı</div>
+                <button class="detail-btn" 
+                        data-id="${aid}"
+                        data-name="${escapeHtml(activity.name)}"
+                        data-loc="${escapeHtml(activity.location)}"
+                        data-date="${activity.startDate || ''}"
+                        data-time="${activity.startTime || ''}"
+                        data-desc="${escapeHtml(activity.description || '')}"
+                        data-capacity="${activity.capacity || ''}"
+                        data-number="${activity.numberOfParticipants || ''}"
+                        data-creator-email="${escapeHtml(activity.creatorEmail || '')}"
+                        data-creator-name="${escapeHtml(activity.creatorName || '')}"
+                        data-creator-surname="${escapeHtml(activity.creatorSurname || '')}"
+                        data-category="${escapeHtml(activity.category || '')}">
+                    Detay
+                </button>
+            </div>
+        `;
+        container.innerHTML += cardHTML;
+    });
+
+    document.querySelectorAll('.detail-btn').forEach(btn => {
+        btn.addEventListener('click', openDetailSection);
+    });
 }
 
 function formatDate(dateString) {
@@ -124,6 +179,7 @@ function openDetailSection(e) {
     const creatorEmail = btn.getAttribute('data-creator-email') || '';
     const creatorName = btn.getAttribute('data-creator-name') || '';
     const creatorSurname = btn.getAttribute('data-creator-surname') || '';
+    const category = btn.getAttribute('data-category') || '';
 
     document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
     document.getElementById('detail-location').textContent = loc;
@@ -133,6 +189,7 @@ function openDetailSection(e) {
     document.getElementById('detail-creator').textContent = (creatorName || creatorEmail || '') + (creatorSurname ? (' ' + creatorSurname) : '');
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
+    document.getElementById('detail-category').textContent = category || '(Belirtilmemiş)';
 
     if (joinBtn) {
         joinBtn.setAttribute('data-current-id', id);
@@ -156,6 +213,9 @@ function openDetailSection(e) {
 
     // Aktivite listesini gizle, detayı göster
     activityContainer.style.display = 'none';
+    // hide filter sidebar when showing detail
+    const sidebar = document.getElementById('filter-sidebar');
+    if (sidebar) sidebar.style.display = 'none';
     detailSection.style.display = 'block';
     
     // Sayfanın üstüne git
@@ -168,6 +228,8 @@ function setupDetailBackButton() {
         backBtn.addEventListener('click', () => {
             detailSection.style.display = 'none';
             activityContainer.style.display = 'block';
+            const sidebar = document.getElementById('filter-sidebar');
+            if (sidebar) sidebar.style.display = 'block';
             window.scrollTo(0, 0);
         });
     }

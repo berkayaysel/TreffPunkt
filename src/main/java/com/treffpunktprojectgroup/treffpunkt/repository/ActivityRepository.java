@@ -14,4 +14,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
     List<Activity> findByParticipants_UserId(Integer userId);
     List<Activity> findByCreator(User creator);
     List<Activity> findByParticipantsContains(User user);
+    List<Activity> findByCategory(com.treffpunktprojectgroup.treffpunkt.enums.Category category);
+
+    List<Activity> findByCapacityGreaterThan(Integer capacity);
 }

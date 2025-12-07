@@ -11,19 +11,22 @@ public class CreateActivityRequest {
     private LocalDate startDate;
     private LocalTime startTime;
     private String description;
+    private String category;
 
     public CreateActivityRequest(String name,
                                  String location,
                                  Integer capacity,
                                  LocalDate startDate,
                                  LocalTime startTime,
-                                 String description) {
+                                 String description,
+                                 String category) {
         this.name = name;
         this.location = location;
         this.capacity = capacity;
         this.startDate = startDate;
         this.startTime = startTime;
         this.description = description;
+        this.category = category;
     }
 
     public String getName() {
@@ -72,6 +75,14 @@ public class CreateActivityRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public CreateActivityRequest() {

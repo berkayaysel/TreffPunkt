@@ -57,11 +57,54 @@ a {
 
 /* Ana İçerik Kutusu */
 .container {
-    max-width: 600px; /* Telefon ekranı gibi dar ve uzun */
+    max-width: 100%;
     margin: 20px auto;
     padding: 10px;
     padding-bottom: 50px; /* En altta biraz boşluk kalsın */
 }
+
+/* Layout wrapper: main + sidebar */
+.page-wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 10px;
+    flex-wrap: wrap;
+}
+
+.container {
+    flex: 1 1 700px;
+}
+
+.filter-sidebar {
+    width: 280px;
+    background: #fff;
+    border: 1px solid #e1e4e8;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    height: fit-content;
+}
+
+@media (max-width: 900px) {
+    .page-wrapper { flex-direction: column; }
+    .filter-sidebar { width: 100%; order: 1; }
+    .container { order: 2; }
+}
+
+.filter-sidebar h3 {
+    margin-top: 0;
+}
+
+.filter-group { margin-bottom: 12px; }
+.filter-group label { display: block; font-size: 14px; color: #333; margin-bottom: 6px; }
+.filter-group select, .filter-group input[type="text"], .filter-group input[type="date"] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
+
+.filter-actions { display:flex; gap:10px; margin-top: 12px; }
+.btn-apply { flex:1; padding:10px; background:#0a66c2; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+.btn-clear { flex:1; padding:10px; background:#e4e6eb; color:#000; border:none; border-radius:6px; cursor:pointer; }
 
 /* Aktivite Kartları */
 .activity-card {

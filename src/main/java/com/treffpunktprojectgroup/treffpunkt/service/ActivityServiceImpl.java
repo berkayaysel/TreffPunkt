@@ -105,7 +105,49 @@ public class ActivityServiceImpl implements ActivityService{
                     a.getCreator() != null ? a.getCreator().getName() : null,
                     a.getCreator() != null ? a.getCreator().getSurname() : null
                 ))
+                .peek(ar -> ar.setCategory(activityRepository.findById(ar.getActivityId()).map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
+    }
+
+    @Override
+    public List<ActivityResponse> getFilteredActivities(String categoryLabel, Boolean available, String dateOrder) {
+        com.treffpunktprojectgroup.treffpunkt.enums.Category cat = com.treffpunktprojectgroup.treffpunkt.enums.Category.fromLabel(categoryLabel);
+
+        List<Activity> base;
+        if (cat != null) {
+            base = activityRepository.findByCategory(cat);
+        } else {
+            base = activityRepository.findAll();
+        }
+
+        // available filter
+        if (available != null && available) {
+            base = base.stream().filter(a -> (a.getCapacity() != null && a.getCapacity() > 0)).toList();
+        }
+
+        // sort
+        base = base.stream().sorted((x, y) -> {
+            java.time.LocalDate dx = x.getStartDate();
+            java.time.LocalDate dy = y.getStartDate();
+            if (dx == null && dy == null) return 0;
+            if (dx == null) return dateOrder != null && dateOrder.equalsIgnoreCase("desc") ? 1 : -1;
+            if (dy == null) return dateOrder != null && dateOrder.equalsIgnoreCase("desc") ? -1 : 1;
+            int cmp = dx.compareTo(dy);
+            if (cmp != 0) return dateOrder != null && dateOrder.equalsIgnoreCase("desc") ? -cmp : cmp;
+            java.time.LocalTime tx = x.getStartTime();
+            java.time.LocalTime ty = y.getStartTime();
+            if (tx == null && ty == null) return 0;
+            if (tx == null) return dateOrder != null && dateOrder.equalsIgnoreCase("desc") ? 1 : -1;
+            if (ty == null) return dateOrder != null && dateOrder.equalsIgnoreCase("desc") ? -1 : 1;
+            return dateOrder != null && dateOrder.equalsIgnoreCase("desc") ? -tx.compareTo(ty) : tx.compareTo(ty);
+        }).toList();
+
+        // map to DTO
+        return base.stream().map(a -> {
+            ActivityResponse ar = new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null);
+            ar.setCategory(a.getCategory() != null ? a.getCategory().getLabel() : null);
+            return ar;
+        }).toList();
     }
 
     @Override
@@ -121,14 +163,16 @@ public class ActivityServiceImpl implements ActivityService{
         List<Activity> joinedActivities = activityRepository.findByParticipantsContains(user);
 
         List<ActivityResponse> createdDTO =
-                createdActivities.stream()
-                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
-                        .toList();
+            createdActivities.stream()
+                .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
+                .peek(ar -> ar.setCategory(createdActivities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
+                .toList();
 
         List<ActivityResponse> joinedDTO =
-                joinedActivities.stream()
-                        .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
-                        .toList();
+            joinedActivities.stream()
+                .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
+                .peek(ar -> ar.setCategory(joinedActivities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
+                .toList();
 
         return new MyActivitiesResponse(createdDTO, joinedDTO);
     }

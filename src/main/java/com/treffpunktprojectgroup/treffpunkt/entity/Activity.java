@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
+import com.treffpunktprojectgroup.treffpunkt.enums.Category;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Entity
 @Table(name = "activity")
@@ -37,6 +40,10 @@ public class Activity {
     @Column(name = "description")
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private Category category;
+
     @Column(name = "numberOfParticipant", nullable = false)
     private Integer numberOfParticipant = 0;
 
@@ -52,6 +59,7 @@ public class Activity {
                     Integer capacity,
                     Integer numberOfParticipant,
                     String description,
+                    Category category,
                     User creator) {
         this.activityId = activityId;
         this.name = name;
@@ -61,6 +69,7 @@ public class Activity {
         this.startTime = startTime;
         this.numberOfParticipant = numberOfParticipant;
         this.description = description;
+        this.category = category;
         this.creator = creator;
     }
 
@@ -148,6 +157,14 @@ public class Activity {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Activity() {

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const capacity = document.getElementById('capacity').value;
         const startDate = document.getElementById('startDate').value;
         const startTime = document.getElementById('startTime').value;
+        const category = document.getElementById('category').value;
 
         // 3. Backend'e gönderilecek veri objesini oluştur (DTO'ya uygun)
         const activityData = {
@@ -21,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
             capacity: parseInt(capacity), // Integer'a çevir
             startDate: startDate, // "YYYY-MM-DD" formatında string gider
             startTime: startTime // "HH:MM" formatında string gider
+            ,
+            category: category
             // Backend'inizdeki LocalDate ve LocalTime bu string formatlarını otomatik parse edecektir.
         };
 

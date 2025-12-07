@@ -10,6 +10,7 @@ public interface ActivityService {
     boolean joinActivity(String email, Integer activityId);
     boolean leaveActivity(String email, Integer activityId);
     List<ActivityResponse> getAllActivities();
+    List<ActivityResponse> getFilteredActivities(String categoryLabel, Boolean available, String dateOrder);
     MyActivitiesResponse getMyActivities(String email);
     boolean deleteActivity(String email, Integer activityId);
 }
