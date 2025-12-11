@@ -254,6 +254,8 @@ joinBtn && joinBtn.addEventListener('click', function() {
             alert('Aktiviteye katılma başarılı!');
             detailSection.style.display = 'none';
             activityContainer.style.display = 'block';
+            const sidebar = document.getElementById('filter-sidebar');
+            if (sidebar) sidebar.style.display = 'block';
             fetchActivities();
         } else if (r.status === 401) {
             alert('Yetkisiz erişim. Lütfen giriş yapın.');
