@@ -1,116 +1,158 @@
-/* Genel Sayfa Düzeni */
+/* Page base */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
-    background-color: #f4f4f9;
+    background: #fdfdfd;
+    color: #111;
 }
 
-/* Ana Kutu (Çizimdeki dış çerçeve) */
-.container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    width: 450px;
-    border: 2px solid #333; 
-    position: relative;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-/* Geri Tuşu Stili */
-
-/* Geri Tuşu Stili: myActivities ile uyumlu icon-btn */
-.icon-btn {
-    font-size: 1.1rem;
-    color: #333;
-    text-decoration: none;
-    border: 2px solid #333;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    transition: background 0.3s;
-    margin-bottom: 20px;
-}
-
-.icon-btn:hover {
-    background-color: #333;
+.create-topbar {
+    background: #0096b1;
     color: white;
-}
-
-/* Form Elemanları */
-.form-group {
-    margin-bottom: 15px;
+    padding: 18px 32px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
 }
 
-.form-group label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #333;
+.back-link {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.form-group input {
-    padding: 10px;
-    border: 2px solid #333; /* Çizimdeki kutu stili */
-    border-radius: 5px;
-    font-size: 1rem;
-    outline: none;
+.back-link i {
+    font-size: 20px;
 }
 
-.form-group select {
-    padding: 10px;
-    border: 2px solid #333;
-    border-radius: 5px;
-    font-size: 1rem;
-    outline: none;
-    background: #fff;
-}
-
-/* Description textarea'ının inputlarla aynı görünüme sahip olması için */
-.form-group textarea {
-    padding: 10px;
-    border: 2px solid #333;
-    border-radius: 5px;
-    font-size: 1rem;
-    outline: none;
-    min-height: 100px; /* Yeterli dikey alan */
-    resize: vertical; /* Kullanıcı dikey olarak yeniden boyutlandırabilir */
+.create-page {
+    max-width: 1200px;
+    margin: 40px auto 60px;
+    padding: 0 24px;
     box-sizing: border-box;
 }
 
+.create-header h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0 0 32px;
+    color: #111;
+}
+
+.create-form-card {
+    background: transparent;
+}
+
+.create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px 28px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    font-size: 16px;
+    padding: 14px 16px;
+    border: 3px solid #000;
+    border-radius: 14px;
+    outline: none;
+    background: white;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.form-group input:focus,
+.form-group select:focus,
 .form-group textarea:focus {
-    background-color: #f0f8ff;
-    border-color: #0056b3;
+    border-color: #0096b1;
+    box-shadow: 0 0 0 3px rgba(0,150,177,0.12);
 }
 
-.form-group input:focus {
-    background-color: #f0f8ff;
-    border-color: #0056b3;
+.select-wrapper {
+    position: relative;
 }
 
-/* Create Butonu */
+.select-wrapper select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    padding-right: 44px;
+}
+
+.select-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #111;
+    font-size: 16px;
+}
+
+.form-group textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.actions {
+    margin-top: 8px;
+}
+
 .btn-create {
-    width: 150px;
-    padding: 10px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #333;
-    background-color: transparent;
-    border: 2px solid #333;
-    border-radius: 5px;
+    width: 260px;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    background: #6edc57;
+    border: none;
+    border-radius: 26px;
     cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.2s;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
 }
 
 .btn-create:hover {
-    background-color: #333;
-    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.btn-create:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .create-header h1 {
+        font-size: 36px;
+    }
+
+    .btn-create {
+        width: 100%;
+    }
+
+    .create-page {
+        margin: 24px auto 40px;
+    }
 }

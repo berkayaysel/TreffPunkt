@@ -10,66 +10,85 @@
 </head>
 <body>
 
-    <div class="container">
-        <a href="/treffpunkt/myActivities" class="icon-btn" id="backBtn" aria-label="Geri">
-            <i class="fas fa-arrow-left"></i>
+    <!-- Top bar -->
+    <div class="create-topbar">
+        <a href="/treffpunkt/myActivities" class="back-link" aria-label="Back">
+            <i class="fas fa-chevron-left"></i>
+            <span>Back</span>
         </a>
-        
-        <form id="createActivityForm">
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" required placeholder="Activity Name">
-            </div>
-
-            <div class="form-group">
-                <label for="location">Location</label>
-                <input type="text" id="location" name="location" required placeholder="Place">
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description" placeholder="Aktivite açıklaması"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="category">Category</label>
-                <select id="category" name="category" required>
-                    <option value="" disabled selected>Seçiniz</option>
-                    <option>Sports & Fitness</option>
-                    <option>Social & Fun</option>
-                    <option>Arts & Culture</option>
-                    <option>Gastronomy & Cooking</option>
-                    <option>Nature & Adventure</option>
-                    <option>Arts, Crafts & DIY</option>
-                    <option>Technology & Innovation</option>
-                    <option>Volunteering & Community</option>
-                    <option>Wellness & Spirituality</option>
-                    <option>Gaming & Competition</option>
-                    <option>Music & Performance</option>
-                    <option>Family & Kids</option>
-                    <option>Shopping & Sustainability</option>
-                    <option>Diğer</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="capacity">Capacity</label>
-                <input type="number" id="capacity" name="capacity" min="1" required placeholder="Max participants">
-            </div>
-
-            <div class="form-group">
-                <label for="startDate">Start-Date</label>
-                <input type="date" id="startDate" name="startDate" required>
-            </div>
-
-            <div class="form-group">
-                <label for="startTime">Start-Time</label>
-                <input type="time" id="startTime" name="startTime" required>
-            </div>
-
-            <button type="submit" class="btn-create">create</button>
-        </form>
     </div>
+
+    <main class="create-page">
+        <section class="create-header">
+            <h1>Activity Creation</h1>
+        </section>
+
+        <section class="create-form-card">
+            <form id="createActivityForm" class="create-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Activity Name</label>
+                        <input type="text" id="name" name="name" required placeholder="Name...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startDate">Date of Activity</label>
+                        <input type="date" id="startDate" name="startDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Activity Location</label>
+                        <input type="text" id="location" name="location" required placeholder="Where will your event located?">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startTime">Time of Activity</label>
+                        <input type="time" id="startTime" name="startTime" required>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <div class="select-wrapper">
+                            <select id="category" name="category" required>
+                                <option value="" disabled selected>Choose</option>
+                                <option>Sports & Fitness</option>
+                                <option>Social & Fun</option>
+                                <option>Arts & Culture</option>
+                                <option>Gastronomy & Cooking</option>
+                                <option>Nature & Adventure</option>
+                                <option>Arts, Crafts & DIY</option>
+                                <option>Technology & Innovation</option>
+                                <option>Volunteering & Community</option>
+                                <option>Wellness & Spirituality</option>
+                                <option>Gaming & Competition</option>
+                                <option>Music & Performance</option>
+                                <option>Family & Kids</option>
+                                <option>Shopping & Sustainability</option>
+                                <option>Diğer</option>
+                            </select>
+                            <i class="fas fa-chevron-down select-icon" aria-hidden="true"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="capacity">Capasity</label>
+                        <input type="number" id="capacity" name="capacity" min="1" required placeholder="Max participant">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Description of what will you do, if you have any rules or conditions,."></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn-create">Create</button>
+                </div>
+            </form>
+        </section>
+    </main>
 
     <script src="/createActivity.js"></script>
 </body>
