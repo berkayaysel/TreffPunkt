@@ -28,9 +28,18 @@ public class LoginServiceImpl implements LoginService{
 
         User userFromDb = userOptional.get();
 
+        // BCrypt ile hashlenmiş şifreyi kontrol et
         if(passwordEncoder.matches(requestLogin.getPassword(), userFromDb.getPassword())) {
             return userFromDb;
-        } else {
+        } 
+        // Eğer BCrypt başarısız olursa, düz metin şifre kontrolü yap (eski kullanıcılar için)
+        else if(requestLogin.getPassword().equals(userFromDb.getPassword())) {
+            // Düz metin şifreyi BCrypt'e çevir ve güncelle
+            userFromDb.setPassword(passwordEncoder.encode(requestLogin.getPassword()));
+            userRepository.save(userFromDb);
+            return userFromDb;
+        } 
+        else {
             throw new RuntimeException("Şifre yanlış!");
         }
     }

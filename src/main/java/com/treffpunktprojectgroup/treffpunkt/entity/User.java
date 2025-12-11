@@ -1,6 +1,7 @@
 package com.treffpunktprojectgroup.treffpunkt.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.treffpunktprojectgroup.treffpunkt.enums.Gender;
 import jakarta.persistence.*;
 
@@ -63,6 +64,7 @@ public class User {
     }
 
     @ManyToMany(mappedBy = "participants")
+    @JsonIgnore
     private Set<Activity> activities = new HashSet<>();
 
     public String getName() {

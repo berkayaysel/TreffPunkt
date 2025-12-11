@@ -2,6 +2,7 @@ package com.treffpunktprojectgroup.treffpunkt.service;
 
 import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
 import com.treffpunktprojectgroup.treffpunkt.dto.MyActivitiesResponse;
+import com.treffpunktprojectgroup.treffpunkt.dto.ParticipantDTO;
 import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
 import com.treffpunktprojectgroup.treffpunkt.entity.User;
 import com.treffpunktprojectgroup.treffpunkt.repository.ActivityRepository;
@@ -191,6 +192,69 @@ public class ActivityServiceImpl implements ActivityService{
             }
         }
 
+        return false;
+    }
+
+    @Override
+    public List<ParticipantDTO> getActivityParticipants(Integer activityId) {
+        Optional<Activity> activityOptional = activityRepository.findById(activityId);
+        
+        if (activityOptional.isPresent()) {
+            Activity activity = activityOptional.get();
+            return activity.getParticipants().stream()
+                    .map(user -> new ParticipantDTO(
+                            user.getUserId(),
+                            user.getName(),
+                            user.getSurname(),
+                            user.getEmail(),
+                            user.getProfileImage()
+                    ))
+                    .toList();
+        }
+        
+        return List.of();
+    }
+
+    @Override
+    public boolean removeParticipantFromActivity(String creatorEmail, Integer activityId, Integer participantUserId) {
+        // Aktiviteyi bul
+        Optional<Activity> activityOptional = activityRepository.findById(activityId);
+        
+        if (activityOptional.isEmpty()) {
+            return false;
+        }
+        
+        Activity activity = activityOptional.get();
+        
+        // İsteği yapan kişinin creator olduğunu kontrol et
+        if (activity.getCreator() == null || !activity.getCreator().getEmail().equals(creatorEmail)) {
+            return false;
+        }
+        
+        // Çıkarılacak kullanıcıyı bul
+        Optional<User> participantOptional = userRepository.findById(participantUserId);
+        
+        if (participantOptional.isEmpty()) {
+            return false;
+        }
+        
+        User participant = participantOptional.get();
+        
+        // Kullanıcı gerçekten aktivitede mi?
+        if (activity.getParticipants().contains(participant)) {
+            // Aktiviteden çıkar
+            activity.getParticipants().remove(participant);
+            activity.setCapacity(activity.getCapacity() + 1);
+            activity.setNumberOfParticipant(activity.getNumberOfParticipant() - 1);
+            
+            activityRepository.save(activity);
+            
+            // TODO: Burada çıkarılan kullanıcıya bildirim gönderilebilir
+            // notificationService.sendRemovedFromActivityNotification(participant, activity);
+            
+            return true;
+        }
+        
         return false;
     }
 }

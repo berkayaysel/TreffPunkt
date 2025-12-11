@@ -105,8 +105,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         data-date="${activity.startDate}"
                         data-time="${activity.startTime}"
                         data-desc="${activity.description || ''}"
-                        data-capacity="${activity.capacity || ''}"
-                        data-number="${activity.numberOfParticipants || ''}">
+                        data-capacity="${activity.capacity || 0}"
+                        data-number="${activity.numberOfParticipants || 0}">
                         Detay
                     </button>
                 `;
@@ -130,8 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const date = btn.getAttribute('data-date');
         const time = btn.getAttribute('data-time');
         const desc = btn.getAttribute('data-desc') || '';
-        const capacity = btn.getAttribute('data-capacity') || '-';
-        const number = btn.getAttribute('data-number') || '-';
+        const capacity = btn.getAttribute('data-capacity') || '0';
+        const number = btn.getAttribute('data-number') || '0';
         currentActivityId = btn.getAttribute('data-id');
         isCreatedActivity = btn.getAttribute('data-type') === 'created';
 
@@ -144,13 +144,16 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-capacity').textContent = capacity;
         document.getElementById('modal-number').textContent = number;
 
-        // Oluşturduğum aktivite ise Delete butonunu göster, katıldığım ise Leave butonunu göster
+        // Oluşturduğum aktivite ise Delete butonunu göster ve katılımcıları getir
         if (isCreatedActivity) {
             deleteBtn.style.display = 'block';
             leaveBtn.style.display = 'none';
+            fetchParticipants(currentActivityId);
         } else {
             deleteBtn.style.display = 'none';
             leaveBtn.style.display = 'block';
+            // Katılımcı bölümünü gizle
+            document.getElementById('participants-section').style.display = 'none';
         }
 
         modal.style.display = 'flex';
@@ -215,4 +218,100 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     fetchActivities();
+
+    function fetchParticipants(activityId) {
+        fetch(`/activities/${activityId}/participants`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Katılımcılar alınamadı.");
+            }
+            return response.json();
+        })
+        .then(participants => {
+            renderParticipants(participants, activityId);
+        })
+        .catch(error => {
+            console.error('Katılımcıları getirme hatası:', error);
+        });
+    }
+
+    function renderParticipants(participants, activityId) {
+        const participantsSection = document.getElementById('participants-section');
+        const participantsList = document.getElementById('participants-list');
+        
+        participantsList.innerHTML = '';
+        
+        if (!participants || participants.length === 0) {
+            participantsList.innerHTML = '<p style="text-align:center; color:#666;">Henüz katılımcı yok.</p>';
+            participantsSection.style.display = 'block';
+            return;
+        }
+        
+        participants.forEach(participant => {
+            const participantCard = document.createElement('div');
+            participantCard.classList.add('participant-card');
+            
+            const profileImg = participant.profileImage 
+                ? `/uploads/profile-images/${participant.profileImage}` 
+                : '/uploads/profile-images/default-avatar.png';
+            
+            participantCard.innerHTML = `
+                <div class="participant-info">
+                    <div class="participant-avatar-wrapper">
+                        <img src="${profileImg}" alt="Profile" class="participant-avatar">
+                    </div>
+                    <div class="participant-details">
+                        <span class="participant-name">${participant.name || ''} ${participant.surname || ''}</span>
+                        <span class="participant-email">${participant.email || ''}</span>
+                    </div>
+                </div>
+                <button class="btn-remove-participant" data-user-id="${participant.userId}" data-activity-id="${activityId}">
+                    <i class="fas fa-times"></i> Çıkar
+                </button>
+            `;
+            
+            participantsList.appendChild(participantCard);
+        });
+        
+        // Çıkar butonlarına event listener ekle
+        document.querySelectorAll('.btn-remove-participant').forEach(btn => {
+            btn.addEventListener('click', removeParticipant);
+        });
+        
+        participantsSection.style.display = 'block';
+    }
+
+    function removeParticipant(event) {
+        const btn = event.currentTarget;
+        const userId = btn.getAttribute('data-user-id');
+        const activityId = btn.getAttribute('data-activity-id');
+        
+        if (!confirm("Bu katılımcıyı aktiviteden çıkarmak istediğinize emin misiniz?")) {
+            return;
+        }
+        
+        fetch(`/activities/${activityId}/participants/${userId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        })
+        .then(response => {
+            if(response.ok) {
+                alert("Katılımcı başarıyla çıkarıldı!");
+                // Katılımcıları yeniden yükle
+                fetchParticipants(activityId);
+                // Aktiviteleri de güncelle (katılımcı sayısı değişti)
+                fetchActivities();
+            } else {
+                alert("Katılımcı çıkarma işlemi başarısız oldu.");
+            }
+        })
+        .catch(error => {
+            console.error("Katılımcı çıkarma hatası:", error);
+            alert("Hata: " + error.message);
+        });
+    }
 });

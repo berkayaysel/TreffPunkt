@@ -2,6 +2,7 @@ package com.treffpunktprojectgroup.treffpunkt.controller;
 
 import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
 import com.treffpunktprojectgroup.treffpunkt.dto.MyActivitiesResponse;
+import com.treffpunktprojectgroup.treffpunkt.dto.ParticipantDTO;
 import com.treffpunktprojectgroup.treffpunkt.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -77,5 +78,39 @@ public class ActivityController {
         MyActivitiesResponse response = activityService.getMyActivities(email);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{activityId}/participants")
+    public ResponseEntity<List<ParticipantDTO>> getActivityParticipants(
+            @PathVariable Integer activityId,
+            Principal principal
+    ) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        List<ParticipantDTO> participants = activityService.getActivityParticipants(activityId);
+        return ResponseEntity.ok(participants);
+    }
+
+    @DeleteMapping("/{activityId}/participants/{userId}")
+    public ResponseEntity<String> removeParticipant(
+            @PathVariable Integer activityId,
+            @PathVariable Integer userId,
+            Principal principal
+    ) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String creatorEmail = principal.getName();
+        boolean removed = activityService.removeParticipantFromActivity(creatorEmail, activityId, userId);
+
+        if (removed) {
+            return ResponseEntity.ok("Katılımcı başarıyla çıkarıldı!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Katılımcı çıkarma işlemi başarısız oldu!");
+        }
     }
 }

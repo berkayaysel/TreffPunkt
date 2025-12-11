@@ -176,7 +176,104 @@ body {
 .btn-delete:hover {
     background-color: #cc0000;
 }
+/* Katılımcılar Listesi Stilleri */
+.participants-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
 
+.participant-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+.participant-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.participant-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.participant-avatar-wrapper {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+    min-height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.participant-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.participant-avatar[src] {
+    opacity: 1;
+}
+
+.participant-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.participant-name {
+    font-weight: bold;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.participant-email {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.btn-remove-participant {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+}
+
+.btn-remove-participant:hover {
+    background-color: #cc0000;
+}
+
+.btn-remove-participant i {
+    font-size: 0.9rem;
+}
 .btn-leave {
     background-color: #ff9800;
     color: white;
