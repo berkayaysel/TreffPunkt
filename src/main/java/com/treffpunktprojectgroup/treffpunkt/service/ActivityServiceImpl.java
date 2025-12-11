@@ -9,9 +9,12 @@ import com.treffpunktprojectgroup.treffpunkt.repository.ActivityRepository;
 import com.treffpunktprojectgroup.treffpunkt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Service
 public class ActivityServiceImpl implements ActivityService{
@@ -91,6 +94,7 @@ public class ActivityServiceImpl implements ActivityService{
 
     @Override
     public List<ActivityResponse> getAllActivities() {
+        purgePastActivities();
         return activityRepository.findAll()
                 .stream()
                 .map(a -> new ActivityResponse(
@@ -112,6 +116,7 @@ public class ActivityServiceImpl implements ActivityService{
 
     @Override
     public List<ActivityResponse> getFilteredActivities(String categoryLabel, Boolean available, String dateOrder) {
+        purgePastActivities();
         com.treffpunktprojectgroup.treffpunkt.enums.Category cat = com.treffpunktprojectgroup.treffpunkt.enums.Category.fromLabel(categoryLabel);
 
         List<Activity> base;
@@ -153,6 +158,8 @@ public class ActivityServiceImpl implements ActivityService{
 
     @Override
     public MyActivitiesResponse getMyActivities(String email) {
+
+        purgePastActivities();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found: " + email));
@@ -256,5 +263,21 @@ public class ActivityServiceImpl implements ActivityService{
         }
         
         return false;
+    }
+
+    @Transactional
+    protected void purgePastActivities() {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        List<Activity> past = activityRepository.findByStartDateBefore(today);
+        List<Activity> todayPast = activityRepository.findByStartDateAndStartTimeBefore(today, now);
+
+        if (!past.isEmpty()) {
+            activityRepository.deleteAll(past);
+        }
+        if (!todayPast.isEmpty()) {
+            activityRepository.deleteAll(todayPast);
+        }
     }
 }

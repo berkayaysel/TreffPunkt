@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Integer> {
@@ -17,4 +19,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
     List<Activity> findByCategory(com.treffpunktprojectgroup.treffpunkt.enums.Category category);
 
     List<Activity> findByCapacityGreaterThan(Integer capacity);
+
+    List<Activity> findByStartDateBefore(LocalDate date);
+    List<Activity> findByStartDateAndStartTimeBefore(LocalDate date, LocalTime time);
 }
