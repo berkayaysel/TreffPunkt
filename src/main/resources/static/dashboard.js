@@ -1,36 +1,148 @@
 // Sayfa tamamen yüklendiğinde çalışır
 window.onload = function() {
+    document.body.classList.add('dashboard-body');
     fetchActivities();
-    setupDetailBackButton();
+    initializeCategoryCarousel();
     setupFilterHandlers();
+    setupDetailBackButton();
 };
 
 let allActivities = [];
 
-function setupFilterHandlers() {
-    document.getElementById('applyFilters').addEventListener('click', applyFilters);
-    document.getElementById('clearFilters').addEventListener('click', () => {
-        document.getElementById('filter-category').value = '';
-        document.getElementById('filter-remaining').checked = false;
-        document.getElementById('filter-date').value = 'asc';
-        renderActivities(allActivities);
+const CATEGORIES = [
+    { id: 1, name: 'Sports & Fitness' },
+    { id: 2, name: 'Social & Fun' },
+    { id: 3, name: 'Arts & Culture' },
+    { id: 4, name: 'Gastronomy & Cooking' },
+    { id: 5, name: 'Nature & Adventure' },
+    { id: 6, name: 'Arts, Crafts & DIY' },
+    { id: 7, name: 'Technology & Innovation' },
+    { id: 8, name: 'Volunteering & Community' },
+    { id: 9, name: 'Wellness & Spirituality' },
+    { id: 10, name: 'Gaming & Competition' },
+    { id: 11, name: 'Music & Performance' },
+    { id: 12, name: 'Family & Kids' },
+    { id: 13, name: 'Shopping & Sustainability' },
+    { id: 14, name: 'Diğer' }
+];
+
+function initializeCategoryCarousel() {
+    const carousel = document.getElementById('category-carousel');
+    if (!carousel) return;
+
+    CATEGORIES.forEach(cat => {
+        const card = document.createElement('div');
+        card.className = 'category-card';
+        card.textContent = cat.name;
+        card.addEventListener('click', () => filterByCategory(cat.name));
+        carousel.appendChild(card);
     });
+
+    // Setup carousel navigation
+    const prevBtn = document.getElementById('category-prev');
+    const nextBtn = document.getElementById('category-next');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            carousel.scrollBy({ left: -160, behavior: 'smooth' });
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            carousel.scrollBy({ left: 160, behavior: 'smooth' });
+        });
+    }
+}
+
+function filterByCategory(categoryName) {
+    const checkbox = document.getElementById('filter-remaining');
+    const params = new URLSearchParams();
+    
+    if (categoryName && categoryName !== '') {
+        params.set('category', categoryName);
+    }
+    if (checkbox && checkbox.checked) {
+        params.set('available', 'true');
+    }
+
+    fetch('/activities?' + params.toString())
+        .then(r => {
+            if (!r.ok) throw new Error('Activities not found');
+            return r.json();
+        })
+        .then(list => {
+            allActivities = list || [];
+            renderActivities(allActivities);
+            
+            // Update active category card
+            const cards = document.querySelectorAll('.category-card');
+            cards.forEach(c => {
+                if (c.textContent === categoryName) {
+                    c.classList.add('active');
+                } else {
+                    c.classList.remove('active');
+                }
+            });
+        })
+        .catch(err => {
+            console.error('Filter error', err);
+            alert('Kategori filtrelemesi yapılırken hata oluştu');
+        });
+}
+
+function setupFilterHandlers() {
+    const filterCheckbox = document.getElementById('filter-remaining');
+    const sortSelect = document.getElementById('filter-date');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.querySelector('.search-btn');
+
+    if (searchBtn) {
+        searchBtn.addEventListener('click', performSearch);
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+    }
+
+    if (filterCheckbox) {
+        filterCheckbox.addEventListener('change', applyFilters);
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener('change', applyFilters);
+    }
+}
+
+function performSearch() {
+    const query = document.getElementById('search-input').value.trim();
+    if (!query) {
+        fetchActivities();
+        return;
+    }
+
+    const filtered = allActivities.filter(activity => 
+        activity.name.toLowerCase().includes(query.toLowerCase()) ||
+        activity.location.toLowerCase().includes(query.toLowerCase()) ||
+        activity.description.toLowerCase().includes(query.toLowerCase())
+    );
+
+    renderActivities(filtered);
 }
 
 function applyFilters() {
-    const cat = document.getElementById('filter-category').value;
     const onlyRemaining = document.getElementById('filter-remaining').checked;
     const dateOrder = document.getElementById('filter-date').value || 'asc';
 
-    // Build query string and request server-side filtered results
     const params = new URLSearchParams();
-    if (cat && cat !== '') params.set('category', cat);
     if (onlyRemaining) params.set('available', 'true');
     if (dateOrder) params.set('dateOrder', dateOrder);
 
     fetch('/activities?' + params.toString())
         .then(r => {
-            if (!r.ok) throw new Error('Filtrelenmiş aktiviteler alınamadı');
+            if (!r.ok) throw new Error('Filtered activities not found');
             return r.json();
         })
         .then(list => {
@@ -94,39 +206,79 @@ function renderActivities(list) {
     }
     emptyMsg && (emptyMsg.style.display = 'none');
 
-    list.forEach(activity => {
+    const colorClasses = ['image-1', 'image-2', 'image-3', 'image-4'];
+
+    list.forEach((activity, index) => {
         const aid = activity.activityId || activity.id;
+        const colorClass = colorClasses[index % colorClasses.length];
+        const isFull = activity.numberOfParticipants >= activity.capacity;
+        
         const cardHTML = `
-            <div class="activity-card">
-                <div class="activity-title">${activity.name || 'Başlıksız Aktivite'}</div>
-                <div class="activity-info">Kategori: ${escapeHtml(activity.category || 'Diğer')}</div>
-                <div class="activity-info">📅 ${formatDateOnly(activity.startDate)}</div>
-                <div class="activity-info">⏰ ${formatTime(activity.startTime)}</div>
-                <div class="activity-info">📍 ${activity.location || 'Konum yok'}</div>
-                <div class="activity-info">👤 ${escapeHtml((activity.creatorName ? activity.creatorName : '') + ' ' + (activity.creatorSurname ? activity.creatorSurname : ''))}</div>
-                <div class="activity-info">👥 ${activity.numberOfParticipants || 0} katılımcı</div>
-                <button class="detail-btn" 
-                        data-id="${aid}"
-                        data-name="${escapeHtml(activity.name)}"
-                        data-loc="${escapeHtml(activity.location)}"
-                        data-date="${activity.startDate || ''}"
-                        data-time="${activity.startTime || ''}"
-                        data-desc="${escapeHtml(activity.description || '')}"
-                        data-capacity="${activity.capacity || ''}"
-                        data-number="${activity.numberOfParticipants || ''}"
-                        data-creator-email="${escapeHtml(activity.creatorEmail || '')}"
-                        data-creator-name="${escapeHtml(activity.creatorName || '')}"
-                        data-creator-surname="${escapeHtml(activity.creatorSurname || '')}"
-                        data-category="${escapeHtml(activity.category || '')}">
-                    Detay
-                </button>
+            <div class="event-card" data-id="${aid}">
+                <div class="event-card-image ${colorClass}">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <div class="event-card-content">
+                    <div class="event-card-header">
+                        <h3 class="event-card-title">${escapeHtml(activity.name || 'Başlıksız Aktivite')}</h3>
+                        <div class="event-card-participants">
+                            <i class="fas fa-users"></i>
+                            <span>${activity.numberOfParticipants || 0} participant${(activity.numberOfParticipants || 0) !== 1 ? 's' : ''}</span>
+                        </div>
+                    </div>
+                    <div class="event-card-footer">
+                        <div class="event-card-footer-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${escapeHtml(activity.location || 'Konum yok')}</span>
+                        </div>
+                        <div class="event-card-footer-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${formatDateOnly(activity.startDate)}</span>
+                        </div>
+                        <div class="event-card-footer-item">
+                            <i class="fas fa-clock"></i>
+                            <span>${formatTime(activity.startTime)}</span>
+                        </div>
+                    </div>
+                    <div class="event-card-bottom">
+                        <div>
+                            <div class="event-host-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="event-host-name">${escapeHtml((activity.creatorName ? activity.creatorName : '') + (activity.creatorSurname ? ' ' + activity.creatorSurname : ''))}</div>
+                        </div>
+                        <button class="join-btn ${isFull ? 'joined' : ''}" 
+                                data-id="${aid}"
+                                data-name="${escapeHtml(activity.name)}"
+                                data-loc="${escapeHtml(activity.location)}"
+                                data-date="${activity.startDate || ''}"
+                                data-time="${activity.startTime || ''}"
+                                data-desc="${escapeHtml(activity.description || '')}"
+                                data-capacity="${activity.capacity || ''}"
+                                data-number="${activity.numberOfParticipants || ''}"
+                                data-creator-email="${escapeHtml(activity.creatorEmail || '')}"
+                                data-creator-name="${escapeHtml(activity.creatorName || '')}"
+                                data-creator-surname="${escapeHtml(activity.creatorSurname || '')}"
+                                data-category="${escapeHtml(activity.category || '')}"
+                                ${isFull ? 'disabled' : ''}>
+                            ${isFull ? 'Full' : 'JOIN'}
+                        </button>
+                    </div>
+                </div>
             </div>
         `;
         container.innerHTML += cardHTML;
     });
 
-    document.querySelectorAll('.detail-btn').forEach(btn => {
-        btn.addEventListener('click', openDetailSection);
+    document.querySelectorAll('.join-btn').forEach(btn => {
+        btn.addEventListener('click', handleJoinClick);
+    });
+
+    document.querySelectorAll('.event-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.join-btn')) return;
+            openDetailSection(card);
+        });
     });
 }
 
@@ -163,23 +315,49 @@ function escapeHtml(str) {
 
 // DETAY BÖLÜMÜ GÖSTERME
 const detailSection = document.getElementById('detail-section');
-const activityContainer = document.getElementById('activity-container');
 const joinBtn = document.getElementById('joinBtn');
 
-function openDetailSection(e) {
-    const btn = e.currentTarget;
-    const id = btn.getAttribute('data-id');
-    const name = btn.getAttribute('data-name') || '';
-    const loc = btn.getAttribute('data-loc') || '';
-    const date = btn.getAttribute('data-date') || '';
-    const time = btn.getAttribute('data-time') || '';
-    const desc = btn.getAttribute('data-desc') || '';
-    const capacity = btn.getAttribute('data-capacity') || '-';
-    const number = btn.getAttribute('data-number') || '-';
-    const creatorEmail = btn.getAttribute('data-creator-email') || '';
-    const creatorName = btn.getAttribute('data-creator-name') || '';
-    const creatorSurname = btn.getAttribute('data-creator-surname') || '';
-    const category = btn.getAttribute('data-category') || '';
+function openDetailSection(cardOrEvent) {
+    let btn, id, name, loc, date, time, desc, capacity, number, creatorEmail, creatorName, creatorSurname, category;
+
+    // Eğer event object ise (click event) - button'dan gelen data kullan
+    if (cardOrEvent.target) {
+        btn = cardOrEvent.currentTarget;
+        id = btn.getAttribute('data-id');
+        name = btn.getAttribute('data-name') || '';
+        loc = btn.getAttribute('data-loc') || '';
+        date = btn.getAttribute('data-date') || '';
+        time = btn.getAttribute('data-time') || '';
+        desc = btn.getAttribute('data-desc') || '';
+        capacity = btn.getAttribute('data-capacity') || '-';
+        number = btn.getAttribute('data-number') || '-';
+        creatorEmail = btn.getAttribute('data-creator-email') || '';
+        creatorName = btn.getAttribute('data-creator-name') || '';
+        creatorSurname = btn.getAttribute('data-creator-surname') || '';
+        category = btn.getAttribute('data-category') || '';
+    } else {
+        // Eğer card element ise (direct click)
+        const card = cardOrEvent;
+        id = card.getAttribute('data-id');
+        
+        // Card'dan data al
+        const title = card.querySelector('.event-card-title');
+        const footerItems = card.querySelectorAll('.event-card-footer-item');
+        const creatorName_ = card.querySelector('.event-host-name');
+        const joinBtn_ = card.querySelector('.join-btn');
+
+        name = title ? title.textContent : '';
+        loc = footerItems[0] ? footerItems[0].textContent.trim() : '';
+        date = footerItems[1] ? footerItems[1].textContent.trim() : '';
+        time = footerItems[2] ? footerItems[2].textContent.trim() : '';
+        capacity = joinBtn_ ? joinBtn_.getAttribute('data-capacity') : '-';
+        number = joinBtn_ ? joinBtn_.getAttribute('data-number') : '-';
+        desc = joinBtn_ ? joinBtn_.getAttribute('data-desc') : '';
+        creatorEmail = joinBtn_ ? joinBtn_.getAttribute('data-creator-email') : '';
+        creatorName = joinBtn_ ? joinBtn_.getAttribute('data-creator-name') : '';
+        creatorSurname = joinBtn_ ? joinBtn_.getAttribute('data-creator-surname') : '';
+        category = joinBtn_ ? joinBtn_.getAttribute('data-category') : '';
+    }
 
     document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
     document.getElementById('detail-location').textContent = loc;
@@ -211,14 +389,61 @@ function openDetailSection(e) {
             });
     }
 
-    // Aktivite listesini gizle, detayı göster
-    activityContainer.style.display = 'none';
-    // hide filter sidebar when showing detail
-    const sidebar = document.getElementById('filter-sidebar');
-    if (sidebar) sidebar.style.display = 'none';
+    const mainContent = document.querySelector('.dashboard-main');
+    if (mainContent) mainContent.style.display = 'none';
     detailSection.style.display = 'block';
     
     // Sayfanın üstüne git
+    window.scrollTo(0, 0);
+}
+
+function handleJoinClick(e) {
+    e.stopPropagation();
+    const btn = e.currentTarget;
+    const id = btn.getAttribute('data-id');
+    const name = btn.getAttribute('data-name') || '';
+    const loc = btn.getAttribute('data-loc') || '';
+    const date = btn.getAttribute('data-date') || '';
+    const time = btn.getAttribute('data-time') || '';
+    const desc = btn.getAttribute('data-desc') || '';
+    const capacity = btn.getAttribute('data-capacity') || '-';
+    const number = btn.getAttribute('data-number') || '-';
+    const creatorEmail = btn.getAttribute('data-creator-email') || '';
+    const creatorName = btn.getAttribute('data-creator-name') || '';
+    const creatorSurname = btn.getAttribute('data-creator-surname') || '';
+    const category = btn.getAttribute('data-category') || '';
+
+    // Detay'ı aç
+    document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
+    document.getElementById('detail-location').textContent = loc;
+    document.getElementById('detail-date').textContent = date;
+    document.getElementById('detail-time').textContent = time;
+    document.getElementById('detail-description').textContent = desc || '(Yok)';
+    document.getElementById('detail-creator').textContent = (creatorName || creatorEmail || '') + (creatorSurname ? (' ' + creatorSurname) : '');
+    document.getElementById('detail-capacity').textContent = capacity;
+    document.getElementById('detail-number').textContent = number;
+    document.getElementById('detail-category').textContent = category || '(Belirtilmemiş)';
+
+    if (joinBtn) {
+        joinBtn.setAttribute('data-current-id', id);
+        fetch('/user-dashboard/profile-info', { credentials: 'include' })
+            .then(r => r.json())
+            .then(profile => {
+                if (creatorEmail === profile.email) {
+                    joinBtn.style.display = 'none';
+                } else {
+                    joinBtn.style.display = 'block';
+                }
+            })
+            .catch(err => {
+                console.error('Email kontrol hatası:', err);
+                joinBtn.style.display = 'block';
+            });
+    }
+
+    const mainContent = document.querySelector('.dashboard-main');
+    if (mainContent) mainContent.style.display = 'none';
+    detailSection.style.display = 'block';
     window.scrollTo(0, 0);
 }
 
@@ -226,47 +451,47 @@ function setupDetailBackButton() {
     const backBtn = document.getElementById('backFromDetail');
     if (backBtn) {
         backBtn.addEventListener('click', () => {
+            const mainContent = document.querySelector('.dashboard-main');
+            if (mainContent) mainContent.style.display = 'block';
             detailSection.style.display = 'none';
-            activityContainer.style.display = 'block';
-            const sidebar = document.getElementById('filter-sidebar');
-            if (sidebar) sidebar.style.display = 'block';
             window.scrollTo(0, 0);
         });
     }
 }
 
 // Join işlemi
-joinBtn && joinBtn.addEventListener('click', function() {
-    const activityId = this.getAttribute('data-current-id');
-    if (!activityId) {
-        alert('Aktivite ID bulunamadı.');
-        return;
-    }
-
-    fetch(`/activities/${activityId}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({})
-    })
-    .then(r => {
-        if (r.ok) {
-            alert('Aktiviteye katılma başarılı!');
-            detailSection.style.display = 'none';
-            activityContainer.style.display = 'block';
-            const sidebar = document.getElementById('filter-sidebar');
-            if (sidebar) sidebar.style.display = 'block';
-            fetchActivities();
-        } else if (r.status === 401) {
-            alert('Yetkisiz erişim. Lütfen giriş yapın.');
-        } else if (r.status === 409) {
-            r.text().then(t => alert('Katılım başarısız: ' + t));
-        } else {
-            r.text().then(t => alert('Katılma isteği başarısız: ' + t));
+if (joinBtn) {
+    joinBtn.addEventListener('click', function() {
+        const activityId = this.getAttribute('data-current-id');
+        if (!activityId) {
+            alert('Aktivite ID bulunamadı.');
+            return;
         }
-    })
-    .catch(err => {
-        console.error('Join hatası', err);
-        alert('Katılma isteği sırasında hata oluştu. Konsolu kontrol edin.');
+
+        fetch(`/activities/${activityId}/join`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({})
+        })
+        .then(r => {
+            if (r.ok) {
+                alert('Aktiviteye katılma başarılı!');
+                const mainContent = document.querySelector('.dashboard-main');
+                if (mainContent) mainContent.style.display = 'block';
+                detailSection.style.display = 'none';
+                fetchActivities();
+            } else if (r.status === 401) {
+                alert('Yetkisiz erişim. Lütfen giriş yapın.');
+            } else if (r.status === 409) {
+                r.text().then(t => alert('Katılım başarısız: ' + t));
+            } else {
+                r.text().then(t => alert('Katılma isteği başarısız: ' + t));
+            }
+        })
+        .catch(err => {
+            console.error('Join hatası', err);
+            alert('Katılma isteği sırasında hata oluştu. Konsolu kontrol edin.');
+        });
     });
-});
+}

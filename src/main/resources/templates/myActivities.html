@@ -1,30 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Activities</title>
-    <link rel="stylesheet" href="/myActivities.css">
+    <title>My Activities - TreffPunkt</title>
+    <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="main-container">
-        <header class="page-header">
-            <a href="/treffpunkt/dashboard" class="icon-btn" id="backBtn">
-                <i class="fas fa-arrow-left"></i> </a>
-            
-            <h1>My Activities</h1>
+    <!-- Main Container with Border -->
+    <div class="my-activities-container">
+        <!-- Simple Header (moved inside container for top alignment) -->
+        <div class="my-activities-header">
+            <a href="/treffpunkt/dashboard" class="back-link">
+                <i class="fas fa-chevron-left"></i>
+                <span>Back</span>
+            </a>
+            <a href="/treffpunkt/createActivity" class="create-event-btn">
+                <span>Create Event</span>
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
 
-            <a href="/treffpunkt/createActivity" class="icon-btn" id="addBtn">
-                <i class="fas fa-plus"></i> </a>
-        </header>
+        <!-- Horizontal Divider Line -->
+        <div class="my-activities-top-line"></div>
 
-        <div id="activities-list" class="activities-grid">
-            <p class="loading-text">Aktiviteler yükleniyor...</p>
+        <!-- Two Column Layout -->
+        <div class="my-activities-content">
+            <!-- Created Events Column -->
+            <div class="activities-column created-column">
+                <h2 class="column-title">Created events</h2>
+                <div id="created-events" class="events-list">
+                    <p class="empty-state">Henüz hiç aktivite oluşturmadınız.</p>
+                </div>
+            </div>
+
+            <!-- Vertical Divider -->
+            <div class="column-divider"></div>
+
+            <!-- Participated Events Column -->
+            <div class="activities-column participated-column">
+                <h2 class="column-title">Participated events</h2>
+                <div id="participated-events" class="events-list">
+                    <p class="empty-state">You haven't participated in any activities yet.</p>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Activity Modal -->
     <div id="activityModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -39,7 +64,7 @@
                 <p><strong>Kapasite:</strong> <span id="modal-capacity">-</span></p>
                 <p><strong>Katılımcı Sayısı:</strong> <span id="modal-number">-</span></p>
                 
-                <!-- Katılımcılar listesi (sadece oluşturan için gösterilecek) -->
+                <!-- Katılımcılar listesi -->
                 <div id="participants-section" style="display: none;">
                     <h3 style="margin-top: 20px; margin-bottom: 10px;">Katılımcılar</h3>
                     <div id="participants-list" class="participants-list">
@@ -56,5 +81,8 @@
     </div>
 
     <script src="/myActivities.js"></script>
+
+</body>
+</html>    <script src="/myActivities.js"></script>
 </body>
 </html>

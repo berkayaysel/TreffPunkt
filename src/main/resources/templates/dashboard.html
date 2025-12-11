@@ -3,76 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TreffPunkt Dashboard</title>
+    <title>TreffPunkt - Create events, meet people around you</title>
     
-    <link rel="stylesheet" href="/dashboard.css">
+    <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="navbar">
-        <a href="/treffpunkt/myActivities" class="nav-btn">My Activities</a>
-
-        <a href="/treffpunkt/profile" class="nav-btn profile-btn">Profile</a>
+    <!-- Header Bar -->
+    <div class="dashboard-header">
+        <a href="/treffpunkt/myActivities" class="dashboard-header-left">
+            <i class="fas fa-calendar-alt"></i>
+            <span>My Activities</span>
+        </a>
+        <a href="/treffpunkt/profile" class="dashboard-profile-btn">
+            <i class="fas fa-user-circle"></i>
+        </a>
     </div>
 
-    <div class="page-wrapper">
-        <aside class="filter-sidebar" id="filter-sidebar">
-            <h3>Filtreler</h3>
+    <div class="dashboard-wrapper">
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Hero Section -->
+            <section class="dashboard-hero">
+                <h1>Create events, meet people around you.</h1>
+                <p class="hero-subtitle">Hurry, seats are filling up!</p>
+            </section>
 
-            <div class="filter-group">
-                <label for="filter-category">Kategori</label>
-                <select id="filter-category">
-                    <option value="">Tümü</option>
-                    <option>Sports & Fitness</option>
-                    <option>Social & Fun</option>
-                    <option>Arts & Culture</option>
-                    <option>Gastronomy & Cooking</option>
-                    <option>Nature & Adventure</option>
-                    <option>Arts, Crafts & DIY</option>
-                    <option>Technology & Innovation</option>
-                    <option>Volunteering & Community</option>
-                    <option>Wellness & Spirituality</option>
-                    <option>Gaming & Competition</option>
-                    <option>Music & Performance</option>
-                    <option>Family & Kids</option>
-                    <option>Shopping & Sustainability</option>
-                    <option>Diğer</option>
-                </select>
-            </div>
+            <!-- Search Bar -->
+            <section class="dashboard-search-section">
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="Search events...">
+                    <button class="search-btn"><i class="fas fa-search"></i> Search</button>
+                </div>
+            </section>
 
-            <div class="filter-group">
-                <label>
-                    <input type="checkbox" id="filter-remaining" /> Sadece boş kontenjan olanlar
+            <!-- Category Carousel -->
+            <section class="dashboard-category-section">
+                <div class="carousel-container">
+                    <button class="carousel-btn prev" id="category-prev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="carousel-scroll" id="category-carousel">
+                        <!-- Categories will be populated by JS -->
+                    </div>
+                    <button class="carousel-btn next" id="category-next">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Filter & Sort Section -->
+            <section class="dashboard-filter-controls">
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="filter-remaining" />
+                    <span>Exclude the events with maximum participants</span>
                 </label>
-            </div>
+                <div class="sort-container">
+                    <label for="filter-date">Sort by</label>
+                    <select id="filter-date" class="sort-select">
+                        <option value="asc">En yakın → En uzak</option>
+                        <option value="desc">En uzak → En yakın</option>
+                    </select>
+                </div>
+            </section>
 
-            <div class="filter-group">
-                <label for="filter-date">Tarih Sırala</label>
-                <select id="filter-date">
-                    <option value="asc">En yakın → En uzak</option>
-                    <option value="desc">En uzak → En yakın</option>
-                </select>
-            </div>
+            <!-- Events Container -->
+            <section class="dashboard-events">
+                <div id="loading-msg" class="loading-msg">
+                    <i class="fas fa-spinner fa-spin"></i> Aktiviteler yükleniyor...
+                </div>
 
-            <div class="filter-actions">
-                <button id="applyFilters" class="btn-apply">Uygula</button>
-                <button id="clearFilters" class="btn-clear">Temizle</button>
-            </div>
-        </aside>
+                <div class="empty-message" id="no-activity-msg" style="display: none;">
+                    <p>Henüz hiç aktivite yok.</p>
+                </div>
 
-        <main class="container" id="activity-container">
-            <div id="loading-msg" style="text-align:center; color:#666; margin-top:20px;">
-                Aktiviteler yükleniyor...
-            </div>
-
-            <div class="empty-message" id="no-activity-msg" style="display: none;">
-                Henüz hiç aktivite yok.
-            </div>
+                <div class="events-grid" id="activity-container">
+                    <!-- Event cards will be populated by JS -->
+                </div>
+            </section>
         </main>
     </div>
 
-    <!-- DETAY BÖLÜMÜ (inline gösterim) -->
+    <!-- Detail Modal (if needed) -->
     <div id="detail-section" class="detail-section" style="display: none;">
         <div class="detail-header">
             <button id="backFromDetail" class="icon-btn">

@@ -54,14 +54,23 @@ document.addEventListener('DOMContentLoaded', function() {
             emailSpan.textContent = data.email;
             birthDateSpan.textContent = data.birthDate ? data.birthDate : '';
             addressSpan.textContent = data.address;
+            
+            // Username'i email'den oluştur
+            const usernameSpan = document.getElementById('profile-username');
+            if (usernameSpan && data.email) {
+                usernameSpan.textContent = data.email.split('@')[0];
+            }
 
             // Profile image (if present) — add cache-buster to ensure immediate reload after upload
             if (data.profileImage) {
                 const sep = data.profileImage.includes('?') ? '&' : '?';
                 profileImg.src = data.profileImage + sep + 't=' + new Date().getTime();
             } else {
-                profileImg.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"></svg>';
+                profileImg.src = '/uploads/profile-images/default-avatar.png';
             }
+            
+            // Event sayılarını getir
+            fetchEventStats();
             
             // Yükleniyor Placeholder'larını kaldır
             nameSpan.classList.remove('loading-placeholder');
@@ -236,4 +245,35 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Resim yüklenirken hata oluştu.');
         });
     });
+    
+    // Event sayılarını getir
+    function fetchEventStats() {
+        fetch('/activities/my-activities', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        })
+        .then(response => {
+            if (!response.ok) return;
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                const createdCount = (data.created || []).length;
+                const joinedCount = (data.joined || []).length;
+                
+                const createdSpan = document.getElementById('created-events-count');
+                const participatedSpan = document.getElementById('participated-events-count');
+                
+                if (createdSpan) createdSpan.textContent = createdCount;
+                if (participatedSpan) participatedSpan.textContent = joinedCount;
+            }
+        })
+        .catch(error => {
+            console.error('Event sayıları alınamadı:', error);
+        });
+    }
+    
+    // Sayfa yüklendiğinde profil bilgilerini getir
+    checkLoginStatusAndFetchProfile();
 });

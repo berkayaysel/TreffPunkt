@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const listContainer = document.getElementById('activities-list');
+    const createdContainer = document.getElementById('created-events');
+    const participatedContainer = document.getElementById('participated-events');
     const modal = document.getElementById('activityModal');
     const closeModalBtn = document.querySelector('.close-modal');
     const deleteBtn = document.getElementById('deleteBtn');
     const leaveBtn = document.getElementById('leaveBtn');
     
     let currentActivityId = null;
-    let isCreatedActivity = false; // Created mi joined mi olduğunu tutacağız
+    let isCreatedActivity = false;
 
     function fetchActivities() {
         fetch('/activities/my-activities', {
@@ -28,104 +29,87 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Hata:', error);
-            listContainer.innerHTML = `<p style="text-align:center; color:red;">${error.message}</p>`;
+            createdContainer.innerHTML = `<p style="text-align:center; color:red;">${error.message}</p>`;
         });
     }
 
     function renderActivities(created, joined) {
-        listContainer.innerHTML = '';
-
-        const createSection = document.createElement('div');
-        createSection.classList.add('section');
-        const joinedSection = document.createElement('div');
-        joinedSection.classList.add('section');
-
-        const createdTitle = document.createElement('h3');
-        createdTitle.textContent = 'Oluşturduğum Aktiviteler';
-        createSection.appendChild(createdTitle);
-
+        // Render Created Events
         if (!created || created.length === 0) {
-            const p = document.createElement('p');
-            p.style.textAlign = 'center';
-            p.textContent = 'Henüz oluşturduğunuz bir aktivite yok.';
-            createSection.appendChild(p);
+            createdContainer.innerHTML = '<p class="empty-state">Henüz hiç aktivite oluşturmadınız.</p>';
         } else {
+            createdContainer.innerHTML = '';
             created.forEach(activity => {
-                const card = document.createElement('div');
-                card.classList.add('activity-card');
-                card.innerHTML = `
-                    <div class="card-info">
-                        <h4>${activity.name}</h4>
-                        <p>${activity.startDate} | ${activity.location}</p>
-                        <p>Kategori: ${activity.category || 'Diğer'}</p>
-                    </div>
-                    <button class="btn-detail" 
-                        data-id="${activity.activityId}" 
-                        data-type="created"
-                        data-name="${activity.name}"
-                        data-category="${activity.category || ''}"
-                        data-loc="${activity.location}"
-                        data-date="${activity.startDate}"
-                        data-time="${activity.startTime}"
-                        data-desc="${activity.description || ''}"
-                        data-capacity="${activity.capacity || ''}"
-                        data-number="${activity.numberOfParticipants || ''}">
-                        Detay
-                    </button>
-                `;
-                createSection.appendChild(card);
+                const card = createEventCard(activity, 'created');
+                createdContainer.appendChild(card);
             });
         }
 
-        const joinedTitle = document.createElement('h3');
-        joinedTitle.textContent = 'Katıldığım Aktiviteler';
-        joinedSection.appendChild(joinedTitle);
-
+        // Render Participated Events
         if (!joined || joined.length === 0) {
-            const p = document.createElement('p');
-            p.style.textAlign = 'center';
-            p.textContent = 'Henüz katıldığınız bir aktivite yok.';
-            joinedSection.appendChild(p);
+            participatedContainer.innerHTML = '<p class="empty-state">You haven\'t participated in any activities yet.</p>';
         } else {
+            participatedContainer.innerHTML = '';
             joined.forEach(activity => {
-                const card = document.createElement('div');
-                card.classList.add('activity-card');
-                card.innerHTML = `
-                    <div class="card-info">
-                        <h4>${activity.name}</h4>
-                        <p>${activity.startDate} | ${activity.location}</p>
-                        <p>Kategori: ${activity.category || 'Diğer'}</p>
-                    </div>
-                    <button class="btn-detail" 
-                        data-id="${activity.activityId}" 
-                        data-type="joined"
-                        data-name="${activity.name}"
-                        data-category="${activity.category || ''}"
-                        data-loc="${activity.location}"
-                        data-date="${activity.startDate}"
-                        data-time="${activity.startTime}"
-                        data-desc="${activity.description || ''}"
-                        data-capacity="${activity.capacity || 0}"
-                        data-number="${activity.numberOfParticipants || 0}">
-                        Detay
-                    </button>
-                `;
-                joinedSection.appendChild(card);
+                const card = createEventCard(activity, 'joined');
+                participatedContainer.appendChild(card);
             });
         }
+    }
 
-        listContainer.appendChild(createSection);
-        listContainer.appendChild(joinedSection);
+    function createEventCard(activity, type) {
+        const card = document.createElement('div');
+        card.className = 'event-item';
+        
+        const info = document.createElement('div');
+        info.className = 'event-item-info';
+        
+        const name = document.createElement('h4');
+        name.className = 'event-item-name';
+        name.textContent = activity.name;
+        
+        const meta = document.createElement('p');
+        meta.className = 'event-item-meta';
+        meta.innerHTML = `
+            <span>${formatDate(activity.startDate)}</span>
+            <span>${activity.location}</span>
+            <span>${activity.category || 'Diğer'}</span>
+        `;
+        
+        info.appendChild(name);
+        info.appendChild(meta);
+        
+        const detailBtn = document.createElement('button');
+        detailBtn.className = 'details-btn';
+        detailBtn.textContent = 'Details';
+        detailBtn.setAttribute('data-id', activity.activityId);
+        detailBtn.setAttribute('data-type', type);
+        detailBtn.setAttribute('data-name', activity.name);
+        detailBtn.setAttribute('data-category', activity.category || '');
+        detailBtn.setAttribute('data-loc', activity.location);
+        detailBtn.setAttribute('data-date', activity.startDate);
+        detailBtn.setAttribute('data-time', activity.startTime);
+        detailBtn.setAttribute('data-desc', activity.description || '');
+        detailBtn.setAttribute('data-capacity', activity.capacity || '0');
+        detailBtn.setAttribute('data-number', activity.numberOfParticipants || '0');
+        detailBtn.addEventListener('click', openModal);
+        
+        card.appendChild(info);
+        card.appendChild(detailBtn);
+        
+        return card;
+    }
 
-        document.querySelectorAll('.btn-detail').forEach(btn => {
-            btn.addEventListener('click', openModal);
-        });
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('tr-TR');
     }
 
     function openModal(event) {
-        const btn = event.target;
+        const btn = event.currentTarget;
         const name = btn.getAttribute('data-name');
-            const category = btn.getAttribute('data-category') || '';
+        const category = btn.getAttribute('data-category') || '';
         const loc = btn.getAttribute('data-loc');
         const date = btn.getAttribute('data-date');
         const time = btn.getAttribute('data-time');
@@ -152,12 +136,22 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             deleteBtn.style.display = 'none';
             leaveBtn.style.display = 'block';
-            // Katılımcı bölümünü gizle
             document.getElementById('participants-section').style.display = 'none';
         }
 
         modal.style.display = 'flex';
     }
+
+    closeModalBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        currentActivityId = null;
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
 
     closeModalBtn.addEventListener('click', () => {
         modal.style.display = 'none';
