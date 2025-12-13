@@ -25,6 +25,9 @@ public class ActivityServiceImpl implements ActivityService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private com.treffpunktprojectgroup.treffpunkt.service.NotificationService notificationService;
+
     @Override
     public boolean joinActivity(String email, Integer activityId) {
         // Kullanıcıyı email ile buluyoruz
@@ -193,6 +196,13 @@ public class ActivityServiceImpl implements ActivityService{
             Activity activity = activityOptional.get();
 
             if (activity.getCreator() != null && activity.getCreator().getEmail().equals(email)) {
+                // notify participants before deleting
+                    try {
+                        notificationService.sendActivityDeletedNotifications(activity, activity.getCreator());
+                    } catch (Exception ex) {
+                        // ignore notification errors
+                    }
+
                 // Delete activity
                 activityRepository.deleteById(activityId);
                 return true;
@@ -257,7 +267,11 @@ public class ActivityServiceImpl implements ActivityService{
             activityRepository.save(activity);
             
             // TODO: Burada çıkarılan kullanıcıya bildirim gönderilebilir
-            // notificationService.sendRemovedFromActivityNotification(participant, activity);
+            try {
+                notificationService.sendRemovedFromActivityNotification(participant, activity, activity.getCreator());
+            } catch (Exception ex) {
+                // ignore
+            }
             
             return true;
         }

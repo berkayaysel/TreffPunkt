@@ -855,6 +855,66 @@ body.dashboard-body {
     font-size: 22px;
 }
 
+/* Notification / bell styles (moved from inline in dashboard.html) */
+.dashboard-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-bell {
+    position: relative;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.notification-badge {
+    background: #e74c3c;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 12px;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Fixed right-side notification panel */
+.notification-dropdown {
+    display: none;
+    position: fixed;
+    right: 12px;
+    top: 80px;
+    width: 320px;
+    max-height: calc(100vh - 160px);
+    overflow: auto;
+    background: #fafafa;
+    border: 1px solid #e2e6ea;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    padding: 8px;
+    z-index: 1200;
+}
+
+.notification-dropdown.open { display: block; }
+.notification-dropdown .panel-header { display:flex; justify-content:space-between; align-items:center; padding:6px 8px; border-bottom:1px solid #eee; margin-bottom:8px; }
+.notification-dropdown ul { list-style: none; padding: 0; margin: 0; }
+.notification-dropdown li { padding: 12px; display: block; background: #fff; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
+.notif-item { cursor: pointer; }
+.notif-title { font-weight: 700; margin-bottom: 6px; font-size: 14px; }
+.notif-body { color: #333; margin-bottom: 8px; font-size: 13px; }
+.notif-meta { color: #888; font-size: 12px; display:flex; justify-content:space-between; align-items:center; }
+.notif-dismiss { background: transparent; border: none; font-size: 18px; color: #bbb; cursor: pointer; }
+.notif-dismiss:hover { color: #666; }
+
+
 .dashboard-profile-btn {
     font-size: 32px;
     color: white;
