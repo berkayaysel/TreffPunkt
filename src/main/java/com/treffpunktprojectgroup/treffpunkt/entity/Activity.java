@@ -91,6 +91,9 @@ public class Activity {
     @JsonIgnore
     private Set<User> discardedUsers = new HashSet<>();
 
+    @Column(name = "is_completed", nullable = false)
+    private Boolean isCompleted = false;
+
     public Integer getActivityId() {
         return activityId;
     }
@@ -181,6 +184,14 @@ public class Activity {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(Boolean completed) {
+        isCompleted = completed;
     }
 
     public Activity() {

@@ -34,7 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
             Notification n = new Notification(u, "ACTIVITY_DELETED", activity, msg);
             notificationRepository.save(n);
             try {
-                messagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notifications", new NotificationDTO(n.getId(), n.getMessage(), activity.getActivityId(), activity.getName(), activity.getLocation(), initiatorName, n.getTimestamp(), n.getRead()));
+                messagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notifications", new NotificationDTO(n.getId(), n.getMessage(), activity.getActivityId(), activity.getName(), activity.getLocation(), initiatorName, n.getTimestamp(), n.getRead(), null));
             } catch (Exception ex) {
                 // ignore: user might be offline
             }

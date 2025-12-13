@@ -130,6 +130,11 @@ public class ActivityServiceImpl implements ActivityService{
         return activityRepository.findAll()
                 .stream()
                 .filter(a -> {
+                    Boolean completed = a.isCompleted();
+                    // null kabul: eski kayıtlar için tamamlanmamış say
+                    return completed == null || !completed;
+                }) // Tamamlanan aktiviteleri gösterme
+                .filter(a -> {
                     if (currentUserEmail == null) return true;
                     return a.getCreator() == null || !currentUserEmail.equals(a.getCreator().getEmail());
                 })
@@ -149,6 +154,7 @@ public class ActivityServiceImpl implements ActivityService{
                     );
                     ar.setCategory(a.getCategory() != null ? a.getCategory().getLabel() : null);
                     ar.setIsDiscarded(currentUser != null && a.isUserDiscarded(currentUser));
+                    ar.setIsCompleted(a.isCompleted());
                     return ar;
                 })
                 .toList();
@@ -166,6 +172,15 @@ public class ActivityServiceImpl implements ActivityService{
         } else {
             base = activityRepository.findAll();
         }
+
+        // Tamamlanan aktiviteleri filtrele
+        base = base.stream()
+                .filter(a -> {
+                    Boolean completed = a.isCompleted();
+                    // null ise tamamlanmamış kabul et
+                    return completed == null || !completed;
+                })
+                .toList();
 
         // Filter out activities created by current user
         if (currentUserEmail != null) {
