@@ -80,6 +80,28 @@
         </div>
     </div>
 
+    <!-- Removal Reason Modal -->
+    <div id="removalReasonModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" onclick="closeRemovalReasonModal()">&times;</span>
+            <h2>Çıkarma Sebebi</h2>
+            
+            <div class="modal-body">
+                <p style="margin-bottom: 15px;">Lütfen bu katılımcıyı neden çıkardığınızı belirtin:</p>
+                <textarea id="removalReasonText" 
+                          placeholder="Sebep yazın..." 
+                          style="width: 100%; min-height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"
+                          required></textarea>
+                <p id="removalReasonError" style="color: red; display: none; margin-top: 5px;">Lütfen bir sebep giriniz!</p>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="closeRemovalReasonModal()" class="btn-cancel" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">İptal</button>
+                <button onclick="confirmRemoval()" class="btn-confirm" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Çıkar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script src="/notifications.js"></script>

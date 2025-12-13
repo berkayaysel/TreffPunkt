@@ -13,9 +13,9 @@ public interface ActivityService {
     List<ActivityResponse> getAllActivities();
     // Returns activities for the main dashboard, excluding activities created by the given email (if email!=null)
     List<ActivityResponse> getDashboardActivities(String currentUserEmail);
-    List<ActivityResponse> getFilteredActivities(String categoryLabel, Boolean available, String dateOrder);
+    List<ActivityResponse> getFilteredActivities(String categoryLabel, Boolean available, String dateOrder, String currentUserEmail);
     MyActivitiesResponse getMyActivities(String email);
     boolean deleteActivity(String email, Integer activityId);
     List<ParticipantDTO> getActivityParticipants(Integer activityId);
-    boolean removeParticipantFromActivity(String creatorEmail, Integer activityId, Integer participantUserId);
+    boolean removeParticipantFromActivity(String creatorEmail, Integer activityId, Integer participantUserId, String reason);
 }

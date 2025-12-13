@@ -42,13 +42,13 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendRemovedFromActivityNotification(User user, Activity activity, User initiator) {
+    public void sendRemovedFromActivityNotification(User user, Activity activity, User initiator, String reason) {
         String initiatorName = initiator != null ? (initiator.getName() != null ? initiator.getName() : initiator.getEmail()) : null;
         String msg = initiatorName + " sizi '" + (activity.getName() != null ? activity.getName() : "etkinlik") + "' (" + (activity.getLocation() != null ? activity.getLocation() : "bilinmeyen konum") + ") etkinliğinden çıkardı.";
-        Notification n = new Notification(user, "REMOVED_FROM_ACTIVITY", activity, msg);
+        Notification n = new Notification(user, "REMOVED_FROM_ACTIVITY", activity, msg, reason);
         notificationRepository.save(n);
         try {
-            messagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/notifications", new NotificationDTO(n.getId(), n.getMessage(), activity.getActivityId(), activity.getName(), activity.getLocation(), initiatorName, n.getTimestamp(), n.getRead()));
+            messagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/notifications", new NotificationDTO(n.getId(), n.getMessage(), activity.getActivityId(), activity.getName(), activity.getLocation(), initiatorName, n.getTimestamp(), n.getRead(), reason));
         } catch (Exception ex) {
             // offline
         }
@@ -68,7 +68,8 @@ public class NotificationServiceImpl implements NotificationService {
                 n.getActivity() != null ? n.getActivity().getLocation() : null,
                 n.getUser() != null ? (n.getUser().getName() != null ? n.getUser().getName() : n.getUser().getEmail()) : null,
                 n.getTimestamp(),
-                n.getRead()))
+                n.getRead(),
+                n.getRemovalReason()))
             .collect(Collectors.toList());
         }
 

@@ -63,9 +63,11 @@ public class ActivityController {
     public ResponseEntity<List<ActivityResponse>> getFilteredActivities(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Boolean available,
-            @RequestParam(required = false) String dateOrder
+            @RequestParam(required = false) String dateOrder,
+            Principal principal
     ) {
-        return ResponseEntity.ok(activityService.getFilteredActivities(category, available, dateOrder));
+        String email = principal != null ? principal.getName() : null;
+        return ResponseEntity.ok(activityService.getFilteredActivities(category, available, dateOrder, email));
     }
 
     @GetMapping("/my-activities")
@@ -98,6 +100,7 @@ public class ActivityController {
     public ResponseEntity<String> removeParticipant(
             @PathVariable Integer activityId,
             @PathVariable Integer userId,
+            @RequestParam(required = false) String reason,
             Principal principal
     ) {
         if (principal == null) {
@@ -105,7 +108,7 @@ public class ActivityController {
         }
 
         String creatorEmail = principal.getName();
-        boolean removed = activityService.removeParticipantFromActivity(creatorEmail, activityId, userId);
+        boolean removed = activityService.removeParticipantFromActivity(creatorEmail, activityId, userId, reason);
 
         if (removed) {
             return ResponseEntity.ok("Katılımcı başarıyla çıkarıldı!");

@@ -279,22 +279,46 @@ document.addEventListener('DOMContentLoaded', function() {
         participantsSection.style.display = 'block';
     }
 
+    let pendingRemoval = null;
+
     function removeParticipant(event) {
         const btn = event.currentTarget;
         const userId = btn.getAttribute('data-user-id');
         const activityId = btn.getAttribute('data-activity-id');
         
-        if (!confirm("Bu katılımcıyı aktiviteden çıkarmak istediğinize emin misiniz?")) {
+        // Store the removal data and show modal
+        pendingRemoval = { userId, activityId };
+        document.getElementById('removalReasonModal').style.display = 'flex';
+        document.getElementById('removalReasonText').value = '';
+        document.getElementById('removalReasonError').style.display = 'none';
+    }
+
+    // Add these functions to global scope
+    window.closeRemovalReasonModal = function() {
+        document.getElementById('removalReasonModal').style.display = 'none';
+        pendingRemoval = null;
+    };
+
+    window.confirmRemoval = function() {
+        const reason = document.getElementById('removalReasonText').value.trim();
+        
+        if (!reason) {
+            document.getElementById('removalReasonError').style.display = 'block';
             return;
         }
         
-        fetch(`/activities/${activityId}/participants/${userId}`, {
+        if (!pendingRemoval) return;
+        
+        const { userId, activityId } = pendingRemoval;
+        
+        fetch(`/activities/${activityId}/participants/${userId}?reason=${encodeURIComponent(reason)}`, {
             method: 'DELETE',
             credentials: 'include'
         })
         .then(response => {
             if(response.ok) {
                 alert("Katılımcı başarıyla çıkarıldı!");
+                closeRemovalReasonModal();
                 // Katılımcıları yeniden yükle
                 fetchParticipants(activityId);
                 // Aktiviteleri de güncelle (katılımcı sayısı değişti)
@@ -307,5 +331,5 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Katılımcı çıkarma hatası:", error);
             alert("Hata: " + error.message);
         });
-    }
+    };
 });

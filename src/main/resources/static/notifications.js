@@ -27,6 +27,29 @@ function showToast(text) {
     setTimeout(() => { t.classList.remove('visible'); setTimeout(() => t.remove(), 400); }, 5000);
 }
 
+function showRemovalReasonPopup(reason) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:10000;';
+    
+    const popup = document.createElement('div');
+    popup.style.cssText = 'background:white;padding:30px;border-radius:8px;max-width:500px;width:90%;box-shadow:0 4px 15px rgba(0,0,0,0.2);';
+    
+    popup.innerHTML = `
+        <h3 style="margin:0 0 15px 0;color:#333;">Çıkarılma Sebebi</h3>
+        <div style="padding:15px;background:#f8f9fa;border-radius:4px;border-left:4px solid #dc3545;margin-bottom:20px;">
+            <p style="margin:0;color:#495057;line-height:1.5;">${reason}</p>
+        </div>
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="background:#007bff;color:white;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;font-size:14px;">Kapat</button>
+    `;
+    
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.remove();
+    });
+}
+
 function prependNotificationToList(n) {
     const ul = document.getElementById('notification-list');
     if (!ul) return;
@@ -45,9 +68,17 @@ function prependNotificationToList(n) {
                     </div>
                 </div>
         `;
-        // navigate on clicking body
-        li.querySelector('.notif-title').addEventListener('click', (e) => { e.stopPropagation(); window.location.href = '/treffpunkt/activities/' + (n.activityId || ''); });
-        li.querySelector('.notif-body').addEventListener('click', (e) => { e.stopPropagation(); window.location.href = '/treffpunkt/activities/' + (n.activityId || ''); });
+        // Show removal reason if exists on click
+        const clickHandler = (e) => { 
+            e.stopPropagation(); 
+            if (n.removalReason) {
+                showRemovalReasonPopup(n.removalReason);
+            } else {
+                window.location.href = '/treffpunkt/activities/' + (n.activityId || ''); 
+            }
+        };
+        li.querySelector('.notif-title').addEventListener('click', clickHandler);
+        li.querySelector('.notif-body').addEventListener('click', clickHandler);
         const btn = li.querySelector('.notif-dismiss');
         btn.addEventListener('click', async (ev) => {
                 ev.stopPropagation();
@@ -95,8 +126,18 @@ async function loadNotifications() {
                         `;
                         const dismiss = li.querySelector('.notif-dismiss');
                         dismiss.addEventListener('click', async (ev) => { ev.stopPropagation(); try { await fetch('/treffpunkt/notifications/' + n.id + '/read', { method: 'POST' }); } catch(e){} li.remove(); updateBadgeCount(-1); });
-                        li.querySelector('.notif-title').addEventListener('click', (e) => { e.stopPropagation(); window.location.href = '/treffpunkt/activities/' + (n.activityId || ''); });
-                        li.querySelector('.notif-body').addEventListener('click', (e) => { e.stopPropagation(); window.location.href = '/treffpunkt/activities/' + (n.activityId || ''); });
+                        
+                        const clickHandler = (e) => { 
+                            e.stopPropagation(); 
+                            if (n.removalReason) {
+                                showRemovalReasonPopup(n.removalReason);
+                            } else {
+                                window.location.href = '/treffpunkt/activities/' + (n.activityId || ''); 
+                            }
+                        };
+                        li.querySelector('.notif-title').addEventListener('click', clickHandler);
+                        li.querySelector('.notif-body').addEventListener('click', clickHandler);
+                        
                         ul.appendChild(li);
                         if (!n.read) unread++;
                 });

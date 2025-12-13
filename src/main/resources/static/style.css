@@ -1327,6 +1327,16 @@ body.dashboard-body {
     cursor: not-allowed;
 }
 
+.join-btn.discarded-btn {
+    background: #dc3545;
+    cursor: not-allowed;
+}
+
+.event-card.discarded-card {
+    opacity: 0.7;
+    border: 2px solid #dc3545;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .dashboard-hero h1 {

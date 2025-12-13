@@ -11,10 +11,11 @@ public class NotificationDTO {
     private String initiatorName;
     private LocalDateTime timestamp;
     private Boolean read;
+    private String removalReason;
 
     public NotificationDTO() {}
 
-    public NotificationDTO(Long id, String message, Integer activityId, String activityName, String activityLocation, String initiatorName, LocalDateTime timestamp, Boolean read) {
+    public NotificationDTO(Long id, String message, Integer activityId, String activityName, String activityLocation, String initiatorName, LocalDateTime timestamp, Boolean read, String removalReason) {
         this.id = id;
         this.message = message;
         this.activityId = activityId;
@@ -23,6 +24,7 @@ public class NotificationDTO {
         this.initiatorName = initiatorName;
         this.timestamp = timestamp;
         this.read = read;
+        this.removalReason = removalReason;
     }
 
     public Long getId() { return id; }
@@ -33,4 +35,5 @@ public class NotificationDTO {
     public String getInitiatorName() { return initiatorName; }
     public LocalDateTime getTimestamp() { return timestamp; }
     public Boolean getRead() { return read; }
+    public String getRemovalReason() { return removalReason; }
 }

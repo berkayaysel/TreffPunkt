@@ -55,9 +55,19 @@ function initializeCategoryCarousel() {
     }
 }
 
+let activeCategory = null; // Track the currently active category
+
 function filterByCategory(categoryName) {
     const checkbox = document.getElementById('filter-remaining');
     const params = new URLSearchParams();
+    
+    // If the same category is clicked again, remove the filter
+    if (activeCategory === categoryName) {
+        activeCategory = null;
+        categoryName = null;
+    } else {
+        activeCategory = categoryName;
+    }
     
     if (categoryName && categoryName !== '') {
         params.set('category', categoryName);
@@ -78,7 +88,7 @@ function filterByCategory(categoryName) {
             // Update active category card
             const cards = document.querySelectorAll('.category-card');
             cards.forEach(c => {
-                if (c.textContent === categoryName) {
+                if (c.textContent === activeCategory) {
                     c.classList.add('active');
                 } else {
                     c.classList.remove('active');
@@ -212,9 +222,10 @@ function renderActivities(list) {
         const aid = activity.activityId || activity.id;
         const colorClass = colorClasses[index % colorClasses.length];
         const isFull = activity.numberOfParticipants >= activity.capacity;
+        const isDiscarded = activity.isDiscarded === true;
         
         const cardHTML = `
-            <div class="event-card" data-id="${aid}">
+            <div class="event-card ${isDiscarded ? 'discarded-card' : ''}" data-id="${aid}" data-discarded="${isDiscarded}">
                 <div class="event-card-image ${colorClass}">
                     <i class="fas fa-calendar"></i>
                 </div>
@@ -247,7 +258,7 @@ function renderActivities(list) {
                             </div>
                             <div class="event-host-name">${escapeHtml((activity.creatorName ? activity.creatorName : '') + (activity.creatorSurname ? ' ' + activity.creatorSurname : ''))}</div>
                         </div>
-                        <button class="join-btn ${isFull ? 'joined' : ''}" 
+                        <button class="join-btn ${isFull ? 'joined' : ''} ${isDiscarded ? 'discarded-btn' : ''}" 
                                 data-id="${aid}"
                                 data-name="${escapeHtml(activity.name)}"
                                 data-loc="${escapeHtml(activity.location)}"
@@ -260,8 +271,8 @@ function renderActivities(list) {
                                 data-creator-name="${escapeHtml(activity.creatorName || '')}"
                                 data-creator-surname="${escapeHtml(activity.creatorSurname || '')}"
                                 data-category="${escapeHtml(activity.category || '')}"
-                                ${isFull ? 'disabled' : ''}>
-                            ${isFull ? 'Full' : 'JOIN'}
+                                ${isFull || isDiscarded ? 'disabled' : ''}>
+                            ${isDiscarded ? 'DISCARDED' : (isFull ? 'Full' : 'JOIN')}
                         </button>
                     </div>
                 </div>
@@ -318,7 +329,7 @@ const detailSection = document.getElementById('detail-section');
 const joinBtn = document.getElementById('joinBtn');
 
 function openDetailSection(cardOrEvent) {
-    let btn, id, name, loc, date, time, desc, capacity, number, creatorEmail, creatorName, creatorSurname, category;
+    let btn, id, name, loc, date, time, desc, capacity, number, creatorEmail, creatorName, creatorSurname, category, isDiscarded = false;
 
     // Eğer event object ise (click event) - button'dan gelen data kullan
     if (cardOrEvent.target) {
@@ -339,6 +350,7 @@ function openDetailSection(cardOrEvent) {
         // Eğer card element ise (direct click)
         const card = cardOrEvent;
         id = card.getAttribute('data-id');
+        isDiscarded = card.getAttribute('data-discarded') === 'true';
         
         // Card'dan data al
         const title = card.querySelector('.event-card-title');
@@ -372,21 +384,26 @@ function openDetailSection(cardOrEvent) {
     if (joinBtn) {
         joinBtn.setAttribute('data-current-id', id);
         
-        // Kullanıcının email'ini principal'dan alalım
-        fetch('/user-dashboard/profile-info', { credentials: 'include' })
-            .then(r => r.json())
-            .then(profile => {
-                // Eğer bu aktivite kendi aktivitesiyse, Join butonunu gizle
-                if (creatorEmail === profile.email) {
-                    joinBtn.style.display = 'none';
-                } else {
-                    joinBtn.style.display = 'block';
-                }
-            })
-            .catch(err => {
-                console.error('Email kontrol hatası:', err);
-                joinBtn.style.display = 'block'; // Hata durumunda göster
-            });
+        // Eğer discard edilmişse butonu gizle
+        if (isDiscarded) {
+            joinBtn.style.display = 'none';
+        } else {
+            // Kullanıcının email'ini principal'dan alalım
+            fetch('/user-dashboard/profile-info', { credentials: 'include' })
+                .then(r => r.json())
+                .then(profile => {
+                    // Eğer bu aktivite kendi aktivitesiyse, Join butonunu gizle
+                    if (creatorEmail === profile.email) {
+                        joinBtn.style.display = 'none';
+                    } else {
+                        joinBtn.style.display = 'block';
+                    }
+                })
+                .catch(err => {
+                    console.error('Email kontrol hatası:', err);
+                    joinBtn.style.display = 'block'; // Hata durumunda göster
+                });
+        }
     }
 
     const mainContent = document.querySelector('.dashboard-main');

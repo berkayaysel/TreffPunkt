@@ -50,6 +50,11 @@ public class ActivityServiceImpl implements ActivityService{
                 return false;
             }
 
+            // Çıkarılmış kullanıcı mı kontrol et
+            if (activity.isUserDiscarded(user)) {
+                return false; // Çıkarılan kullanıcılar tekrar katılamaz
+            }
+
             // Kapasite var mı?
             if (activity.getCapacity() > 0) {
                 activity.getParticipants().add(user);
@@ -120,13 +125,16 @@ public class ActivityServiceImpl implements ActivityService{
     @Override
     public List<ActivityResponse> getDashboardActivities(String currentUserEmail) {
         purgePastActivities();
+        User currentUser = currentUserEmail != null ? userRepository.findByEmail(currentUserEmail).orElse(null) : null;
+        
         return activityRepository.findAll()
                 .stream()
                 .filter(a -> {
                     if (currentUserEmail == null) return true;
                     return a.getCreator() == null || !currentUserEmail.equals(a.getCreator().getEmail());
                 })
-                .map(a -> new ActivityResponse(
+                .map(a -> {
+                    ActivityResponse ar = new ActivityResponse(
                         a.getActivityId(),
                         a.getName(),
                         a.getLocation(),
@@ -138,14 +146,18 @@ public class ActivityServiceImpl implements ActivityService{
                         a.getCreator() != null ? a.getCreator().getEmail() : null,
                         a.getCreator() != null ? a.getCreator().getName() : null,
                         a.getCreator() != null ? a.getCreator().getSurname() : null
-                ))
-                .peek(ar -> ar.setCategory(activityRepository.findById(ar.getActivityId()).map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
+                    );
+                    ar.setCategory(a.getCategory() != null ? a.getCategory().getLabel() : null);
+                    ar.setIsDiscarded(currentUser != null && a.isUserDiscarded(currentUser));
+                    return ar;
+                })
                 .toList();
     }
 
     @Override
-    public List<ActivityResponse> getFilteredActivities(String categoryLabel, Boolean available, String dateOrder) {
+    public List<ActivityResponse> getFilteredActivities(String categoryLabel, Boolean available, String dateOrder, String currentUserEmail) {
         purgePastActivities();
+        User currentUser = currentUserEmail != null ? userRepository.findByEmail(currentUserEmail).orElse(null) : null;
         com.treffpunktprojectgroup.treffpunkt.enums.Category cat = com.treffpunktprojectgroup.treffpunkt.enums.Category.fromLabel(categoryLabel);
 
         List<Activity> base;
@@ -153,6 +165,13 @@ public class ActivityServiceImpl implements ActivityService{
             base = activityRepository.findByCategory(cat);
         } else {
             base = activityRepository.findAll();
+        }
+
+        // Filter out activities created by current user
+        if (currentUserEmail != null) {
+            base = base.stream()
+                    .filter(a -> a.getCreator() == null || !currentUserEmail.equals(a.getCreator().getEmail()))
+                    .toList();
         }
 
         // available filter
@@ -181,6 +200,7 @@ public class ActivityServiceImpl implements ActivityService{
         return base.stream().map(a -> {
             ActivityResponse ar = new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null);
             ar.setCategory(a.getCategory() != null ? a.getCategory().getLabel() : null);
+            ar.setIsDiscarded(currentUser != null && a.isUserDiscarded(currentUser));
             return ar;
         }).toList();
     }
@@ -259,7 +279,7 @@ public class ActivityServiceImpl implements ActivityService{
     }
 
     @Override
-    public boolean removeParticipantFromActivity(String creatorEmail, Integer activityId, Integer participantUserId) {
+    public boolean removeParticipantFromActivity(String creatorEmail, Integer activityId, Integer participantUserId, String reason) {
         // Aktiviteyi bul
         Optional<Activity> activityOptional = activityRepository.findById(activityId);
         
@@ -290,11 +310,14 @@ public class ActivityServiceImpl implements ActivityService{
             activity.setCapacity(activity.getCapacity() + 1);
             activity.setNumberOfParticipant(activity.getNumberOfParticipant() - 1);
             
+            // Çıkarılan kullanıcıları discarded listesine ekle
+            activity.addDiscardedUser(participant);
+            
             activityRepository.save(activity);
             
-            // TODO: Burada çıkarılan kullanıcıya bildirim gönderilebilir
+            // Çıkarma sebebi ile birlikte bildirim gönder
             try {
-                notificationService.sendRemovedFromActivityNotification(participant, activity, activity.getCreator());
+                notificationService.sendRemovedFromActivityNotification(participant, activity, activity.getCreator(), reason);
             } catch (Exception ex) {
                 // ignore
             }

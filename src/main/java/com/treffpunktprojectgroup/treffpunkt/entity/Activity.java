@@ -82,6 +82,15 @@ public class Activity {
     @JsonIgnore
     private Set<User> participants = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "activity_discarded_users",
+            joinColumns = @JoinColumn(name = "activity_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonIgnore
+    private Set<User> discardedUsers = new HashSet<>();
+
     public Integer getActivityId() {
         return activityId;
     }
@@ -135,6 +144,12 @@ public class Activity {
     public void addParticipant(User user) { this.participants.add(user); }
 
     public void removeParticipant(User user) { this.participants.remove(user); }
+
+    public Set<User> getDiscardedUsers() { return discardedUsers; }
+
+    public void addDiscardedUser(User user) { this.discardedUsers.add(user); }
+
+    public boolean isUserDiscarded(User user) { return discardedUsers.contains(user); }
 
     public String getDescription() {
         return description;

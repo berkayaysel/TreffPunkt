@@ -17,6 +17,7 @@ public class ActivityResponse {
     private String creatorName;
     private String creatorSurname;
     private String category;
+    private Boolean isDiscarded; // Kullanıcının bu aktiviteden çıkarılıp çıkarılmadığı
 
     public ActivityResponse(Integer activityId, String name, String location, LocalDate startDate, LocalTime startTime, String description, Integer numberOfParticipants, Integer capacity, String creatorEmail, String creatorName, String creatorSurname) {
         this.activityId = activityId;
@@ -127,6 +128,14 @@ public class ActivityResponse {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Boolean getIsDiscarded() {
+        return isDiscarded;
+    }
+
+    public void setIsDiscarded(Boolean isDiscarded) {
+        this.isDiscarded = isDiscarded;
     }
 
     public ActivityResponse() {
