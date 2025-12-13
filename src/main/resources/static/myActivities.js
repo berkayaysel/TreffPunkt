@@ -98,35 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         detailBtn.setAttribute('data-number', activity.numberOfParticipants || '0');
         detailBtn.addEventListener('click', openModal);
         
-        // Katıldığı aktivitelere "Değerlendir" butonu ekle
-        if (type === 'joined') {
-            const ratingBtn = document.createElement('button');
-            ratingBtn.className = 'details-btn';
-            ratingBtn.textContent = 'Değerlendir';
-            ratingBtn.style.background = '#28a745';
-            
-            // Aktivite zamanı geçip geçmediğini kontrol et
-            const activityEndTime = new Date(activity.startDate + 'T' + activity.startTime);
-            const now = new Date();
-            
-            if (now < activityEndTime) {
-                // Zamanı henüz gelmemişse butonu disable et
-                ratingBtn.disabled = true;
-                ratingBtn.style.opacity = '0.5';
-                ratingBtn.style.cursor = 'not-allowed';
-                ratingBtn.title = 'Değerlendirme aktivite zamanı bitikten sonra yapılabilir.';
-            } else {
-                // Zamanı geçmişse normal şekilde çalışsın
-                ratingBtn.addEventListener('click', () => {
-                    openRatingModal(activity.activityId, activity.creatorId);
-                });
-            }
-            
-            buttonsContainer.appendChild(detailBtn);
-            buttonsContainer.appendChild(ratingBtn);
-        } else {
-            buttonsContainer.appendChild(detailBtn);
-        }
+        buttonsContainer.appendChild(detailBtn);
         
         card.appendChild(info);
         card.appendChild(buttonsContainer);
@@ -367,69 +339,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // Rating Modal Functions
-    let pendingRating = null;
-
-    window.openRatingModal = function(activityId, organizerId) {
-        // Zaten rating yapmış mı kontrol et
-        fetch(`/ratings/activity/${activityId}/user-rated`, { credentials: 'include' })
-            .then(r => r.json())
-            .then(hasRated => {
-                if (hasRated) {
-                    alert("Bu aktiviteyi zaten değerlendirmişsiniz!");
-                    return;
-                }
-                
-                pendingRating = { activityId, organizerId };
-                // Rating formunu temizle
-                document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-                document.getElementById('ratingError').style.display = 'none';
-                document.getElementById('ratingModal').style.display = 'flex';
-            });
-    };
-
-    window.closeRatingModal = function() {
-        document.getElementById('ratingModal').style.display = 'none';
-        pendingRating = null;
-    };
-
-    window.submitRating = function() {
-        const org_planning = document.querySelector('input[name="org_planning"]:checked')?.value;
-        const participant_behavior = document.querySelector('input[name="participant_behavior"]:checked')?.value;
-        const incompatibility = document.querySelector('input[name="incompatibility"]:checked')?.value;
-        const reliability = document.querySelector('input[name="reliability"]:checked')?.value;
-
-        if (!org_planning || !participant_behavior || !incompatibility || !reliability) {
-            document.getElementById('ratingError').style.display = 'block';
-            return;
-        }
-
-        if (!pendingRating) return;
-
-        const ratingData = {
-            activityId: pendingRating.activityId,
-            organizerId: pendingRating.organizerId,
-            organizationPlanning: parseInt(org_planning),
-            participantBehavior: parseInt(participant_behavior),
-            incompatibilityIsolation: parseInt(incompatibility),
-            reliabilityConsistency: parseInt(reliability)
-        };
-
-        fetch('/ratings/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify(ratingData)
-        })
-        .then(r => r.text())
-        .then(msg => {
-            alert("Değerlendirme başarıyla kaydedildi!");
-            closeRatingModal();
-            fetchActivities();
-        })
-        .catch(error => {
-            console.error("Rating hatası:", error);
-            alert("Değerlendirme kaydedilemedi: " + error.message);
-        });
-    };
+    // Rating features removed
 });
