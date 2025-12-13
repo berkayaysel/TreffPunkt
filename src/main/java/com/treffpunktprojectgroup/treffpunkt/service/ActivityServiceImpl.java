@@ -345,17 +345,7 @@ public class ActivityServiceImpl implements ActivityService{
 
     @Transactional
     protected void purgePastActivities() {
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
-
-        List<Activity> past = activityRepository.findByStartDateBefore(today);
-        List<Activity> todayPast = activityRepository.findByStartDateAndStartTimeBefore(today, now);
-
-        if (!past.isEmpty()) {
-            activityRepository.deleteAll(past);
-        }
-        if (!todayPast.isEmpty()) {
-            activityRepository.deleteAll(todayPast);
-        }
+        // Pasif edildi: Geçmiş aktiviteler silinmesin ki kullanıcılar değerlendirebilsin
+        // Bu metot artık veri silmiyor; sadece ileride gerekirse temizlik için düzenlenebilir.
     }
 }
