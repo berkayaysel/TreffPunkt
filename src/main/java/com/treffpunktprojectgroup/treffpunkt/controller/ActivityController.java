@@ -54,8 +54,9 @@ public class ActivityController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ActivityResponse>> getAllActivities() {
-        return ResponseEntity.ok(activityService.getAllActivities());
+    public ResponseEntity<List<ActivityResponse>> getAllActivities(Principal principal) {
+        String email = principal != null ? principal.getName() : null;
+        return ResponseEntity.ok(activityService.getDashboardActivities(email));
     }
 
     @GetMapping("")

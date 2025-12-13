@@ -118,6 +118,32 @@ public class ActivityServiceImpl implements ActivityService{
     }
 
     @Override
+    public List<ActivityResponse> getDashboardActivities(String currentUserEmail) {
+        purgePastActivities();
+        return activityRepository.findAll()
+                .stream()
+                .filter(a -> {
+                    if (currentUserEmail == null) return true;
+                    return a.getCreator() == null || !currentUserEmail.equals(a.getCreator().getEmail());
+                })
+                .map(a -> new ActivityResponse(
+                        a.getActivityId(),
+                        a.getName(),
+                        a.getLocation(),
+                        a.getStartDate(),
+                        a.getStartTime(),
+                        a.getDescription(),
+                        a.getNumberOfParticipant(),
+                        a.getCapacity(),
+                        a.getCreator() != null ? a.getCreator().getEmail() : null,
+                        a.getCreator() != null ? a.getCreator().getName() : null,
+                        a.getCreator() != null ? a.getCreator().getSurname() : null
+                ))
+                .peek(ar -> ar.setCategory(activityRepository.findById(ar.getActivityId()).map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
+                .toList();
+    }
+
+    @Override
     public List<ActivityResponse> getFilteredActivities(String categoryLabel, Boolean available, String dateOrder) {
         purgePastActivities();
         com.treffpunktprojectgroup.treffpunkt.enums.Category cat = com.treffpunktprojectgroup.treffpunkt.enums.Category.fromLabel(categoryLabel);
