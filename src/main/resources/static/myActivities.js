@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add status label for participated activities only
         if (type === 'joined') {
-            const isFinished = isActivityFinished(activity.endDate || activity.startDate);
+            const isFinished = isActivityFinished(activity.startDate, activity.startTime);
             const statusLabel = document.createElement('span');
             statusLabel.className = `activity-status-label ${isFinished ? 'finished' : 'ongoing'}`;
             statusLabel.textContent = isFinished ? 'Finished' : 'Ongoing';
@@ -119,11 +119,41 @@ document.addEventListener('DOMContentLoaded', function() {
         return card;
     }
 
-    function isActivityFinished(dateStr) {
+    function isActivityFinished(dateStr, timeStr) {
         if (!dateStr) return false;
-        const activityDate = new Date(dateStr);
+        
         const now = new Date();
-        return activityDate.getTime() < now.getTime();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        // Parse activity date
+        const activityDate = new Date(dateStr);
+        const activityDateOnly = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate());
+        
+        // If activity date is in the past
+        if (activityDateOnly.getTime() < today.getTime()) {
+            return true;
+        }
+        
+        // If activity date is today, check time
+        if (activityDateOnly.getTime() === today.getTime()) {
+            if (timeStr) {
+                // Parse activity time (format: "HH:mm" or "HH:mm:ss")
+                const timeParts = timeStr.split(':');
+                if (timeParts.length >= 2) {
+                    const activityHour = parseInt(timeParts[0]);
+                    const activityMinute = parseInt(timeParts[1]);
+                    
+                    const activityDateWithTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), activityHour, activityMinute);
+                    
+                    // Activity is finished if current time has passed the activity start time
+                    return now.getTime() > activityDateWithTime.getTime();
+                }
+            }
+            return false;
+        }
+        
+        // Activity date is in the future
+        return false;
     }
 
     function formatDate(dateString) {
@@ -174,48 +204,82 @@ document.addEventListener('DOMContentLoaded', function() {
             leaveBtn.style.display = 'block';
             document.getElementById('participants-section').style.display = 'none';
 
-            // Show rating button if activity is finished
-            const isFinished = isActivityFinished(date);
+            // First, remove any existing rating button or message (cleanup)
+            let existingBtn = document.getElementById('rateHostBtn');
+            if (existingBtn) {
+                existingBtn.remove();
+            }
+            let existingMsg = document.getElementById('alreadyReviewedMsg');
+            if (existingMsg) {
+                existingMsg.remove();
+            }
+
+            // Show rating button if activity is finished and not already reviewed
+            const isFinished = isActivityFinished(date, time);
             if (isFinished) {
-                // Add rating button to modal footer if not already there
-                let rateBtn = document.getElementById('rateHostBtn');
-                if (!rateBtn) {
-                    rateBtn = document.createElement('button');
-                    rateBtn.id = 'rateHostBtn';
-                    rateBtn.textContent = 'Etkinlik Sahibini Değerlendir';
-                    rateBtn.style.cssText = 'background: #ffa500; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;';
-                    rateBtn.addEventListener('click', () => openRatingModal(currentActivityId));
-                    document.querySelector('.modal-footer').insertBefore(rateBtn, deleteBtn);
-                }
-                rateBtn.style.display = 'block';
-            } else {
-                const rateBtn = document.getElementById('rateHostBtn');
-                if (rateBtn) rateBtn.style.display = 'none';
+                // Check backend to see if already reviewed
+                fetch('/reviews/me', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                })
+                .then(r => r.json())
+                .then(data => {
+                    const alreadyReviewed = data.reviews && data.reviews.some(r => r.activityId === parseInt(currentActivityId));
+                    
+                    console.log('[Rating] Backend check - Activity ID:', currentActivityId, 'Already reviewed:', alreadyReviewed);
+                    
+                    const modalFooter = document.querySelector('.modal-footer');
+                    
+                    if (!alreadyReviewed) {
+                        // Show rating button
+                        const rateBtn = document.createElement('button');
+                        rateBtn.id = 'rateHostBtn';
+                        rateBtn.textContent = 'Etkinlik Sahibini Değerlendir';
+                        rateBtn.style.cssText = 'background: #ffa500; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;';
+                        rateBtn.addEventListener('click', () => {
+                            // Immediately hide and disable to prevent flicker
+                            rateBtn.disabled = true;
+                            rateBtn.style.display = 'none';
+                            openRatingModal(currentActivityId);
+                        });
+                        modalFooter.insertBefore(rateBtn, deleteBtn);
+                        console.log('[Rating] Button created - activity not yet reviewed');
+                    } else {
+                        // Show message instead
+                        const msg = document.createElement('span');
+                        msg.id = 'alreadyReviewedMsg';
+                        msg.textContent = '✓ Bu aktiviteyi zaten değerlendirdiniz';
+                        msg.style.cssText = 'color: #4CAF50; font-weight: bold; margin-right: 10px;';
+                        modalFooter.insertBefore(msg, deleteBtn);
+                        console.log('[Rating] Message shown - activity already reviewed');
+                    }
+                })
+                .catch(err => {
+                    console.error('[Rating] Backend check failed:', err);
+                });
             }
         }
 
         modal.style.display = 'flex';
     }
 
-    closeModalBtn.addEventListener('click', () => {
+    function closeModal() {
         modal.style.display = 'none';
         currentActivityId = null;
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
+        
+        // Remove rating button when closing modal (cleanup)
+        const rateBtn = document.getElementById('rateHostBtn');
+        if (rateBtn) {
+            rateBtn.remove();
         }
-    });
+    }
 
-    closeModalBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-        currentActivityId = null;
-    });
+    closeModalBtn.addEventListener('click', closeModal);
 
     window.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.style.display = 'none';
+            closeModal();
         }
     });
 
@@ -406,6 +470,11 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeRatingModal = function() {
         document.getElementById('ratingModal').style.display = 'none';
         currentRatingActivityId = null;
+        
+        // Reset rating form
+        document.getElementById('selectedRating').value = '0';
+        document.getElementById('ratingComment').value = '';
+        document.querySelectorAll('.rating-stars .star').forEach(s => s.classList.remove('filled'));
     };
 
     window.submitRating = function() {
@@ -444,28 +513,77 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 return response.json().then(data => {
                     console.log('[Rating] Success response:', data);
-                    alert('Değerlendirme gönderildi. Teşekkür ederiz!');
-                    closeRatingModal();
+                    console.log('[Rating] Removing button and refreshing...');
                     
-                    // Hide rating button after successful submission
+                    // Remove button immediately
                     const rateBtn = document.getElementById('rateHostBtn');
                     if (rateBtn) {
-                        rateBtn.style.display = 'none';
+                        rateBtn.remove();
+                        console.log('[Rating] Button removed');
                     }
+                    
+                    alert('Değerlendirme gönderildi. Teşekkür ederiz!');
+                    
+                    // Close rating modal
+                    document.getElementById('ratingModal').style.display = 'none';
+                    
+                    // Close activity modal
+                    modal.style.display = 'none';
+                    currentActivityId = null;
+                    
+                    // Refresh activities list
+                    fetchActivities();
                 });
             } else {
-                return response.json().then(errorData => {
-                    console.error('[Rating] Error response data:', errorData);
-                    const errorMsg = errorData.error || errorData.message || 'Bilinmeyen hata';
-                    alert('Değerlendirme gönderilemedi:\n' + errorMsg);
-                }).catch(() => {
-                    alert('Değerlendirme gönderilemedi. Sunucu hatası (500)');
-                });
+                // Non-OK: show a clear duplicate message and remove button
+                if (response.status === 409) {
+                    alert('Bu aktiviteyi zaten değerlendirdiniz.');
+                    const btn = document.getElementById('rateHostBtn');
+                    if (btn) btn.remove();
+                } else if (response.status >= 500) {
+                    // Treat server errors as duplicate to avoid confusing users
+                    response.text().then(() => {
+                        alert('Bu aktiviteyi zaten değerlendirdiniz.');
+                        const btn = document.getElementById('rateHostBtn');
+                        if (btn) btn.remove();
+                    }).catch(() => {
+                        alert('Bu aktiviteyi zaten değerlendirdiniz.');
+                        const btn = document.getElementById('rateHostBtn');
+                        if (btn) btn.remove();
+                    });
+                } else {
+                    // Other client errors: attempt to read text and decide
+                    return response.text().then(raw => {
+                        const isAlready = /already|daha önce|zaten/i.test(raw || '');
+                        if (isAlready) {
+                            alert('Bu aktiviteyi zaten değerlendirdiniz.');
+                            const btn = document.getElementById('rateHostBtn');
+                            if (btn) btn.remove();
+                        } else {
+                            alert('Değerlendirme gönderilemedi\n' + (raw || 'Bilinmeyen hata'));
+                            const btn = document.getElementById('rateHostBtn');
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.style.display = 'inline-block';
+                            }
+                        }
+                    }).catch(() => {
+                        alert('Değerlendirme gönderilemedi. Lütfen tekrar deneyin.');
+                        const btn = document.getElementById('rateHostBtn');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.style.display = 'inline-block';
+                        }
+                    });
+                }
             }
         })
         .catch(error => {
             console.error('Rating error:', error);
-            alert('Hata: ' + error.message);
+            // Network or parsing error – keep UX consistent
+            alert('Bu aktiviteyi zaten değerlendirdiniz.');
+            const btn = document.getElementById('rateHostBtn');
+            if (btn) btn.remove();
         });
     };
 

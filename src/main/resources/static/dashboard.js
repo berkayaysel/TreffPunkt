@@ -210,7 +210,31 @@ function renderActivities(list) {
     const container = document.getElementById('activity-container');
     const emptyMsg = document.getElementById('no-activity-msg');
     if (container) container.innerHTML = '';
-    if (!list || list.length === 0) {
+
+    // Filter out activities whose start date-time has already passed
+    const now = new Date();
+    const filtered = (list || []).filter(a => {
+        const dateStr = a.startDate; // expected ISO date or yyyy-MM-dd
+        const timeStr = a.startTime; // expected HH:mm[:ss] or ISO
+        if (!dateStr || !timeStr) return true; // if missing info, keep
+
+        // Build a Date from date + time
+        let start;
+        if (typeof timeStr === 'string' && timeStr.includes('T')) {
+            // full ISO provided
+            start = new Date(timeStr);
+        } else {
+            // combine date and time strings
+            const [y, m, d] = dateStr.split('-');
+            const [hh, mm] = (timeStr || '').split(':');
+            start = new Date(parseInt(y), parseInt(m) - 1, parseInt(d), parseInt(hh || '0'), parseInt(mm || '0'));
+        }
+
+        // Show only activities that haven't started yet (start > now)
+        return start.getTime() > now.getTime();
+    });
+
+    if (!filtered || filtered.length === 0) {
         if (emptyMsg) emptyMsg.style.display = 'block';
         return;
     }
@@ -218,7 +242,7 @@ function renderActivities(list) {
 
     const colorClasses = ['image-1', 'image-2', 'image-3', 'image-4'];
 
-    list.forEach((activity, index) => {
+    filtered.forEach((activity, index) => {
         const aid = activity.activityId || activity.id;
         const colorClass = colorClasses[index % colorClasses.length];
         const isFull = activity.numberOfParticipants >= activity.capacity;
