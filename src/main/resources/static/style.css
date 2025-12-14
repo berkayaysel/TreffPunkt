@@ -1216,14 +1216,14 @@ body.dashboard-body {
 
 .category-card {
     flex-shrink: 0;
-    width: 140px;
+    width: 156px;
     aspect-ratio: 1;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 16px;
+    padding: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid transparent;
@@ -1233,6 +1233,7 @@ body.dashboard-body {
     position: relative;
     background-size: cover; /* photo fill */
     background-position: center;
+    background-repeat: no-repeat;
     background-color: #ddd; /* fallback if no photo */
 }
 
@@ -1629,7 +1630,8 @@ body.dashboard-body {
     }
 
     .category-card {
-        width: 120px;
+        width: 128px;
+        padding: 10px;
     }
 }
 
