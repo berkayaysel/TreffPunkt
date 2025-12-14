@@ -36,6 +36,9 @@
                         <div class="stat-box">
                             <div class="stat-value"><span id="profile-rating">-</span><i class="fas fa-star" style="color: #ffa500; margin-left: 5px;"></i></div>
                             <div class="stat-label">Rating</div>
+                            <div class="rating-count-box" id="reviewCountBox" style="cursor: pointer;">
+                                <span id="profile-review-count">0</span> reviews
+                            </div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-label">Number of created<br>events</div>
@@ -121,6 +124,19 @@
                 </div>
                 <p id="error-message" class="error-message"></p>
             </form>
+        </div>
+    </div>
+
+    <!-- Reviews Modal -->
+    <div id="reviewsModal" class="modal" style="display: none;">
+        <div class="modal-content reviews-modal-content">
+            <button class="close-modal" onclick="closeReviewsModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 28px; cursor: pointer;">&times;</button>
+            
+            <h2 style="margin-bottom: 25px; text-align: center;">Reviews</h2>
+            
+            <div id="reviewsList" class="reviews-list">
+                <!-- Reviews buraya dinamik olarak eklenecek -->
+            </div>
         </div>
     </div>
 

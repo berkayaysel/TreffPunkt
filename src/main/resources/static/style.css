@@ -486,6 +486,7 @@ form {
 
 .stat-box {
     text-align: center;
+    position: relative;
 }
 
 .stat-label {
@@ -499,6 +500,98 @@ form {
     font-size: 3rem;
     font-weight: 700;
     color: #1a1a1a;
+}
+
+.rating-count-box {
+    margin-top: 8px;
+    padding: 6px 12px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #666;
+    display: inline-block;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.rating-count-box:hover {
+    background-color: #e0e0e0;
+}
+
+/* Reviews Modal */
+.reviews-modal-content {
+    max-width: 600px;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 30px;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.review-card {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px;
+    transition: box-shadow 0.3s ease;
+}
+
+.review-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.reviewer-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.reviewer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.reviewer-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.reviewer-name {
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 0.95rem;
+}
+
+.review-date {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 2px;
+}
+
+.review-rating {
+    display: flex;
+    gap: 3px;
+}
+
+.review-comment {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding-top: 8px;
+    border-top: 1px solid #e0e0e0;
 }
 
 .profile-info-section {

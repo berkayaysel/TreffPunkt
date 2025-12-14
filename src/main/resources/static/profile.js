@@ -285,12 +285,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            if (data && data.averageRating) {
-                const ratingSpan = document.getElementById('profile-rating');
-                if (ratingSpan) {
-                    // Format: 4.6 (round to 1 decimal place)
-                    const rating = parseFloat(data.averageRating).toFixed(1);
-                    ratingSpan.textContent = rating;
+            if (data) {
+                // Set average rating
+                if (data.averageRating) {
+                    const ratingSpan = document.getElementById('profile-rating');
+                    if (ratingSpan) {
+                        // Format: 4.6 (round to 1 decimal place)
+                        const rating = parseFloat(data.averageRating).toFixed(1);
+                        ratingSpan.textContent = rating;
+                    }
+                }
+                
+                // Set review count
+                if (data.reviewCount !== undefined) {
+                    const countSpan = document.getElementById('profile-review-count');
+                    if (countSpan) {
+                        countSpan.textContent = data.reviewCount;
+                    }
                 }
             }
         })
@@ -299,6 +310,83 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Reviews Modal Functions
+    window.closeReviewsModal = function() {
+        document.getElementById('reviewsModal').style.display = 'none';
+    };
+
+    function openReviewsModal() {
+        fetch('/reviews/me', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Reviews alınamadı');
+            return response.json();
+        })
+        .then(data => {
+            const reviewsList = document.getElementById('reviewsList');
+            reviewsList.innerHTML = '';
+
+            if (!data.reviews || data.reviews.length === 0) {
+                reviewsList.innerHTML = '<p style="text-align: center; color: #999;">Henüz hiç yorum yapılmamış.</p>';
+                document.getElementById('reviewsModal').style.display = 'flex';
+                return;
+            }
+
+            data.reviews.forEach(review => {
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'review-card';
+                
+                // Generate stars
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    starsHtml += `<i class="fas fa-star" style="color: ${i <= review.rating ? '#ffa500' : '#ddd'}; font-size: 14px;"></i>`;
+                }
+
+                const formattedDate = new Date(review.createdAt).toLocaleDateString('tr-TR');
+                
+                reviewCard.innerHTML = `
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <img src="${review.reviewerProfileImage || '/uploads/profile-images/default-avatar.png'}" 
+                                 alt="Reviewer" class="reviewer-avatar">
+                            <div class="reviewer-details">
+                                <div class="reviewer-name">${review.reviewerName || ''} ${review.reviewerSurname || ''}</div>
+                                <div class="review-date">${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="review-rating">${starsHtml}</div>
+                    </div>
+                    <div class="review-comment">${review.comment || '(Yorum yok)'}</div>
+                `;
+                
+                reviewsList.appendChild(reviewCard);
+            });
+
+            document.getElementById('reviewsModal').style.display = 'flex';
+        })
+        .catch(error => {
+            console.error('Reviews modal hatası:', error);
+            alert('Yorumlar yüklenemedi.');
+        });
+    }
+
+    // Rating count box'a click handler
+    const reviewCountBox = document.getElementById('reviewCountBox');
+    if (reviewCountBox) {
+        reviewCountBox.addEventListener('click', openReviewsModal);
+    }
+
+    // Modal dışında tıklanınca kapat
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('reviewsModal');
+        if (e.target === modal) {
+            closeReviewsModal();
+        }
+    });
+
     // Sayfa yüklendiğinde profil bilgilerini getir
     checkLoginStatusAndFetchProfile();
     
