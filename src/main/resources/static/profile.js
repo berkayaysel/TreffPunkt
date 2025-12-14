@@ -273,7 +273,37 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Event sayıları alınamadı:', error);
         });
     }
+
+    function fetchUserRating() {
+        fetch('/reviews/me', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        })
+        .then(response => {
+            if (!response.ok) return;
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.averageRating) {
+                const ratingSpan = document.getElementById('profile-rating');
+                if (ratingSpan) {
+                    // Format: 4.6 (round to 1 decimal place)
+                    const rating = parseFloat(data.averageRating).toFixed(1);
+                    ratingSpan.textContent = rating;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Rating alınamadı:', error);
+        });
+    }
     
     // Sayfa yüklendiğinde profil bilgilerini getir
     checkLoginStatusAndFetchProfile();
+    
+    // Profil yüklendikten sonra rating'i de çek
+    setTimeout(() => {
+        fetchUserRating();
+    }, 500);
 });
