@@ -188,7 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-location').textContent = loc;
         document.getElementById('modal-date').textContent = date;
         document.getElementById('modal-time').textContent = time;
-        document.getElementById('modal-category').textContent = category || '(Belirtilmemiş)';
+        const catPill = document.getElementById('modal-category-pill');
+        if (catPill) catPill.textContent = category || '(Belirtilmemiş)';
         document.getElementById('modal-description').textContent = desc || '(Yok)';
         document.getElementById('modal-capacity').textContent = capacity;
         document.getElementById('modal-number').textContent = number;
@@ -382,8 +383,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="participant-email">${participant.email || ''}</span>
                     </div>
                 </div>
-                <button class="btn-remove-participant" data-user-id="${participant.userId}" data-activity-id="${activityId}">
-                    <i class="fas fa-times"></i> Çıkar
+                <button class="btn-remove-participant" title="Remove" data-user-id="${participant.userId}" data-activity-id="${activityId}">
+                    <i class="fas fa-times"></i>
                 </button>
             `;
             

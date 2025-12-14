@@ -165,8 +165,8 @@ body {
 .host-info .host-extra .extra-label { color: #666; font-weight: 600; margin-right: 6px; }
 
 .meta-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
-.meta-list li { display: flex; align-items: center; gap: 8px; }
-.meta-list i { color: #0aa3a3; }
+.meta-list li { display: flex; align-items: center; gap: 12px; }
+.meta-list i { color: #000; font-size: 22px; }
 
 .detail-description-box label { display: block; font-weight: 600; margin-bottom: 6px; }
 .detail-description-box p { border: 2px solid #79c7c7; border-radius: 10px; padding: 12px; min-height: 80px; }
@@ -1801,7 +1801,7 @@ body.dashboard-body {
     max-height: 90vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     animation: slideIn 0.3s ease;
     box-sizing: border-box;
 }
@@ -1832,14 +1832,14 @@ body.dashboard-body {
 
 .modal-body {
     margin: 20px 0;
-    line-height: 1.8;
+    line-height: 1.6;
     flex: 1;
     overflow-y: auto;
     padding-right: 8px;
 }
 
 .modal-body p {
-    margin: 12px 0;
+    margin: 8px 0;
     color: #333;
 }
 
@@ -1867,6 +1867,8 @@ body.dashboard-body {
 .btn-delete {
     background: #ff6b6b;
     color: white;
+    border-radius: 20px;
+    padding: 10px 22px;
 }
 
 .btn-delete:hover {
@@ -1875,12 +1877,14 @@ body.dashboard-body {
 }
 
 .btn-leave {
-    background: #ffc107;
+    background: #ffc966; /* softer orange like sample */
     color: #333;
+    border-radius: 20px;
+    padding: 10px 22px;
 }
 
 .btn-leave:hover {
-    background: #ffb300;
+    background: #ffb84d;
     transform: translateY(-2px);
 }
 
@@ -1894,9 +1898,9 @@ body.dashboard-body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    background: #f5f5f5;
-    border-radius: 8px;
+    padding: 12px 14px;
+    background: #ccf3e6; /* minty green like sample */
+    border-radius: 12px;
     justify-content: space-between;
 }
 
@@ -1917,6 +1921,7 @@ body.dashboard-body {
     justify-content: center;
     color: white;
     font-size: 18px;
+    flex-shrink: 0;
 }
 
 .participant-avatar img {
@@ -1944,21 +1949,22 @@ body.dashboard-body {
     margin: 0;
 }
 
-.remove-participant-btn {
-    padding: 6px 12px;
-    background: #ff6b6b;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 12px;
+/* New icon-only remove button */
+.btn-remove-participant {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #333;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
-
-.remove-participant-btn:hover {
-    background: #ff5252;
-    transform: scale(1.05);
-}
+.btn-remove-participant i { font-size: 14px; }
+.btn-remove-participant:hover { background: #ffe5e5; border-color: #ff6b6b; color: #ff3b3b; }
 
 /* MyActivities Responsive */
 @media (max-width: 768px) {

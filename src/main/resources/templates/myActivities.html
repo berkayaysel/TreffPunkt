@@ -56,17 +56,21 @@
             <h2 id="modal-title">Activity Details</h2>
             
             <div class="modal-body">
-                <p><strong>Kategori:</strong> <span id="modal-category"></span></p>
-                <p><strong>Konum:</strong> <span id="modal-location"></span></p>
-                <p><strong>Tarih:</strong> <span id="modal-date"></span></p>
-                <p><strong>Saat:</strong> <span id="modal-time"></span></p>
-                <p><strong>Açıklama:</strong> <span id="modal-description">(Yok)</span></p>
-                <p><strong>Kapasite:</strong> <span id="modal-capacity">-</span></p>
-                <p><strong>Katılımcı Sayısı:</strong> <span id="modal-number">-</span></p>
+                <div class="detail-category-pill" id="modal-category-pill">CATEGORY</div>
+                <ul class="meta-list">
+                    <li><i class="fas fa-calendar-alt"></i><span id="modal-date">Event Date</span></li>
+                    <li><i class="fas fa-clock"></i><span id="modal-time">Event Time</span></li>
+                    <li><i class="fas fa-map-marker-alt"></i><span id="modal-location">Event Location</span></li>
+                    <li><i class="fas fa-users"></i><span>Participant and Capacity: <span id="modal-number">-</span> / <span id="modal-capacity">-</span></span></li>
+                </ul>
+                <div class="detail-description-box" style="margin-top:12px;">
+                    <label>Description and Rules:</label>
+                    <p id="modal-description">(Yok)</p>
+                </div>
                 
                 <!-- Katılımcılar listesi -->
                 <div id="participants-section" style="display: none;">
-                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Katılımcılar</h3>
+                    <h3 style="margin-top: 20px; margin-bottom: 10px;">Current Participants:</h3>
                     <div id="participants-list" class="participants-list">
                         <!-- Katılımcılar buraya dinamik olarak eklenecek -->
                     </div>
