@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentActivityId = null;
     let isCreatedActivity = false;
+    let currentActivityData = null;  // Store current activity for rating
 
     function fetchActivities() {
         fetch('/activities/my-activities', {
@@ -82,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const buttonsContainer = document.createElement('div');
         buttonsContainer.style.display = 'flex';
         buttonsContainer.style.gap = '10px';
+        buttonsContainer.style.alignItems = 'center';
         
         const detailBtn = document.createElement('button');
         detailBtn.className = 'details-btn';
@@ -96,14 +98,32 @@ document.addEventListener('DOMContentLoaded', function() {
         detailBtn.setAttribute('data-desc', activity.description || '');
         detailBtn.setAttribute('data-capacity', activity.capacity || '0');
         detailBtn.setAttribute('data-number', activity.numberOfParticipants || '0');
+        detailBtn.setAttribute('data-creator-email', activity.creatorEmail || '');
         detailBtn.addEventListener('click', openModal);
         
         buttonsContainer.appendChild(detailBtn);
+
+        // Add status label for participated activities only
+        if (type === 'joined') {
+            const isFinished = isActivityFinished(activity.endDate || activity.startDate);
+            const statusLabel = document.createElement('span');
+            statusLabel.className = `activity-status-label ${isFinished ? 'finished' : 'ongoing'}`;
+            statusLabel.textContent = isFinished ? 'Finished' : 'Ongoing';
+            statusLabel.setAttribute('data-finished', isFinished ? 'true' : 'false');
+            buttonsContainer.appendChild(statusLabel);
+        }
         
         card.appendChild(info);
         card.appendChild(buttonsContainer);
         
         return card;
+    }
+
+    function isActivityFinished(dateStr) {
+        if (!dateStr) return false;
+        const activityDate = new Date(dateStr);
+        const now = new Date();
+        return activityDate.getTime() < now.getTime();
     }
 
     function formatDate(dateString) {
@@ -125,6 +145,15 @@ document.addEventListener('DOMContentLoaded', function() {
         currentActivityId = btn.getAttribute('data-id');
         isCreatedActivity = btn.getAttribute('data-type') === 'created';
 
+        // Store activity data for rating submission
+        const creatorEmail = btn.getAttribute('data-creator-email') || '';
+        currentActivityData = {
+            activityId: parseInt(currentActivityId),
+            creatorEmail: creatorEmail,
+            name: name,
+            date: date
+        };
+
         document.getElementById('modal-title').textContent = name;
         document.getElementById('modal-location').textContent = loc;
         document.getElementById('modal-date').textContent = date;
@@ -140,9 +169,29 @@ document.addEventListener('DOMContentLoaded', function() {
             leaveBtn.style.display = 'none';
             fetchParticipants(currentActivityId);
         } else {
+            // Katılınan aktivite
             deleteBtn.style.display = 'none';
             leaveBtn.style.display = 'block';
             document.getElementById('participants-section').style.display = 'none';
+
+            // Show rating button if activity is finished
+            const isFinished = isActivityFinished(date);
+            if (isFinished) {
+                // Add rating button to modal footer if not already there
+                let rateBtn = document.getElementById('rateHostBtn');
+                if (!rateBtn) {
+                    rateBtn = document.createElement('button');
+                    rateBtn.id = 'rateHostBtn';
+                    rateBtn.textContent = 'Etkinlik Sahibini Değerlendir';
+                    rateBtn.style.cssText = 'background: #ffa500; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;';
+                    rateBtn.addEventListener('click', () => openRatingModal(currentActivityId));
+                    document.querySelector('.modal-footer').insertBefore(rateBtn, deleteBtn);
+                }
+                rateBtn.style.display = 'block';
+            } else {
+                const rateBtn = document.getElementById('rateHostBtn');
+                if (rateBtn) rateBtn.style.display = 'none';
+            }
         }
 
         modal.style.display = 'flex';
@@ -339,5 +388,109 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // Rating features removed
+    // Rating Modal Functions
+    let currentRatingActivityId = null;
+
+    window.openRatingModal = function(activityId) {
+        currentRatingActivityId = activityId;
+        document.getElementById('ratingModal').style.display = 'flex';
+        document.getElementById('selectedRating').value = '0';
+        document.getElementById('ratingComment').value = '';
+        
+        // Reset stars
+        document.querySelectorAll('#ratingStars i').forEach(star => {
+            star.classList.remove('filled');
+        });
+    };
+
+    window.closeRatingModal = function() {
+        document.getElementById('ratingModal').style.display = 'none';
+        currentRatingActivityId = null;
+    };
+
+    window.submitRating = function() {
+        const rating = parseInt(document.getElementById('selectedRating').value);
+        const comment = document.getElementById('ratingComment').value.trim();
+
+        if (rating === 0) {
+            alert('Lütfen bir puanlama seçiniz!');
+            return;
+        }
+
+        if (!currentActivityData || !currentActivityData.creatorEmail) {
+            console.error('[Rating] Current activity data missing:', currentActivityData);
+            alert('Aktivite bilgisi alınamadı.');
+            return;
+        }
+
+        const reviewData = {
+            activityId: currentActivityData.activityId,
+            reviewedUserEmail: currentActivityData.creatorEmail,
+            rating: rating, 
+            comment: comment
+        };
+        console.log('[Rating] Sending review data:', reviewData);
+
+        // Send rating to backend
+        fetch('/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(reviewData)
+        })
+        .then(response => {
+            console.log('[Rating] Response status:', response.status);
+            console.log('[Rating] Response ok:', response.ok);
+            if (response.ok) {
+                return response.json().then(data => {
+                    console.log('[Rating] Success response:', data);
+                    alert('Değerlendirme gönderildi. Teşekkür ederiz!');
+                    closeRatingModal();
+                    
+                    // Hide rating button after successful submission
+                    const rateBtn = document.getElementById('rateHostBtn');
+                    if (rateBtn) {
+                        rateBtn.style.display = 'none';
+                    }
+                });
+            } else {
+                return response.json().then(errorData => {
+                    console.error('[Rating] Error response data:', errorData);
+                    const errorMsg = errorData.error || errorData.message || 'Bilinmeyen hata';
+                    alert('Değerlendirme gönderilemedi:\n' + errorMsg);
+                }).catch(() => {
+                    alert('Değerlendirme gönderilemedi. Sunucu hatası (500)');
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Rating error:', error);
+            alert('Hata: ' + error.message);
+        });
+    };
+
+    // Star rating click handler
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('#ratingStars i')) {
+            const star = e.target.closest('#ratingStars i');
+            const value = star.getAttribute('data-value');
+            document.getElementById('selectedRating').value = value;
+
+            document.querySelectorAll('#ratingStars i').forEach((s, idx) => {
+                if (idx < value) {
+                    s.classList.add('filled');
+                } else {
+                    s.classList.remove('filled');
+                }
+            });
+        }
+    });
+
+    // Close modals on outside click
+    window.addEventListener('click', (e) => {
+        const ratingModal = document.getElementById('ratingModal');
+        if (e.target === ratingModal) {
+            closeRatingModal();
+        }
+    });
 });

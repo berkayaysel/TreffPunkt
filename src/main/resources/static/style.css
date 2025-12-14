@@ -1824,3 +1824,57 @@ body.dashboard-body {
         text-align: center;
     }
 }
+
+/* Rating Modal Styles */
+.rating-modal-content {
+    max-width: 600px;
+    position: relative;
+}
+
+.rating-modal-body {
+    padding: 40px 35px;
+}
+
+.rating-stars-container {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 20px;
+    font-size: 50px;
+}
+
+.rating-stars i {
+    cursor: pointer;
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+
+.rating-stars i:hover,
+.rating-stars i.filled {
+    color: #ffa500;
+    transform: scale(1.15);
+}
+
+/* Activity Status Label */
+.activity-status-label {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.activity-status-label.ongoing {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.activity-status-label.finished {
+    background-color: #fff3cd;
+    color: #856404;
+}

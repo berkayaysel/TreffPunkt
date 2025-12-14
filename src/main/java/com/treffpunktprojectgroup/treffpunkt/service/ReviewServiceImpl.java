@@ -42,8 +42,10 @@ public class ReviewServiceImpl implements ReviewService {
         Activity activity = activityRepository.findById(req.getActivityId())
                 .orElseThrow(() -> new IllegalArgumentException("Aktivite bulunamadı."));
 
-        if (activity.isCompleted() == null || !activity.isCompleted()) {
-            throw new IllegalStateException("Aktivite tamamlanmadan değerlendirme yapılamaz.");
+        // Check if activity is finished (end date passed) - only front-end enforces rating for finished activities
+        // Backend allows rating for activities that have passed their date
+        if (activity.getStartDate() != null && activity.getStartDate().isAfter(java.time.LocalDate.now())) {
+            throw new IllegalStateException("Aktivite henüz bitmedi. Değerlendirme sadece bitmiş aktiviteler için yapılabilir.");
         }
 
         // ✅ reviewed user email ile
