@@ -26,6 +26,24 @@ const CATEGORIES = [
     { id: 14, name: 'Diğer' }
 ];
 
+// Map category names to CSS classes with background images
+const CATEGORY_CLASS = {
+    'Sports & Fitness': 'cat-sports-fitness',
+    'Social & Fun': 'cat-social-fun',
+    'Arts & Culture': 'cat-arts-culture',
+    'Gastronomy & Cooking': 'cat-gastronomy-cooking',
+    'Nature & Adventure': 'cat-nature-adventure',
+    'Arts, Crafts & DIY': 'cat-arts-crafts-diy',
+    'Technology & Innovation': 'cat-technology-innovation',
+    'Volunteering & Community': 'cat-volunteering-community',
+    'Wellness & Spirituality': 'cat-wellness-spirituality',
+    'Gaming & Competition': 'cat-gaming-competition',
+    'Music & Performance': 'cat-music-performance',
+    'Family & Kids': 'cat-family-kids',
+    'Shopping & Sustainability': 'cat-shopping-sustainability',
+    'Diğer': 'cat-diger'
+};
+
 function initializeCategoryCarousel() {
     const carousel = document.getElementById('category-carousel');
     if (!carousel) return;
@@ -33,7 +51,13 @@ function initializeCategoryCarousel() {
     CATEGORIES.forEach(cat => {
         const card = document.createElement('div');
         card.className = 'category-card';
-        card.textContent = cat.name;
+        const cls = CATEGORY_CLASS[cat.name] || 'cat-default';
+        card.classList.add(cls);
+        // label text stays readable via CSS overlay
+        const label = document.createElement('span');
+        label.className = 'category-card-label';
+        label.textContent = cat.name;
+        card.appendChild(label);
         card.addEventListener('click', () => filterByCategory(cat.name));
         carousel.appendChild(card);
     });
@@ -88,7 +112,9 @@ function filterByCategory(categoryName) {
             // Update active category card
             const cards = document.querySelectorAll('.category-card');
             cards.forEach(c => {
-                if (c.textContent === activeCategory) {
+                const labelEl = c.querySelector('.category-card-label');
+                const labelText = labelEl ? labelEl.textContent : '';
+                if (labelText === activeCategory) {
                     c.classList.add('active');
                 } else {
                     c.classList.remove('active');
@@ -249,7 +275,7 @@ function renderActivities(list) {
         const isDiscarded = activity.isDiscarded === true;
         
         const cardHTML = `
-            <div class="event-card ${isDiscarded ? 'discarded-card' : ''}" data-id="${aid}" data-discarded="${isDiscarded}">
+            <div class="event-card ${isDiscarded ? 'discarded-card' : ''}" data-id="${aid}" data-discarded="${isDiscarded}" data-category="${escapeHtml(activity.category || '')}">
                 <div class="event-card-image ${colorClass}">
                     <i class="fas fa-calendar"></i>
                 </div>
@@ -304,6 +330,9 @@ function renderActivities(list) {
         `;
         container.innerHTML += cardHTML;
     });
+
+    // Apply activity-specific background images with category fallback
+    applyActivityBackgrounds();
 
     document.querySelectorAll('.join-btn').forEach(btn => {
         btn.addEventListener('click', handleJoinClick);
@@ -535,4 +564,45 @@ if (joinBtn) {
             alert('Katılma isteği sırasında hata oluştu. Konsolu kontrol edin.');
         });
     });
+}
+
+function getCategoryImageJpg(name) {
+    const map = {
+        'Sports & Fitness': '/uploads/category-images/sports.jpg',
+        'Social & Fun': '/uploads/category-images/social.jpg',
+        'Arts & Culture': '/uploads/category-images/arts-culture.jpg',
+        'Gastronomy & Cooking': '/uploads/category-images/gastronomy.jpg',
+        'Nature & Adventure': '/uploads/category-images/nature.jpg',
+        'Arts, Crafts & DIY': '/uploads/category-images/crafts.jpg',
+        'Technology & Innovation': '/uploads/category-images/technology.jpg',
+        'Volunteering & Community': '/uploads/category-images/volunteering.jpg',
+        'Wellness & Spirituality': '/uploads/category-images/wellness.jpg',
+        'Gaming & Competition': '/uploads/category-images/gaming.jpg',
+        'Music & Performance': '/uploads/category-images/music.jpg',
+        'Family & Kids': '/uploads/category-images/family.jpg',
+        'Shopping & Sustainability': '/uploads/category-images/shopping.jpg',
+        'Diğer': '/uploads/category-images/other.jpg'
+    };
+    return map[name] || '/uploads/category-images/default.jpg';
+}
+
+async function applyActivityBackgrounds() {
+    const cards = document.querySelectorAll('.event-card');
+    for (const card of cards) {
+        const id = card.getAttribute('data-id');
+        const category = card.getAttribute('data-category') || 'Diğer';
+        const primary = `/uploads/activity-images/${id}.jpg`;
+        try {
+            await applyBackgroundImage(card, primary);
+            card.classList.add('has-bg');
+        } catch (_) {
+            const fallback = getCategoryImageJpg(category);
+            try {
+                await applyBackgroundImage(card, fallback);
+                card.classList.add('has-bg');
+            } catch (__){
+                card.classList.remove('has-bg');
+            }
+        }
+    }
 }
