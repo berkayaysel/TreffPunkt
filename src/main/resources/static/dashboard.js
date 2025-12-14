@@ -352,48 +352,33 @@ function escapeHtml(str) {
 const detailSection = document.getElementById('detail-section');
 const joinBtn = document.getElementById('joinBtn');
 
-function openDetailSection(cardOrEvent) {
-    let btn, id, name, loc, date, time, desc, capacity, number, creatorEmail, creatorName, creatorSurname, category, isDiscarded = false;
+function openDetailSection(card) {
+    // Always derive data from the clicked card element
+    let id, name, loc, date, time, desc, capacity, number, creatorEmail, creatorName, creatorSurname, category, isDiscarded = false;
 
-    // Eğer event object ise (click event) - button'dan gelen data kullan
-    if (cardOrEvent.target) {
-        btn = cardOrEvent.currentTarget;
-        id = btn.getAttribute('data-id');
-        name = btn.getAttribute('data-name') || '';
-        loc = btn.getAttribute('data-loc') || '';
-        date = btn.getAttribute('data-date') || '';
-        time = btn.getAttribute('data-time') || '';
-        desc = btn.getAttribute('data-desc') || '';
-        capacity = btn.getAttribute('data-capacity') || '-';
-        number = btn.getAttribute('data-number') || '-';
-        creatorEmail = btn.getAttribute('data-creator-email') || '';
-        creatorName = btn.getAttribute('data-creator-name') || '';
-        creatorSurname = btn.getAttribute('data-creator-surname') || '';
-        category = btn.getAttribute('data-category') || '';
-    } else {
-        // Eğer card element ise (direct click)
-        const card = cardOrEvent;
-        id = card.getAttribute('data-id');
-        isDiscarded = card.getAttribute('data-discarded') === 'true';
-        
-        // Card'dan data al
-        const title = card.querySelector('.event-card-title');
-        const footerItems = card.querySelectorAll('.event-card-footer-item');
-        const creatorName_ = card.querySelector('.event-host-name');
-        const joinBtn_ = card.querySelector('.join-btn');
-
-        name = title ? title.textContent : '';
-        loc = footerItems[0] ? footerItems[0].textContent.trim() : '';
-        date = footerItems[1] ? footerItems[1].textContent.trim() : '';
-        time = footerItems[2] ? footerItems[2].textContent.trim() : '';
-        capacity = joinBtn_ ? joinBtn_.getAttribute('data-capacity') : '-';
-        number = joinBtn_ ? joinBtn_.getAttribute('data-number') : '-';
-        desc = joinBtn_ ? joinBtn_.getAttribute('data-desc') : '';
-        creatorEmail = joinBtn_ ? joinBtn_.getAttribute('data-creator-email') : '';
-        creatorName = joinBtn_ ? joinBtn_.getAttribute('data-creator-name') : '';
-        creatorSurname = joinBtn_ ? joinBtn_.getAttribute('data-creator-surname') : '';
-        category = joinBtn_ ? joinBtn_.getAttribute('data-category') : '';
+    if (!card || !card.classList || !card.classList.contains('event-card')) {
+        console.warn('openDetailSection: invalid card element');
+        return;
     }
+
+    id = card.getAttribute('data-id');
+    isDiscarded = card.getAttribute('data-discarded') === 'true';
+
+    const titleEl = card.querySelector('.event-card-title');
+    const footerItems = card.querySelectorAll('.event-card-footer-item');
+    const joinBtnEl = card.querySelector('.join-btn');
+
+    name = titleEl ? titleEl.textContent.trim() : '';
+    loc = footerItems[0] ? footerItems[0].textContent.trim() : '';
+    date = footerItems[1] ? footerItems[1].textContent.trim() : '';
+    time = footerItems[2] ? footerItems[2].textContent.trim() : '';
+    capacity = joinBtnEl ? joinBtnEl.getAttribute('data-capacity') : '-';
+    number = joinBtnEl ? joinBtnEl.getAttribute('data-number') : '-';
+    desc = joinBtnEl ? joinBtnEl.getAttribute('data-desc') : '';
+    creatorEmail = joinBtnEl ? joinBtnEl.getAttribute('data-creator-email') : '';
+    creatorName = joinBtnEl ? joinBtnEl.getAttribute('data-creator-name') : '';
+    creatorSurname = joinBtnEl ? joinBtnEl.getAttribute('data-creator-surname') : '';
+    category = joinBtnEl ? joinBtnEl.getAttribute('data-category') : '';
 
     document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
     document.getElementById('detail-location').textContent = loc;
@@ -401,22 +386,37 @@ function openDetailSection(cardOrEvent) {
     document.getElementById('detail-time').textContent = time;
     document.getElementById('detail-description').textContent = desc || '(Yok)';
     document.getElementById('detail-creator').textContent = (creatorName || creatorEmail || '') + (creatorSurname ? (' ' + creatorSurname) : '');
+    const creatorEmailEl = document.getElementById('detail-creator-email');
+    if (creatorEmailEl) creatorEmailEl.textContent = creatorEmail || '';
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
-    document.getElementById('detail-category').textContent = category || '(Belirtilmemiş)';
+    const catPill = document.getElementById('detail-category-pill');
+    if (catPill) catPill.textContent = category || '(Belirtilmemiş)';
 
     if (joinBtn) {
         joinBtn.setAttribute('data-current-id', id);
         
-        // Eğer discard edilmişse butonu gizle
-        if (isDiscarded) {
+        // Hide join if discarded or if start time is past
+        const shouldHideJoin = (() => {
+            if (isDiscarded) return true;
+            // Compute start Date from capacity datasets
+            const ds = (joinBtnEl || {});
+            const dateStr = ds.getAttribute ? ds.getAttribute('data-date') : null;
+            const timeStr = ds.getAttribute ? ds.getAttribute('data-time') : null;
+            if (!dateStr || !timeStr) return false;
+            const [y, m, d] = (dateStr || '').split('-');
+            const [hh, mm] = (timeStr || '').split(':');
+            const start = new Date(parseInt(y), parseInt(m) - 1, parseInt(d), parseInt(hh || '0'), parseInt(mm || '0'));
+            return start.getTime() <= Date.now();
+        })();
+
+        if (shouldHideJoin) {
             joinBtn.style.display = 'none';
         } else {
-            // Kullanıcının email'ini principal'dan alalım
+            // Hide join if it's my activity
             fetch('/user-dashboard/profile-info', { credentials: 'include' })
                 .then(r => r.json())
                 .then(profile => {
-                    // Eğer bu aktivite kendi aktivitesiyse, Join butonunu gizle
                     if (creatorEmail === profile.email) {
                         joinBtn.style.display = 'none';
                     } else {
@@ -425,7 +425,7 @@ function openDetailSection(cardOrEvent) {
                 })
                 .catch(err => {
                     console.error('Email kontrol hatası:', err);
-                    joinBtn.style.display = 'block'; // Hata durumunda göster
+                    joinBtn.style.display = 'block';
                 });
         }
     }

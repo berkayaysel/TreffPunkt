@@ -96,27 +96,43 @@
 
     <!-- Detail Modal (if needed) -->
     <div id="detail-section" class="detail-section" style="display: none;">
-        <div class="detail-header">
-            <button id="backFromDetail" class="icon-btn">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <h2>Activity Details</h2>
+        <div class="detail-header teal">
+            <button id="backFromDetail" class="icon-btn back-text">Back</button>
         </div>
 
-        <div class="detail-content">
-            <h2 id="detail-title">Aktivite Adı</h2>
-            <div class="detail-info">
-                <p><strong>Konum:</strong> <span id="detail-location"></span></p>
-                <p><strong>Tarih:</strong> <span id="detail-date"></span></p>
-                <p><strong>Saat:</strong> <span id="detail-time"></span></p>
-                <p><strong>Kategori:</strong> <span id="detail-category"></span></p>
-                <p><strong>Oluşturan:</strong> <span id="detail-creator">(Bilinmiyor)</span></p>
-                <p><strong>Açıklama:</strong> <span id="detail-description">(Yok)</span></p>
-                <p><strong>Kapasite:</strong> <span id="detail-capacity">-</span></p>
-                <p><strong>Katılımcı Sayısı:</strong> <span id="detail-number">-</span></p>
+        <div class="detail-card">
+            <div class="detail-left">
+                <h2 class="detail-section-title">Activity Details</h2>
+                <div class="detail-image-placeholder"></div>
+                <div class="detail-category-pill" id="detail-category-pill">CATEGORY</div>
             </div>
-            <div class="detail-footer">
-                <button id="joinBtn" class="btn-join">Katıl</button>
+            <div class="detail-right">
+                <div class="detail-top">
+                    <h2 class="detail-title" id="detail-title">EVENT NAME</h2>
+                    <div class="host-card">
+                            <div class="host-avatar"><i class="fas fa-user"></i></div>
+                            <div class="host-info">
+                                <div class="host-name" id="detail-creator">Host Name</div>
+                                <div class="host-role">Host</div>
+                            </div>
+                    </div>
+                </div>
+
+                <ul class="meta-list">
+                    <li><i class="fas fa-calendar-alt"></i><span id="detail-date">Event Date</span></li>
+                    <li><i class="fas fa-clock"></i><span id="detail-time">Event Time</span></li>
+                    <li><i class="fas fa-map-marker-alt"></i><span id="detail-location">Event Location</span></li>
+                    <li><i class="fas fa-users"></i><span>Participant and Capacity: <span id="detail-number">0</span> / <span id="detail-capacity">0</span></span></li>
+                </ul>
+
+                <div class="detail-description-box">
+                    <label>Description and Rules:</label>
+                    <p id="detail-description">(Yok)</p>
+                </div>
+
+                <div class="detail-actions">
+                    <button id="joinBtn" class="btn-join green">Join</button>
+                </div>
             </div>
         </div>
     </div>
