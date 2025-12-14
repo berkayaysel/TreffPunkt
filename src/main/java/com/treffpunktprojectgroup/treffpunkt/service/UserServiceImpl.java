@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -114,18 +117,22 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserProfileResponse getUserProfileByEmail(String email) {
-        // Find the user or throw an error
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-        // Convert User Entity to UserProfileResponse DTO
+        UserReviewSummaryResponse summary = reviewService.getReviewsForUser(user.getUserId());
+
         return new UserProfileResponse(
-            user.getName(),
-            user.getSurname(),
-            user.getEmail(),
-            user.getAddress(),
-            user.getProfileImage(),
-            user.getBirthDate()
+                user.getName(),
+                user.getSurname(),
+                user.getEmail(),
+                user.getAddress(),
+                user.getProfileImage(),
+                user.getBirthDate(),
+                summary.getAverageRating(),
+                summary.getReviewCount(),
+                summary.getReviews()
         );
     }
 

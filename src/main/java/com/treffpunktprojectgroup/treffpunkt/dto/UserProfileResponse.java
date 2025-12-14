@@ -1,5 +1,7 @@
 package com.treffpunktprojectgroup.treffpunkt.dto;
 
+import java.util.List;
+
 public class UserProfileResponse {
 
     private String name;
@@ -8,13 +10,21 @@ public class UserProfileResponse {
     private String address;
     private String profileImage;
     private java.time.LocalDate birthDate;
-    public UserProfileResponse(String name, String surname, String email, String address, String profileImage, java.time.LocalDate birthDate) {
+    private Double averageRating;
+    private Long reviewCount;
+    private List<ReviewResponse> reviews;
+
+    public UserProfileResponse(String name, String surname, String email, String address, String profileImage, java.time.LocalDate birthDate,
+                               Double averageRating, Long reviewCount, List<ReviewResponse> reviews) {
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.address = address;
         this.profileImage = profileImage;
         this.birthDate = birthDate;
+        this.averageRating = averageRating;
+        this.reviewCount = reviewCount;
+        this.reviews = reviews;
     }
 
     public UserProfileResponse() {
@@ -66,4 +76,13 @@ public class UserProfileResponse {
     public void setBirthDate(java.time.LocalDate birthDate) {
         this.birthDate = birthDate;
     }
+
+    public Double getAverageRating() { return averageRating; }
+    public void setAverageRating(Double averageRating) { this.averageRating = averageRating; }
+
+    public Long getReviewCount() { return reviewCount; }
+    public void setReviewCount(Long reviewCount) { this.reviewCount = reviewCount; }
+
+    public List<ReviewResponse> getReviews() { return reviews; }
+    public void setReviews(List<ReviewResponse> reviews) { this.reviews = reviews; }
 }
