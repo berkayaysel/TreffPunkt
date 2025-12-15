@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         detailBtn.setAttribute('data-capacity', activity.capacity || '0');
         detailBtn.setAttribute('data-number', activity.numberOfParticipants || '0');
         detailBtn.setAttribute('data-creator-email', activity.creatorEmail || '');
+        detailBtn.setAttribute('data-image', activity.activityImage || '');
         detailBtn.addEventListener('click', openModal);
         
         buttonsContainer.appendChild(detailBtn);
@@ -190,6 +191,17 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-time').textContent = time;
         const catPill = document.getElementById('modal-category-pill');
         if (catPill) catPill.textContent = category || '(Belirtilmemiş)';
+        const modalImg = document.getElementById('modal-image');
+        if (modalImg) {
+            const imgUrl = btn.getAttribute('data-image') || '';
+            if (imgUrl) {
+                modalImg.style.display = 'block';
+                modalImg.style.backgroundImage = `url('${imgUrl}')`;
+            } else {
+                modalImg.style.display = 'none';
+                modalImg.style.backgroundImage = '';
+            }
+        }
         document.getElementById('modal-description').textContent = desc || '(Yok)';
         document.getElementById('modal-capacity').textContent = capacity;
         document.getElementById('modal-number').textContent = number;

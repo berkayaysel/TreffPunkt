@@ -286,11 +286,12 @@ function renderActivities(list) {
         const isFull = activity.numberOfParticipants >= activity.capacity;
         const isDiscarded = activity.isDiscarded === true;
         const displayName = buildDisplayName(activity.creatorName, activity.creatorSurname);
+        const hasImage = activity.activityImage && activity.activityImage.trim() !== '';
         
         const cardHTML = `
-            <div class="event-card ${isDiscarded ? 'discarded-card' : ''}" data-id="${aid}" data-discarded="${isDiscarded}" data-category="${escapeHtml(activity.category || '')}">
+            <div class="event-card ${isDiscarded ? 'discarded-card' : ''}" data-id="${aid}" data-discarded="${isDiscarded}" data-category="${escapeHtml(activity.category || '')}" data-image="${escapeHtml(activity.activityImage || '')}">
                 <div class="event-card-image ${colorClass}">
-                    <i class="fas fa-calendar"></i>
+                    ${!hasImage ? '<i class="fas fa-calendar"></i>' : ''}
                 </div>
                 <div class="event-card-content">
                     <div class="event-card-header">
@@ -334,6 +335,7 @@ function renderActivities(list) {
                                 data-creator-name="${escapeHtml(activity.creatorName || '')}"
                                 data-creator-surname="${escapeHtml(activity.creatorSurname || '')}"
                                 data-category="${escapeHtml(activity.category || '')}"
+                                data-image="${escapeHtml(activity.activityImage || '')}"
                                 ${isFull || isDiscarded ? 'disabled' : ''}>
                             ${isDiscarded ? 'DISCARDED' : (isFull ? 'Full' : 'JOIN')}
                         </button>
@@ -421,6 +423,7 @@ function openDetailSection(card) {
     creatorName = joinBtnEl ? joinBtnEl.getAttribute('data-creator-name') : '';
     creatorSurname = joinBtnEl ? joinBtnEl.getAttribute('data-creator-surname') : '';
     category = joinBtnEl ? joinBtnEl.getAttribute('data-category') : '';
+    const imageUrl = joinBtnEl ? joinBtnEl.getAttribute('data-image') : '';
 
     document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
     document.getElementById('detail-location').textContent = loc;
@@ -435,6 +438,16 @@ function openDetailSection(card) {
     document.getElementById('detail-number').textContent = number;
     const catPill = document.getElementById('detail-category-pill');
     if (catPill) catPill.textContent = category || '(Belirtilmemiş)';
+    const detailImg = document.querySelector('.detail-image-placeholder');
+    if (detailImg) {
+        if (imageUrl) {
+            detailImg.style.backgroundImage = `url('${imageUrl}')`;
+            detailImg.style.backgroundSize = 'cover';
+            detailImg.style.backgroundPosition = 'center';
+        } else {
+            detailImg.style.backgroundImage = '';
+        }
+    }
 
     if (joinBtn) {
         joinBtn.setAttribute('data-current-id', id);
@@ -496,6 +509,7 @@ function handleJoinClick(e) {
     const creatorName = btn.getAttribute('data-creator-name') || '';
     const creatorSurname = btn.getAttribute('data-creator-surname') || '';
     const category = btn.getAttribute('data-category') || '';
+    const imageUrl = btn.getAttribute('data-image') || '';
 
     // Detay'ı aç
     document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
@@ -508,6 +522,16 @@ function handleJoinClick(e) {
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
     document.getElementById('detail-category').textContent = category || '(Belirtilmemiş)';
+    const detailImg2 = document.querySelector('.detail-image-placeholder');
+    if (detailImg2) {
+        if (imageUrl) {
+            detailImg2.style.backgroundImage = `url('${imageUrl}')`;
+            detailImg2.style.backgroundSize = 'cover';
+            detailImg2.style.backgroundPosition = 'center';
+        } else {
+            detailImg2.style.backgroundImage = '';
+        }
+    }
 
     if (joinBtn) {
         joinBtn.setAttribute('data-current-id', id);
@@ -601,19 +625,55 @@ function getCategoryImageJpg(name) {
     return map[name] || '/uploads/category-images/default.jpg';
 }
 
+// Helper: Load image and set as background image (returns promise)
+function applyBackgroundImage(element, imageUrl) {
+    return new Promise((resolve, reject) => {
+        if (!element || !imageUrl) {
+            reject(new Error('Invalid element or imageUrl'));
+            return;
+        }
+
+        const img = new Image();
+        img.onload = () => {
+            element.style.backgroundImage = `url('${imageUrl}')`;
+            element.style.backgroundSize = 'cover';
+            element.style.backgroundPosition = 'center';
+            resolve();
+        };
+        img.onerror = () => {
+            reject(new Error(`Failed to load image: ${imageUrl}`));
+        };
+        img.src = imageUrl;
+    });
+}
+
 async function applyActivityBackgrounds() {
     const cards = document.querySelectorAll('.event-card');
     for (const card of cards) {
         const id = card.getAttribute('data-id');
         const category = card.getAttribute('data-category') || 'Diğer';
-        const primary = `/uploads/activity-images/${id}.jpg`;
+        const metaUrl = card.getAttribute('data-image');
+        const candidates = [];
+        if (metaUrl) candidates.push(metaUrl);
+        candidates.push(`/uploads/activity-images/activity_${id}.png`);
+        candidates.push(`/uploads/activity-images/activity_${id}.jpg`);
+        candidates.push(`/uploads/activity-images/${id}.jpg`);
+        const imageDiv = card.querySelector('.event-card-image');
         try {
-            await applyBackgroundImage(card, primary);
+            let applied = false;
+            for (const u of candidates) {
+                try {
+                    await applyBackgroundImage(imageDiv || card, u);
+                    applied = true;
+                    break;
+                } catch (_) { /* try next */ }
+            }
+            if (!applied) throw new Error('no image found');
             card.classList.add('has-bg');
         } catch (_) {
             const fallback = getCategoryImageJpg(category);
             try {
-                await applyBackgroundImage(card, fallback);
+                await applyBackgroundImage(imageDiv || card, fallback);
                 card.classList.add('has-bg');
             } catch (__){
                 card.classList.remove('has-bg');

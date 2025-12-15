@@ -34,6 +34,14 @@ public class ActivityResponse {
         this.creatorName = creatorName;
         this.creatorSurname = creatorSurname;
         this.activityImage = activityImage;
+        this.category = null;
+        this.isDiscarded = false;
+        this.isCompleted = false;
+    }
+
+    public ActivityResponse(Integer activityId, String name, String location, LocalDate startDate, LocalTime startTime, String description, Integer numberOfParticipants, Integer capacity, String creatorEmail, String creatorName, String creatorSurname, String category, String activityImage) {
+        this(activityId, name, location, startDate, startTime, description, numberOfParticipants, capacity, creatorEmail, creatorName, creatorSurname, activityImage);
+        this.category = category;
     }
 
 

@@ -165,44 +165,47 @@ body {
     flex-direction: column;
     gap: 14px;
 }
-.detail-top { display: flex; align-items: center; justify-content: space-between; }
-.detail-title { font-size: 28px; margin: 0; }
+.detail-top { display: flex; align-items: flex-start; justify-content: flex-start; gap: 16px; flex-direction: column; }
+.detail-title { font-size: 28px; margin: 0; word-wrap: break-word; }
 .host-card {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px 18px;
+    gap: 12px;
+    padding: 12px 14px;
     border: 2px solid #79c7c7;
     border-radius: 12px;
     background: #f7fbfb;
-    transform: scale(1.2) translateX(-10px); /* enlarge diagonally and move slightly left */
-    transform-origin: center;
+    transform: scale(1.0);
+    min-height: auto;
+    align-self: flex-start;
 }
 .host-card .host-avatar {
-    width: 86px;
-    height: 86px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
     background: #eee;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size: 34px;
+    font-size: 30px;
     color: #666;
+    flex-shrink: 0;
 }
 .host-card .host-info {
     display:flex;
     flex-direction: column;
     flex: 1;
     min-width: 0;
+    overflow: hidden;
 }
 .host-card .host-name {
     font-weight: 600;
-    white-space: normal;
-    word-break: break-word;
-    overflow: visible;
-    text-overflow: clip;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     max-width: 100%;
-    line-height: 1.2;
+    line-height: 1.3;
+    font-size: 15px;
 }
 .host-card .host-role { font-size: 12px; color: #888; }
 .host-info .host-extra { margin-top: 8px; }
@@ -1459,7 +1462,7 @@ body.dashboard-body {
     background: rgba(0, 0, 0, 0.35);
 }
 .event-card.has-bg > * { position: relative; z-index: 1; }
-.event-card.has-bg .event-card-image { display: none; }
+.event-card.has-bg .event-card-image { display: flex; }
 .event-card.has-bg .event-card-title { color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.35); }
 .event-card.has-bg .event-card-footer { color: #f0f0f0; }
 .event-card.has-bg .event-card-footer-item i { color: #fff; }

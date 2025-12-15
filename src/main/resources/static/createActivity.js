@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const createActivityForm = document.getElementById('createActivityForm');
+    const imageInput = document.getElementById('image');
 
     createActivityForm.addEventListener('submit', function(event) {
         // 1. Formun varsayılan gönderme işlemini durdur (sayfa yenilenmesin)
@@ -46,10 +47,54 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(message => {
             // 5. Başarılı işlem sonrası
             console.log('Başarılı:', message);
-            alert(message); // Kullanıcıya mesaj göster
-            createActivityForm.reset(); // Formu temizle
-            // İsterseniz başka bir sayfaya yönlendirebilirsiniz:
-            // window.location.href = '/treffpunkt/dashboard';
+
+            const file = imageInput && imageInput.files && imageInput.files[0] ? imageInput.files[0] : null;
+            if (!file) {
+                alert(message);
+                createActivityForm.reset();
+                return;
+            }
+
+            // Görsel varsa: yeni oluşturulan aktivitenin id'sini bularak yükle
+            return fetch('/activities/my-activities', { credentials: 'include' })
+                .then(r => r.json())
+                .then(data => {
+                    const created = data.created || [];
+                    // Eşleşme kriteri: ad, tarih, saat, konum (saat 'HH:mm' başı eşleşir)
+                    const target = created
+                        .filter(a => a.name === activityData.name && a.location === activityData.location && a.startDate === activityData.startDate)
+                        .filter(a => {
+                            const t = (a.startTime || '').toString();
+                            return t.startsWith(activityData.startTime);
+                        })
+                        .sort((a,b) => (b.activityId||0) - (a.activityId||0))[0];
+
+                    if (!target) {
+                        alert('Aktivite oluşturuldu, ancak görseli bağlamak için aktivite bulunamadı.');
+                        createActivityForm.reset();
+                        return;
+                    }
+
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    return fetch(`/activities/upload-activity-image/${target.activityId}`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: fd
+                    })
+                    .then(upRes => {
+                        if (!upRes.ok) throw new Error('Görsel yüklenemedi');
+                        return upRes.text().catch(() => '');
+                    })
+                    .then(imageUrl => {
+                        alert('Aktivite ve görsel başarıyla kaydedildi.');
+                        createActivityForm.reset();
+                        // Redirect to dashboard to see the new activity with image
+                        setTimeout(() => {
+                            window.location.href = '/treffpunkt/dashboard';
+                        }, 500);
+                    });
+                });
         })
         .catch(error => {
             // 6. Hata durumu

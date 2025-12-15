@@ -123,9 +123,9 @@ public class ActivityServiceImpl implements ActivityService{
                     a.getCreator() != null ? a.getCreator().getEmail() : null,
                     a.getCreator() != null ? a.getCreator().getName() : null,
                     a.getCreator() != null ? a.getCreator().getSurname() : null,
+                    a.getCategory() != null ? a.getCategory().getLabel() : "Diğer",
                     a.getActivityImage()
                 ))
-                .peek(ar -> ar.setCategory(activityRepository.findById(ar.getActivityId()).map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
     }
 
@@ -262,9 +262,9 @@ public class ActivityServiceImpl implements ActivityService{
                     a.getCreator() != null ? a.getCreator().getEmail() : null,
                     a.getCreator() != null ? a.getCreator().getName() : null,
                     a.getCreator() != null ? a.getCreator().getSurname() : null,
+                    a.getCategory() != null ? a.getCategory().getLabel() : "Diğer",
                     a.getActivityImage()
                 ))
-                .peek(ar -> ar.setCategory(createdActivities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
 
         List<ActivityResponse> joinedDTO =
@@ -274,9 +274,9 @@ public class ActivityServiceImpl implements ActivityService{
                     a.getCreator() != null ? a.getCreator().getEmail() : null,
                     a.getCreator() != null ? a.getCreator().getName() : null,
                     a.getCreator() != null ? a.getCreator().getSurname() : null,
+                    a.getCategory() != null ? a.getCategory().getLabel() : "Diğer",
                     a.getActivityImage()
                 ))
-                .peek(ar -> ar.setCategory(joinedActivities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
 
         return new MyActivitiesResponse(createdDTO, joinedDTO);
