@@ -8,6 +8,18 @@ window.onload = function() {
 };
 
 let allActivities = [];
+// İsim gösterimi basit tutulur: ad + soyad
+
+function buildDisplayName(first, last) {
+    const clean = (v) => (v || '').toString().trim();
+    const isEmailLike = (v) => /@/.test(v);
+    const f = clean(first);
+    const l = clean(last);
+    const parts = [];
+    if (f && !isEmailLike(f)) parts.push(f);
+    if (l && !isEmailLike(l)) parts.push(l);
+    return parts.join(' ').trim();
+}
 
 const CATEGORIES = [
     { id: 1, name: 'Sports & Fitness' },
@@ -273,6 +285,7 @@ function renderActivities(list) {
         const colorClass = colorClasses[index % colorClasses.length];
         const isFull = activity.numberOfParticipants >= activity.capacity;
         const isDiscarded = activity.isDiscarded === true;
+        const displayName = buildDisplayName(activity.creatorName, activity.creatorSurname);
         
         const cardHTML = `
             <div class="event-card ${isDiscarded ? 'discarded-card' : ''}" data-id="${aid}" data-discarded="${isDiscarded}" data-category="${escapeHtml(activity.category || '')}">
@@ -306,7 +319,7 @@ function renderActivities(list) {
                             <div class="event-host-avatar">
                                 <i class="fas fa-user"></i>
                             </div>
-                            <div class="event-host-name">${escapeHtml((activity.creatorName ? activity.creatorName : '') + (activity.creatorSurname ? ' ' + activity.creatorSurname : ''))}</div>
+                            <div class="event-host-name">${escapeHtml(displayName)}</div>
                         </div>
                         <button class="join-btn ${isFull ? 'joined' : ''} ${isDiscarded ? 'discarded-btn' : ''}" 
                                 data-id="${aid}"
@@ -414,9 +427,10 @@ function openDetailSection(card) {
     document.getElementById('detail-date').textContent = date;
     document.getElementById('detail-time').textContent = time;
     document.getElementById('detail-description').textContent = desc || '(Yok)';
-    document.getElementById('detail-creator').textContent = (creatorName || creatorEmail || '') + (creatorSurname ? (' ' + creatorSurname) : '');
+    const detailDN = buildDisplayName(creatorName, creatorSurname);
+    document.getElementById('detail-creator').textContent = detailDN;
     const creatorEmailEl = document.getElementById('detail-creator-email');
-    if (creatorEmailEl) creatorEmailEl.textContent = creatorEmail || '';
+    if (creatorEmailEl) creatorEmailEl.textContent = ''; // explicit: no email display
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
     const catPill = document.getElementById('detail-category-pill');
@@ -489,7 +503,8 @@ function handleJoinClick(e) {
     document.getElementById('detail-date').textContent = date;
     document.getElementById('detail-time').textContent = time;
     document.getElementById('detail-description').textContent = desc || '(Yok)';
-    document.getElementById('detail-creator').textContent = (creatorName || creatorEmail || '') + (creatorSurname ? (' ' + creatorSurname) : '');
+    const joinDN = buildDisplayName(creatorName, creatorSurname);
+    document.getElementById('detail-creator').textContent = joinDN;
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
     document.getElementById('detail-category').textContent = category || '(Belirtilmemiş)';
@@ -606,3 +621,5 @@ async function applyActivityBackgrounds() {
         }
     }
 }
+
+// Not: Basit kullanım – doğrudan creatorName + creatorSurname kullanılacak.

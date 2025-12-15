@@ -120,10 +120,10 @@ public class ActivityServiceImpl implements ActivityService{
                     a.getDescription(),
                     a.getNumberOfParticipant(),
                     a.getCapacity(),
-                    a.getActivityImage(),
                     a.getCreator() != null ? a.getCreator().getEmail() : null,
                     a.getCreator() != null ? a.getCreator().getName() : null,
-                    a.getCreator() != null ? a.getCreator().getSurname() : null
+                    a.getCreator() != null ? a.getCreator().getSurname() : null,
+                    a.getActivityImage()
                 ))
                 .peek(ar -> ar.setCategory(activityRepository.findById(ar.getActivityId()).map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
@@ -155,10 +155,10 @@ public class ActivityServiceImpl implements ActivityService{
                         a.getDescription(),
                         a.getNumberOfParticipant(),
                         a.getCapacity(),
-                        a.getActivityImage(),
                         a.getCreator() != null ? a.getCreator().getEmail() : null,
                         a.getCreator() != null ? a.getCreator().getName() : null,
-                        a.getCreator() != null ? a.getCreator().getSurname() : null
+                        a.getCreator() != null ? a.getCreator().getSurname() : null,
+                        a.getActivityImage()
                     );
                     ar.setCategory(a.getCategory() != null ? a.getCategory().getLabel() : null);
                     ar.setIsDiscarded(currentUser != null && a.isUserDiscarded(currentUser));
@@ -221,7 +221,20 @@ public class ActivityServiceImpl implements ActivityService{
 
         // map to DTO
         return base.stream().map(a -> {
-            ActivityResponse ar = new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(),  a.getActivityImage(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null);
+            ActivityResponse ar = new ActivityResponse(
+                a.getActivityId(),
+                a.getName(),
+                a.getLocation(),
+                a.getStartDate(),
+                a.getStartTime(),
+                a.getDescription(),
+                a.getNumberOfParticipant(),
+                a.getCapacity(),
+                a.getCreator() != null ? a.getCreator().getEmail() : null,
+                a.getCreator() != null ? a.getCreator().getName() : null,
+                a.getCreator() != null ? a.getCreator().getSurname() : null,
+                a.getActivityImage()
+            );
             ar.setCategory(a.getCategory() != null ? a.getCategory().getLabel() : null);
             ar.setIsDiscarded(currentUser != null && a.isUserDiscarded(currentUser));
             return ar;
@@ -244,13 +257,25 @@ public class ActivityServiceImpl implements ActivityService{
 
         List<ActivityResponse> createdDTO =
             createdActivities.stream()
-                .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getActivityImage(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
+                .map(a -> new ActivityResponse(
+                    a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(),
+                    a.getCreator() != null ? a.getCreator().getEmail() : null,
+                    a.getCreator() != null ? a.getCreator().getName() : null,
+                    a.getCreator() != null ? a.getCreator().getSurname() : null,
+                    a.getActivityImage()
+                ))
                 .peek(ar -> ar.setCategory(createdActivities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
 
         List<ActivityResponse> joinedDTO =
             joinedActivities.stream()
-                .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getActivityImage(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
+                .map(a -> new ActivityResponse(
+                    a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(),
+                    a.getCreator() != null ? a.getCreator().getEmail() : null,
+                    a.getCreator() != null ? a.getCreator().getName() : null,
+                    a.getCreator() != null ? a.getCreator().getSurname() : null,
+                    a.getActivityImage()
+                ))
                 .peek(ar -> ar.setCategory(joinedActivities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
 

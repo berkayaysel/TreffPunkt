@@ -157,8 +157,26 @@ body {
 }
 
 .modal-body {
-    margin: 20px 0;
+    margin: 16px 0;
     line-height: 1.6;
+}
+
+/* Title + Category: closer and stacked */
+.modal-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* exact 2px between title and category */
+    margin-bottom: 8px;
+}
+
+#modal-title {
+    margin: 0; /* remove default h2 margin */
+}
+
+/* Slightly tighten the pill spacing inside modal */
+.modal-content .detail-category-pill {
+    display: inline-block;
+    margin: 0; /* no extra margin between title and pill */
 }
 
 .btn-delete {

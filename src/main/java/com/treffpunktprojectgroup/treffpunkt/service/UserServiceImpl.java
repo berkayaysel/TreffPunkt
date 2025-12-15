@@ -107,10 +107,10 @@ public class UserServiceImpl implements UserService{
                     a.getDescription(),
                     a.getNumberOfParticipant(),
                     a.getCapacity(),
-                    a.getActivityImage(),
                     a.getCreator() != null ? a.getCreator().getEmail() : null,
                     a.getCreator() != null ? a.getCreator().getName() : null,
-                    a.getCreator() != null ? a.getCreator().getSurname() : null
+                    a.getCreator() != null ? a.getCreator().getSurname() : null,
+                    a.getActivityImage()
                 ))
                 .peek(ar -> ar.setCategory(activities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .collect(Collectors.toList());
