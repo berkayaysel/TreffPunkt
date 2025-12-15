@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,8 +71,8 @@
                 <div class="sort-container">
                     <label for="filter-date">Sort by</label>
                     <select id="filter-date" class="sort-select">
-                        <option value="asc">En yakın → En uzak</option>
-                        <option value="desc">En uzak → En yakın</option>
+                        <option value="asc">Nearest → Farthest</option>
+                        <option value="desc">Farthest → Nearest</option>
                     </select>
                 </div>
             </section>
@@ -80,11 +80,11 @@
             <!-- Events Container -->
             <section class="dashboard-events">
                 <div id="loading-msg" class="loading-msg">
-                    <i class="fas fa-spinner fa-spin"></i> Aktiviteler yükleniyor...
+                    <i class="fas fa-spinner fa-spin"></i> Loading activities...
                 </div>
 
                 <div class="empty-message" id="no-activity-msg" style="display: none;">
-                    <p>Henüz hiç aktivite yok.</p>
+                    <p>No activities yet.</p>
                 </div>
 
                 <div class="events-grid" id="activity-container">
@@ -127,7 +127,7 @@
 
                 <div class="detail-description-box">
                     <label>Description and Rules:</label>
-                    <p id="detail-description">(Yok)</p>
+                    <p id="detail-description">(None)</p>
                 </div>
 
                 <div class="detail-actions">

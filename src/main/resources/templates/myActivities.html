@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +32,7 @@
             <div class="activities-column created-column">
                 <h2 class="column-title">Created events</h2>
                 <div id="created-events" class="events-list">
-                    <p class="empty-state">Henüz hiç aktivite oluşturmadınız.</p>
+                    <p class="empty-state">You haven't created any activities yet.</p>
                 </div>
             </div>
 
@@ -68,7 +68,7 @@
                 </ul>
                 <div class="detail-description-box" style="margin-top:12px;">
                     <label>Description and Rules:</label>
-                    <p id="modal-description">(Yok)</p>
+                    <p id="modal-description">(None)</p>
                 </div>
                 
                 <!-- Katılımcılar listesi -->
@@ -91,20 +91,20 @@
     <div id="removalReasonModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
             <span class="close-modal" onclick="closeRemovalReasonModal()">&times;</span>
-            <h2>Çıkarma Sebebi</h2>
+            <h2>Removal Reason</h2>
             
             <div class="modal-body">
-                <p style="margin-bottom: 15px;">Lütfen bu katılımcıyı neden çıkardığınızı belirtin:</p>
+                <p style="margin-bottom: 15px;">Please provide a reason for removing this participant:</p>
                 <textarea id="removalReasonText" 
-                          placeholder="Sebep yazın..." 
+                          placeholder="Type your reason..." 
                           style="width: 100%; min-height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"
                           required></textarea>
-                <p id="removalReasonError" style="color: red; display: none; margin-top: 5px;">Lütfen bir sebep giriniz!</p>
+                <p id="removalReasonError" style="color: red; display: none; margin-top: 5px;">Please enter a reason.</p>
             </div>
 
             <div class="modal-footer">
-                <button onclick="closeRemovalReasonModal()" class="btn-cancel" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">İptal</button>
-                <button onclick="confirmRemoval()" class="btn-confirm" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Çıkar</button>
+                <button onclick="closeRemovalReasonModal()" class="btn-cancel" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Cancel</button>
+                <button onclick="confirmRemoval()" class="btn-confirm" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Remove</button>
             </div>
         </div>
     </div>
@@ -115,8 +115,8 @@
             <button class="close-modal" onclick="closeRatingModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 28px; cursor: pointer;">&times;</button>
             
             <div class="rating-modal-body">
-                <h2 style="text-align: center; margin-bottom: 10px;">Etkinlik Sahibini Nasıl Değerlendirirsiniz?</h2>
-                <p style="text-align: center; color: #666; margin-bottom: 30px;">Lütfen 5 yıldız üzerinden puanlandırınız. Geri bildiriminiz TreffPunkt'ta daha keyifli bir deneyim için önemlidir.</p>
+                <h2 style="text-align: center; margin-bottom: 10px;">How would you rate the host?</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 30px;">Please rate out of 5 stars. Your feedback helps improve the TreffPunkt experience.</p>
                 
                 <div class="rating-stars-container">
                     <div id="ratingStars" class="rating-stars">
@@ -130,15 +130,15 @@
                 </div>
 
                 <div style="margin-top: 25px;">
-                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Düşünceleriniz...</label>
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Your thoughts...</label>
                     <textarea id="ratingComment" 
-                              placeholder="Etkinlik sahibi hakkında yorumlarınızı yazın..." 
+                              placeholder="Share your comments about the host..." 
                               style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; resize: vertical; font-family: inherit; font-size: 14px;"></textarea>
                 </div>
 
                 <div style="text-align: right; margin-top: 20px;">
-                    <button onclick="closeRatingModal()" style="background: #6c757d; color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; margin-right: 10px; font-weight: 500;">İptal</button>
-                    <button id="submitRatingBtn" onclick="submitRating()" style="background: #ffa500; color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: 500;">Gönder</button>
+                    <button onclick="closeRatingModal()" style="background: #6c757d; color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; margin-right: 10px; font-weight: 500;">Cancel</button>
+                    <button id="submitRatingBtn" onclick="submitRating()" style="background: #ffa500; color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: 500;">Submit</button>
                 </div>
             </div>
         </div>

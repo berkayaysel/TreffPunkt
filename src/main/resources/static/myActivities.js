@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (response.status === 401 || response.status === 403) {
-                throw new Error("Oturum kapalı. Lütfen giriş yapın.");
+                throw new Error("Session expired. Please sign in.");
             }
             if (!response.ok) {
-                throw new Error("Aktiviteler alınamadı.");
+                throw new Error("Could not retrieve activities.");
             }
             return response.json();
         })
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderActivities(created, joined) {
         // Render Created Events
         if (!created || created.length === 0) {
-            createdContainer.innerHTML = '<p class="empty-state">Henüz hiç aktivite oluşturmadınız.</p>';
+            createdContainer.innerHTML = '<p class="empty-state">You haven\'t created any activities yet.</p>';
         } else {
             createdContainer.innerHTML = '';
             created.forEach(activity => {
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
         meta.innerHTML = `
             <span>${formatDate(activity.startDate)}</span>
             <span>${activity.location}</span>
-            <span>${activity.category || 'Diğer'}</span>
+            <span>${activity.category || 'Other'}</span>
         `;
         
         info.appendChild(name);
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatDate(dateString) {
         if (!dateString) return '';
         const date = new Date(dateString);
-        return date.toLocaleDateString('tr-TR');
+        return date.toLocaleDateString('en-US');
     }
 
     function openModal(event) {
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-date').textContent = date;
         document.getElementById('modal-time').textContent = time;
         const catPill = document.getElementById('modal-category-pill');
-        if (catPill) catPill.textContent = category || '(Belirtilmemiş)';
+        if (catPill) catPill.textContent = category || '(Not specified)';
         const modalImg = document.getElementById('modal-image');
         if (modalImg) {
             const imgUrl = btn.getAttribute('data-image') || '';
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modalImg.style.backgroundImage = '';
             }
         }
-        document.getElementById('modal-description').textContent = desc || '(Yok)';
+        document.getElementById('modal-description').textContent = desc || '(None)';
         document.getElementById('modal-capacity').textContent = capacity;
         document.getElementById('modal-number').textContent = number;
 
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Show rating button
                         const rateBtn = document.createElement('button');
                         rateBtn.id = 'rateHostBtn';
-                        rateBtn.textContent = 'Etkinlik Sahibini Değerlendir';
+                        rateBtn.textContent = 'Rate Host';
                         rateBtn.style.cssText = 'background: #ffa500; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;';
                         rateBtn.addEventListener('click', () => {
                             // Immediately hide and disable to prevent flicker
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Show message instead
                         const msg = document.createElement('span');
                         msg.id = 'alreadyReviewedMsg';
-                        msg.textContent = '✓ Bu aktiviteyi zaten değerlendirdiniz';
+                        msg.textContent = '✓ You already reviewed this activity';
                         msg.style.cssText = 'color: #4CAF50; font-weight: bold; margin-right: 10px;';
                         modalFooter.insertBefore(msg, deleteBtn);
                         console.log('[Rating] Message shown - activity already reviewed');
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
     deleteBtn.addEventListener('click', function() {
         if(!currentActivityId) return;
 
-        if(confirm("Bu aktiviteyi silmek istediğinize emin misiniz?")) {
+        if(confirm("Are you sure you want to delete this activity?")) {
             console.log('Deleting activity:', currentActivityId);
             fetch(`/user-dashboard/activities/${currentActivityId}`, {
                 method: 'DELETE',
@@ -309,19 +309,19 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => {
                 console.log('Delete response status:', response.status);
                 if(response.ok) {
-                    alert("Aktivite silindi!");
+                    alert("Activity deleted!");
                     modal.style.display = 'none';
                     fetchActivities();
                 } else {
                     return response.text().then(text => {
                         console.error('Delete error response:', text);
-                        alert("Silme işlemi başarısız oldu: " + text);
+                        alert("Delete failed: " + text);
                     });
                 }
             })
             .catch(error => {
-                console.error("Silme hatası:", error);
-                alert("Hata: " + error.message);
+                console.error("Delete error:", error);
+                alert("Error: " + error.message);
             });
         }
     });
@@ -330,23 +330,23 @@ document.addEventListener('DOMContentLoaded', function() {
     leaveBtn.addEventListener('click', function() {
         if(!currentActivityId) return;
 
-        if(confirm("Bu aktiviteden ayrılmak istediğinize emin misiniz?")) {
+        if(confirm("Are you sure you want to leave this activity?")) {
             fetch(`/activities/${currentActivityId}/leave`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
             .then(response => {
                 if(response.ok) {
-                    alert("Aktiviteden başarıyla ayrıldınız!");
+                    alert("You have left the activity successfully!");
                     modal.style.display = 'none';
                     fetchActivities();
                 } else {
-                    alert("Ayrılma işlemi başarısız oldu.");
+                    alert("Failed to leave the activity.");
                 }
             })
             .catch(error => {
-                console.error("Ayrılma hatası:", error);
-                alert("Hata: " + error.message);
+                console.error("Leave error:", error);
+                alert("Error: " + error.message);
             });
         }
     });
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error("Katılımcılar alınamadı.");
+                throw new Error("Could not fetch participants.");
             }
             return response.json();
         })
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderParticipants(participants, activityId);
         })
         .catch(error => {
-            console.error('Katılımcıları getirme hatası:', error);
+            console.error('Error fetching participants:', error);
         });
     }
 
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
         participantsList.innerHTML = '';
         
         if (!participants || participants.length === 0) {
-            participantsList.innerHTML = '<p style="text-align:center; color:#666;">Henüz katılımcı yok.</p>';
+            participantsList.innerHTML = '<p style="text-align:center; color:#666;">No participants yet.</p>';
             participantsSection.style.display = 'block';
             return;
         }
@@ -457,19 +457,19 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if(response.ok) {
-                alert("Katılımcı başarıyla çıkarıldı!");
+                alert("Participant removed successfully!");
                 closeRemovalReasonModal();
                 // Katılımcıları yeniden yükle
                 fetchParticipants(activityId);
                 // Aktiviteleri de güncelle (katılımcı sayısı değişti)
                 fetchActivities();
             } else {
-                alert("Katılımcı çıkarma işlemi başarısız oldu.");
+                alert("Failed to remove participant.");
             }
         })
         .catch(error => {
-            console.error("Katılımcı çıkarma hatası:", error);
-            alert("Hata: " + error.message);
+            console.error("Remove participant error:", error);
+            alert("Error: " + error.message);
         });
     };
 
@@ -509,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!currentActivityData || !currentActivityData.creatorEmail) {
             console.error('[Rating] Current activity data missing:', currentActivityData);
-            alert('Aktivite bilgisi alınamadı.');
+            alert('Activity information could not be retrieved.');
             return;
         }
 
@@ -558,17 +558,17 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Non-OK: show a clear duplicate message and remove button
                 if (response.status === 409) {
-                    alert('Bu aktiviteyi zaten değerlendirdiniz.');
+                    alert('You already reviewed this activity.');
                     const btn = document.getElementById('rateHostBtn');
                     if (btn) btn.remove();
                 } else if (response.status >= 500) {
                     // Treat server errors as duplicate to avoid confusing users
                     response.text().then(() => {
-                        alert('Bu aktiviteyi zaten değerlendirdiniz.');
+                        alert('You already reviewed this activity.');
                         const btn = document.getElementById('rateHostBtn');
                         if (btn) btn.remove();
                     }).catch(() => {
-                        alert('Bu aktiviteyi zaten değerlendirdiniz.');
+                        alert('You already reviewed this activity.');
                         const btn = document.getElementById('rateHostBtn');
                         if (btn) btn.remove();
                     });
@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return response.text().then(raw => {
                         const isAlready = /already|daha önce|zaten/i.test(raw || '');
                         if (isAlready) {
-                            alert('Bu aktiviteyi zaten değerlendirdiniz.');
+                            alert('You already reviewed this activity.');
                             const btn = document.getElementById('rateHostBtn');
                             if (btn) btn.remove();
                         } else {
@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Rating error:', error);
             // Network or parsing error – keep UX consistent
-            alert('Bu aktiviteyi zaten değerlendirdiniz.');
+            alert('You already reviewed this activity.');
             const btn = document.getElementById('rateHostBtn');
             if (btn) btn.remove();
         });

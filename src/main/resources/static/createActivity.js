@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(message => {
             // 5. Başarılı işlem sonrası
-            console.log('Başarılı:', message);
+            console.log('Success:', message);
 
             const file = imageInput && imageInput.files && imageInput.files[0] ? imageInput.files[0] : null;
             if (!file) {
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         .sort((a,b) => (b.activityId||0) - (a.activityId||0))[0];
 
                     if (!target) {
-                        alert('Aktivite oluşturuldu, ancak görseli bağlamak için aktivite bulunamadı.');
+                        alert('Activity created, but could not find it to attach the image.');
                         createActivityForm.reset();
                         return;
                     }
@@ -83,11 +83,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         body: fd
                     })
                     .then(upRes => {
-                        if (!upRes.ok) throw new Error('Görsel yüklenemedi');
+                        if (!upRes.ok) throw new Error('Image upload failed');
                         return upRes.text().catch(() => '');
                     })
                     .then(imageUrl => {
-                        alert('Aktivite ve görsel başarıyla kaydedildi.');
+                        alert('Activity and image saved successfully.');
                         createActivityForm.reset();
                         // Redirect to dashboard to see the new activity with image
                         setTimeout(() => {
@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             // 6. Hata durumu
-            console.error('Hata:', error);
-            alert('Aktivite oluşturulurken bir hata oluştu: ' + error.message);
+            console.error('Error:', error);
+            alert('An error occurred while creating the activity: ' + error.message);
         });
     });
 });

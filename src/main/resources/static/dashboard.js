@@ -35,7 +35,7 @@ const CATEGORIES = [
     { id: 11, name: 'Music & Performance' },
     { id: 12, name: 'Family & Kids' },
     { id: 13, name: 'Shopping & Sustainability' },
-    { id: 14, name: 'Diğer' }
+    { id: 14, name: 'Other' }
 ];
 
 // Map category names to CSS classes with background images
@@ -53,7 +53,7 @@ const CATEGORY_CLASS = {
     'Music & Performance': 'cat-music-performance',
     'Family & Kids': 'cat-family-kids',
     'Shopping & Sustainability': 'cat-shopping-sustainability',
-    'Diğer': 'cat-diger'
+    'Other': 'cat-diger'
 };
 
 function initializeCategoryCarousel() {
@@ -135,7 +135,7 @@ function filterByCategory(categoryName) {
         })
         .catch(err => {
             console.error('Filter error', err);
-            alert('Kategori filtrelemesi yapılırken hata oluştu');
+            alert('An error occurred while filtering categories.');
         });
 }
 
@@ -199,7 +199,7 @@ function applyFilters() {
         })
         .catch(err => {
             console.error('Filter error', err);
-            alert('Filtre uygulanırken hata oluştu');
+            alert('An error occurred while applying filters.');
         });
 }
 
@@ -212,7 +212,7 @@ function fetchActivities() {
             if (loadingMsg) loadingMsg.style.display = 'none';
 
             if (!response.ok) {
-                throw new Error('Veri çekilemedi veya Backend kapalı');
+                throw new Error('Could not fetch activities or the backend is offline.');
             }
             return response.json();
         })
@@ -235,7 +235,7 @@ function fetchActivities() {
             }
         })
         .catch(error => {
-            console.log("Hata:", error);
+            console.log("Error:", error);
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.style.display = 'none';
             
@@ -295,7 +295,7 @@ function renderActivities(list) {
                 </div>
                 <div class="event-card-content">
                     <div class="event-card-header">
-                        <h3 class="event-card-title">${escapeHtml(activity.name || 'Başlıksız Aktivite')}</h3>
+                        <h3 class="event-card-title">${escapeHtml(activity.name || 'Untitled Activity')}</h3>
                         <div class="event-card-participants">
                             <i class="fas fa-users"></i>
                             <span>${activity.numberOfParticipants || 0} participant${(activity.numberOfParticipants || 0) !== 1 ? 's' : ''}</span>
@@ -304,7 +304,7 @@ function renderActivities(list) {
                     <div class="event-card-footer">
                         <div class="event-card-footer-item">
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>${escapeHtml(activity.location || 'Konum yok')}</span>
+                            <span>${escapeHtml(activity.location || 'No location')}</span>
                         </div>
                         <div class="event-card-footer-item">
                             <i class="fas fa-calendar-alt"></i>
@@ -364,13 +364,13 @@ function renderActivities(list) {
 function formatDate(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('tr-TR') + ' ' + date.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+    return date.toLocaleDateString('en-US') + ' ' + date.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
 }
 
 function formatDateOnly(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('tr-TR');
+    return date.toLocaleDateString('en-US');
 }
 
 function formatTime(timeString) {
@@ -378,7 +378,7 @@ function formatTime(timeString) {
     // timeString may be 'HH:mm:ss', 'HH:mm', or an ISO datetime
     if (timeString.includes('T')) {
         const d = new Date(timeString);
-        return d.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+        return d.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
     }
     const parts = timeString.split(':');
     if (parts.length >= 2) {
@@ -425,11 +425,11 @@ function openDetailSection(card) {
     category = joinBtnEl ? joinBtnEl.getAttribute('data-category') : '';
     const imageUrl = joinBtnEl ? joinBtnEl.getAttribute('data-image') : '';
 
-    document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
+    document.getElementById('detail-title').textContent = name || 'Activity Details';
     document.getElementById('detail-location').textContent = loc;
     document.getElementById('detail-date').textContent = date;
     document.getElementById('detail-time').textContent = time;
-    document.getElementById('detail-description').textContent = desc || '(Yok)';
+    document.getElementById('detail-description').textContent = desc || '(None)';
     const detailDN = buildDisplayName(creatorName, creatorSurname);
     document.getElementById('detail-creator').textContent = detailDN;
     const creatorEmailEl = document.getElementById('detail-creator-email');
@@ -437,7 +437,7 @@ function openDetailSection(card) {
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
     const catPill = document.getElementById('detail-category-pill');
-    if (catPill) catPill.textContent = category || '(Belirtilmemiş)';
+    if (catPill) catPill.textContent = category || '(Not specified)';
     const detailImg = document.querySelector('.detail-image-placeholder');
     if (detailImg) {
         if (imageUrl) {
@@ -492,7 +492,7 @@ function openDetailSection(card) {
                     }
                 })
                 .catch(err => {
-                    console.error('Email kontrol hatası:', err);
+                    console.error('Email check error:', err);
                     joinBtn.style.display = 'block';
                 });
         }
@@ -523,17 +523,17 @@ function handleJoinClick(e) {
     const category = btn.getAttribute('data-category') || '';
     const imageUrl = btn.getAttribute('data-image') || '';
 
-    // Detay'ı aç
-    document.getElementById('detail-title').textContent = name || 'Aktivite Detay';
+    // Open detail
+    document.getElementById('detail-title').textContent = name || 'Activity Details';
     document.getElementById('detail-location').textContent = loc;
     document.getElementById('detail-date').textContent = date;
     document.getElementById('detail-time').textContent = time;
-    document.getElementById('detail-description').textContent = desc || '(Yok)';
+    document.getElementById('detail-description').textContent = desc || '(None)';
     const joinDN = buildDisplayName(creatorName, creatorSurname);
     document.getElementById('detail-creator').textContent = joinDN;
     document.getElementById('detail-capacity').textContent = capacity;
     document.getElementById('detail-number').textContent = number;
-    document.getElementById('detail-category').textContent = category || '(Belirtilmemiş)';
+    document.getElementById('detail-category').textContent = category || '(Not specified)';
     const detailImg2 = document.querySelector('.detail-image-placeholder');
     if (detailImg2) {
         if (imageUrl) {
@@ -557,7 +557,7 @@ function handleJoinClick(e) {
                 }
             })
             .catch(err => {
-                console.error('Email kontrol hatası:', err);
+                console.error('Email check error:', err);
                 joinBtn.style.display = 'block';
             });
     }
@@ -580,12 +580,12 @@ function setupDetailBackButton() {
     }
 }
 
-// Join işlemi
+// Join flow
 if (joinBtn) {
     joinBtn.addEventListener('click', function() {
         const activityId = this.getAttribute('data-current-id');
         if (!activityId) {
-            alert('Aktivite ID bulunamadı.');
+            alert('Activity ID not found.');
             return;
         }
 
@@ -597,22 +597,22 @@ if (joinBtn) {
         })
         .then(r => {
             if (r.ok) {
-                alert('Aktiviteye katılma başarılı!');
+                alert('Joined the activity successfully!');
                 const mainContent = document.querySelector('.dashboard-main');
                 if (mainContent) mainContent.style.display = 'block';
                 detailSection.style.display = 'none';
                 fetchActivities();
             } else if (r.status === 401) {
-                alert('Yetkisiz erişim. Lütfen giriş yapın.');
+                alert('Unauthorized. Please sign in.');
             } else if (r.status === 409) {
-                r.text().then(t => alert('Katılım başarısız: ' + t));
+                r.text().then(t => alert('Join failed: ' + t));
             } else {
-                r.text().then(t => alert('Katılma isteği başarısız: ' + t));
+                r.text().then(t => alert('Join request failed: ' + t));
             }
         })
         .catch(err => {
-            console.error('Join hatası', err);
-            alert('Katılma isteği sırasında hata oluştu. Konsolu kontrol edin.');
+            console.error('Join error', err);
+            alert('An error occurred during join request. Please check the console.');
         });
     });
 }
@@ -632,7 +632,7 @@ function getCategoryImageJpg(name) {
         'Music & Performance': '/uploads/category-images/music.jpg',
         'Family & Kids': '/uploads/category-images/family.jpg',
         'Shopping & Sustainability': '/uploads/category-images/shopping.jpg',
-        'Diğer': '/uploads/category-images/other.jpg'
+        'Other': '/uploads/category-images/other.jpg'
     };
     return map[name] || '/uploads/category-images/default.jpg';
 }
@@ -663,7 +663,7 @@ async function applyActivityBackgrounds() {
     const cards = document.querySelectorAll('.event-card');
     for (const card of cards) {
         const id = card.getAttribute('data-id');
-        const category = card.getAttribute('data-category') || 'Diğer';
+        const category = card.getAttribute('data-category') || 'Other';
         const metaUrl = card.getAttribute('data-image');
         const candidates = [];
         if (metaUrl) candidates.push(metaUrl);
