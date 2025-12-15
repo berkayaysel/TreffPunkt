@@ -109,13 +109,16 @@ public class UserController {
     @DeleteMapping("/activities/{activityId}")
     public ResponseEntity<?> deleteActivity(@PathVariable Integer activityId, Principal principal) {
         if (principal == null) {
+            System.out.println("[DELETE] Principal null - 401");
             return ResponseEntity.status(401).body("Yetkisiz işlem");
         }
 
         String email = principal.getName();
+        System.out.println("[DELETE] User: " + email + ", Activity ID: " + activityId);
 
         boolean deleted = activityService.deleteActivity(email, activityId);
 
+        System.out.println("[DELETE] Delete result: " + deleted);
         if (deleted) {
             return ResponseEntity.ok("Aktivite başarıyla silindi.");
         } else {

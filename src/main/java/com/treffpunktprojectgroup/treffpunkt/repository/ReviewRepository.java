@@ -4,7 +4,9 @@ import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
 import com.treffpunktprojectgroup.treffpunkt.entity.Review;
 import com.treffpunktprojectgroup.treffpunkt.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -19,4 +21,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
     @Query("select count(r) from Review r where r.reviewedUser.userId = :userId")
     Long countByReviewedUserId(Integer userId);
+
+    @Modifying
+    @Query("DELETE FROM Review r WHERE r.activity.activityId = :activityId")
+    void deleteByActivityId(@Param("activityId") Integer activityId);
 }

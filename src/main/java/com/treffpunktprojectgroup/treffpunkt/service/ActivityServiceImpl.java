@@ -33,6 +33,12 @@ public class ActivityServiceImpl implements ActivityService{
 
     @Autowired
     private com.treffpunktprojectgroup.treffpunkt.service.NotificationService notificationService;
+    
+    @Autowired
+    private com.treffpunktprojectgroup.treffpunkt.repository.NotificationRepository notificationRepository;
+
+    @Autowired
+    private com.treffpunktprojectgroup.treffpunkt.repository.ReviewRepository reviewRepository;
 
     @Override
     public boolean joinActivity(String email, Integer activityId) {
@@ -283,24 +289,61 @@ public class ActivityServiceImpl implements ActivityService{
     }
 
     @Override
+    @Transactional
     public boolean deleteActivity(String email, Integer activityId) {
         Optional<Activity> activityOptional = activityRepository.findById(activityId);
 
         if (activityOptional.isPresent()) {
             Activity activity = activityOptional.get();
+            System.out.println("[ActivityService] Activity found: " + activity.getName() + ", Creator: " + (activity.getCreator() != null ? activity.getCreator().getEmail() : "null"));
 
             if (activity.getCreator() != null && activity.getCreator().getEmail().equals(email)) {
-                // notify participants before deleting
-                    try {
-                        notificationService.sendActivityDeletedNotifications(activity, activity.getCreator());
-                    } catch (Exception ex) {
-                        // ignore notification errors
-                    }
+                System.out.println("[ActivityService] Creator matches, deleting activity...");
+                
+                try {
+                    // notify participants before deleting
+                    notificationService.sendActivityDeletedNotifications(activity, activity.getCreator());
+                } catch (Exception ex) {
+                    System.out.println("[ActivityService] Notification send error: " + ex.getMessage());
+                    // ignore notification errors
+                }
 
-                // Delete activity
-                activityRepository.deleteById(activityId);
-                return true;
+                try {
+                    // Delete all related data in order
+                    System.out.println("[ActivityService] Deleting notifications...");
+                    notificationRepository.deleteByActivityId(activityId);
+                    System.out.println("[ActivityService] Notifications deleted");
+
+                    System.out.println("[ActivityService] Deleting reviews...");
+                    reviewRepository.deleteByActivityId(activityId);
+                    System.out.println("[ActivityService] Reviews deleted");
+                    
+                    // Clear relationships
+                    System.out.println("[ActivityService] Clearing relationships...");
+                    // Retrieve fresh activity object to avoid detached entity issues
+                    Activity freshActivity = activityRepository.findById(activityId).orElse(null);
+                    if (freshActivity != null) {
+                        freshActivity.getParticipants().clear();
+                        freshActivity.getDiscardedUsers().clear();
+                        activityRepository.save(freshActivity);
+                        System.out.println("[ActivityService] Relationships cleared and saved");
+                    }
+                    
+                    // Finally delete the activity
+                    System.out.println("[ActivityService] Deleting activity...");
+                    activityRepository.deleteById(activityId);
+                    System.out.println("[ActivityService] Activity deleted successfully");
+                    return true;
+                } catch (Exception ex) {
+                    System.out.println("[ActivityService] Delete error: " + ex.getMessage());
+                    ex.printStackTrace();
+                    return false;
+                }
+            } else {
+                System.out.println("[ActivityService] Creator doesn't match. Activity creator: " + (activity.getCreator() != null ? activity.getCreator().getEmail() : "null") + ", User email: " + email);
             }
+        } else {
+            System.out.println("[ActivityService] Activity not found with ID: " + activityId);
         }
 
         return false;

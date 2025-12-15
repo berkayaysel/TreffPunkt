@@ -99,6 +99,10 @@ public class Activity {
     @Column(name = "is_completed", nullable = false)
     private Boolean isCompleted = false;
 
+    @OneToMany(mappedBy = "activity")
+    @JsonIgnore
+    private Set<Notification> notifications = new HashSet<>();
+
     public Integer getActivityId() {
         return activityId;
     }
@@ -209,6 +213,14 @@ public class Activity {
 
     public Boolean getCompleted() {
         return isCompleted;
+    }
+
+    public Set<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(Set<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     public Activity() {

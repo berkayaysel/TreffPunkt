@@ -301,20 +301,28 @@ document.addEventListener('DOMContentLoaded', function() {
         if(!currentActivityId) return;
 
         if(confirm("Bu aktiviteyi silmek istediğinize emin misiniz?")) {
+            console.log('Deleting activity:', currentActivityId);
             fetch(`/user-dashboard/activities/${currentActivityId}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
             .then(response => {
+                console.log('Delete response status:', response.status);
                 if(response.ok) {
                     alert("Aktivite silindi!");
                     modal.style.display = 'none';
                     fetchActivities();
                 } else {
-                    alert("Silme işlemi başarısız oldu.");
+                    return response.text().then(text => {
+                        console.error('Delete error response:', text);
+                        alert("Silme işlemi başarısız oldu: " + text);
+                    });
                 }
             })
-            .catch(error => console.error("Silme hatası:", error));
+            .catch(error => {
+                console.error("Silme hatası:", error);
+                alert("Hata: " + error.message);
+            });
         }
     });
 
