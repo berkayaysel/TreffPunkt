@@ -19,8 +19,9 @@ public class ActivityResponse {
     private String category;
     private Boolean isDiscarded; // Kullanıcının bu aktiviteden çıkarılıp çıkarılmadığı
     private Boolean isCompleted; // Aktivite tamamlanmış mı
+    private String activityImage;
 
-    public ActivityResponse(Integer activityId, String name, String location, LocalDate startDate, LocalTime startTime, String description, Integer numberOfParticipants, Integer capacity, String creatorEmail, String creatorName, String creatorSurname) {
+    public ActivityResponse(Integer activityId, String name, String location, LocalDate startDate, LocalTime startTime, String description, Integer numberOfParticipants, Integer capacity, String creatorEmail, String creatorName, String creatorSurname, String activityImage) {
         this.activityId = activityId;
         this.name = name;
         this.location = location;
@@ -32,6 +33,7 @@ public class ActivityResponse {
         this.creatorEmail = creatorEmail;
         this.creatorName = creatorName;
         this.creatorSurname = creatorSurname;
+        this.activityImage = activityImage;
     }
 
 
@@ -145,6 +147,14 @@ public class ActivityResponse {
 
     public void setIsCompleted(Boolean isCompleted) {
         this.isCompleted = isCompleted;
+    }
+
+    public String getActivityImage() {
+        return activityImage;
+    }
+
+    public void setActivityImage(String activityImage) {
+        this.activityImage = activityImage;
     }
 
     public ActivityResponse() {
