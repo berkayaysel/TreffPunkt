@@ -10,7 +10,13 @@ import com.treffpunktprojectgroup.treffpunkt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
@@ -114,6 +120,7 @@ public class ActivityServiceImpl implements ActivityService{
                     a.getDescription(),
                     a.getNumberOfParticipant(),
                     a.getCapacity(),
+                    a.getActivityImage(),
                     a.getCreator() != null ? a.getCreator().getEmail() : null,
                     a.getCreator() != null ? a.getCreator().getName() : null,
                     a.getCreator() != null ? a.getCreator().getSurname() : null
@@ -148,6 +155,7 @@ public class ActivityServiceImpl implements ActivityService{
                         a.getDescription(),
                         a.getNumberOfParticipant(),
                         a.getCapacity(),
+                        a.getActivityImage(),
                         a.getCreator() != null ? a.getCreator().getEmail() : null,
                         a.getCreator() != null ? a.getCreator().getName() : null,
                         a.getCreator() != null ? a.getCreator().getSurname() : null
@@ -213,7 +221,7 @@ public class ActivityServiceImpl implements ActivityService{
 
         // map to DTO
         return base.stream().map(a -> {
-            ActivityResponse ar = new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null);
+            ActivityResponse ar = new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(),  a.getActivityImage(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null);
             ar.setCategory(a.getCategory() != null ? a.getCategory().getLabel() : null);
             ar.setIsDiscarded(currentUser != null && a.isUserDiscarded(currentUser));
             return ar;
@@ -236,13 +244,13 @@ public class ActivityServiceImpl implements ActivityService{
 
         List<ActivityResponse> createdDTO =
             createdActivities.stream()
-                .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
+                .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getActivityImage(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
                 .peek(ar -> ar.setCategory(createdActivities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
 
         List<ActivityResponse> joinedDTO =
             joinedActivities.stream()
-                .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
+                .map(a -> new ActivityResponse(a.getActivityId(), a.getName(), a.getLocation(), a.getStartDate(), a.getStartTime(), a.getDescription(), a.getNumberOfParticipant(), a.getCapacity(), a.getActivityImage(), a.getCreator() != null ? a.getCreator().getEmail() : null, a.getCreator() != null ? a.getCreator().getName() : null, a.getCreator() != null ? a.getCreator().getSurname() : null))
                 .peek(ar -> ar.setCategory(joinedActivities.stream().filter(x -> x.getActivityId().equals(ar.getActivityId())).findFirst().map(Activity::getCategory).map(c -> c == null ? null : c.getLabel()).orElse(null)))
                 .toList();
 
@@ -347,5 +355,42 @@ public class ActivityServiceImpl implements ActivityService{
     protected void purgePastActivities() {
         // Pasif edildi: Geçmiş aktiviteler silinmesin ki kullanıcılar değerlendirebilsin
         // Bu metot artık veri silmiyor; sadece ileride gerekirse temizlik için düzenlenebilir.
+    }
+
+    @Override
+    public String saveActivityImage(String email, Integer activityId, MultipartFile file) {
+
+        // Aktiviteyi bul
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new RuntimeException("Aktivite bulunamadı"));
+
+        // Güvenlik: sadece creator yükleyebilsin (istersen kaldırırsın)
+        if (activity.getCreator() == null || activity.getCreator().getEmail() == null ||
+                !activity.getCreator().getEmail().equals(email)) {
+            throw new RuntimeException("Sadece aktivite sahibi resim ekleyebilir");
+        }
+
+        try {
+            String folder = "src/main/resources/static/uploads/activity-images/";
+            File directory = new File(folder);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String fileName = "activity_" + activity.getActivityId() + ".png";
+            Path path = Paths.get(folder + fileName);
+
+            Files.write(path, file.getBytes());
+
+            String publicPath = "/uploads/activity-images/" + fileName;
+
+            activity.setActivityImage(publicPath);
+            activityRepository.save(activity);
+
+            return publicPath;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Aktivite resmi kaydedilirken hata oluştu", e);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.treffpunktprojectgroup.treffpunkt.dto.ActivityResponse;
 import com.treffpunktprojectgroup.treffpunkt.dto.MyActivitiesResponse;
 import com.treffpunktprojectgroup.treffpunkt.dto.ParticipantDTO;
 import com.treffpunktprojectgroup.treffpunkt.entity.Activity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,4 +19,5 @@ public interface ActivityService {
     boolean deleteActivity(String email, Integer activityId);
     List<ParticipantDTO> getActivityParticipants(Integer activityId);
     boolean removeParticipantFromActivity(String creatorEmail, Integer activityId, Integer participantUserId, String reason);
+    String saveActivityImage(String email, Integer activityId, MultipartFile file);
 }

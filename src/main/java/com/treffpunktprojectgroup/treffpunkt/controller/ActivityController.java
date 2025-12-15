@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -117,4 +118,24 @@ public class ActivityController {
                     .body("Katılımcı çıkarma işlemi başarısız oldu!");
         }
     }
+
+    @PostMapping("/upload-activity-image/{activityId}")
+    public ResponseEntity<?> uploadActivityImage(Principal principal,
+                                                 @PathVariable Integer activityId,
+                                                 @RequestParam("file") MultipartFile file) {
+
+        if (principal == null) {
+            return ResponseEntity.status(401).body("Yetkisiz. Lütfen giriş yapın.");
+        }
+
+        String email = principal.getName();
+
+        try {
+            String publicUrl = activityService.saveActivityImage(email, activityId, file);
+            return ResponseEntity.ok(publicUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
 }

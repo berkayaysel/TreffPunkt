@@ -47,6 +47,9 @@ public class Activity {
     @Column(name = "numberOfParticipant", nullable = false)
     private Integer numberOfParticipant = 0;
 
+    @Column(name = "activityImage")
+    private String activityImage;
+
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private User creator;
@@ -60,7 +63,8 @@ public class Activity {
                     Integer numberOfParticipant,
                     String description,
                     Category category,
-                    User creator) {
+                    User creator,
+                    String activityImage) {
         this.activityId = activityId;
         this.name = name;
         this.location = location;
@@ -71,6 +75,7 @@ public class Activity {
         this.description = description;
         this.category = category;
         this.creator = creator;
+        this.activityImage = activityImage;
     }
 
     @ManyToMany
@@ -192,6 +197,18 @@ public class Activity {
 
     public void setCompleted(Boolean completed) {
         isCompleted = completed;
+    }
+
+    public String getActivityImage() {
+        return activityImage;
+    }
+
+    public void setActivityImage(String activityImage) {
+        this.activityImage = activityImage;
+    }
+
+    public Boolean getCompleted() {
+        return isCompleted;
     }
 
     public Activity() {

@@ -107,6 +107,7 @@ public class UserServiceImpl implements UserService{
                     a.getDescription(),
                     a.getNumberOfParticipant(),
                     a.getCapacity(),
+                    a.getActivityImage(),
                     a.getCreator() != null ? a.getCreator().getEmail() : null,
                     a.getCreator() != null ? a.getCreator().getName() : null,
                     a.getCreator() != null ? a.getCreator().getSurname() : null
