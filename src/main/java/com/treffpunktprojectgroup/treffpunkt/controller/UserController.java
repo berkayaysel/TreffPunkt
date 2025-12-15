@@ -78,6 +78,20 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // Public read-only profile by email (no authentication required)
+    @GetMapping("/public-profile")
+    public ResponseEntity<?> getPublicProfile(@RequestParam("email") String email) {
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body("Email is required");
+        }
+        try {
+            UserProfileResponse response = userService.getPublicUserProfile(email);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(404).body(ex.getMessage());
+        }
+    }
+
     @PutMapping("/profile/update")
     public ResponseEntity<?> updateProfile(
             @RequestBody ProfileUpdateRequest request,

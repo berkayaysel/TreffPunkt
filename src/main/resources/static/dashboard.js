@@ -449,6 +449,18 @@ function openDetailSection(card) {
         }
     }
 
+    // Host profile navigation (detail view)
+    const hostCard = document.getElementById('detail-host-card');
+    if (hostCard && creatorEmail) {
+        hostCard.style.cursor = 'pointer';
+        const goProfile = (e) => {
+            e.stopPropagation();
+            window.location.href = '/treffpunkt/profile?email=' + encodeURIComponent(creatorEmail);
+        };
+        hostCard.onclick = goProfile;
+        hostCard.onkeypress = (e) => { if (e.key === 'Enter' || e.key === ' ') goProfile(e); };
+    }
+
     if (joinBtn) {
         joinBtn.setAttribute('data-current-id', id);
         
@@ -680,6 +692,7 @@ async function applyActivityBackgrounds() {
             }
         }
     }
+
 }
 
 // Not: Basit kullanım – doğrudan creatorName + creatorSurname kullanılacak.

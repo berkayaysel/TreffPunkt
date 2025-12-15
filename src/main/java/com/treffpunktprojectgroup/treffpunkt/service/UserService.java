@@ -13,6 +13,7 @@ public interface UserService {
     void createActivity(CreateActivityRequest createActivityRequest, String email);
     List<ActivityResponse> getUserActivities(Integer userId);
     UserProfileResponse getUserProfileByEmail(String email);
+    UserProfileResponse getPublicUserProfile(String email);
     User updateUserProfile(String loggendInEmail, ProfileUpdateRequest request);
     String saveProfileImage(String email, MultipartFile file);
 }

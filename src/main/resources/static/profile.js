@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const publicEmail = urlParams.get('email');
     // HTML elemanlarını seçme
     const nameSpan = document.getElementById("profile-name");
     const surnameSpan = document.getElementById("profile-surname");
@@ -25,8 +27,72 @@ document.addEventListener('DOMContentLoaded', function() {
     const profileFileInput = document.getElementById('profileFile');
 
     // Ana fonksiyon: Kullanıcının giriş durumunu kontrol et ve verileri getir
+    function populateProfile(data, isPublic=false) {
+        currentUserData = data;
+        nameSpan.textContent = data.name || '';
+        surnameSpan.textContent = data.surname || '';
+        emailSpan.textContent = data.email || '';
+        birthDateSpan.textContent = data.birthDate || '';
+        addressSpan.textContent = data.address || '';
+
+        const usernameSpan = document.getElementById('profile-username');
+        if (usernameSpan && data.email) {
+            usernameSpan.textContent = data.email.split('@')[0];
+        }
+
+        if (data.profileImage) {
+            const sep = data.profileImage.includes('?') ? '&' : '?';
+            profileImg.src = data.profileImage + sep + 't=' + new Date().getTime();
+        } else {
+            profileImg.src = '/uploads/profile-images/default-avatar.png';
+        }
+
+        // Stats and counts
+        const createdSpan = document.getElementById('created-events-count');
+        const participatedSpan = document.getElementById('participated-events-count');
+        if (createdSpan && data.createdCount !== undefined) createdSpan.textContent = data.createdCount;
+        if (participatedSpan && data.participatedCount !== undefined) participatedSpan.textContent = data.participatedCount;
+
+        // Rating info
+        const ratingSpan = document.getElementById('profile-rating');
+        const reviewCountSpan = document.getElementById('profile-review-count');
+        if (ratingSpan && data.averageRating !== undefined && data.averageRating !== null) {
+            ratingSpan.textContent = parseFloat(data.averageRating).toFixed(1);
+        }
+        if (reviewCountSpan && data.reviewCount !== undefined) {
+            reviewCountSpan.textContent = data.reviewCount;
+        }
+
+        if (!isPublic) {
+            fetchEventStats();
+        }
+
+        nameSpan.classList.remove('loading-placeholder');
+        surnameSpan.classList.remove('loading-placeholder');
+        emailSpan.classList.remove('loading-placeholder');
+        birthDateSpan.classList.remove('loading-placeholder');
+        addressSpan.classList.remove('loading-placeholder');
+    }
+
     function checkLoginStatusAndFetchProfile() {
-        
+        if (publicEmail) {
+            // Public view: read-only fetch by email
+            disableEditingUI();
+            hideSensitiveFieldsForPublic();
+            fetch('/user-dashboard/public-profile?email=' + encodeURIComponent(publicEmail))
+                .then(r => {
+                    if (!r.ok) throw new Error('Profil bulunamadı');
+                    return r.json();
+                })
+                .then(data => populateProfile(data, true))
+                .catch(err => {
+                    console.error(err);
+                    alert('Profil yüklenemedi');
+                    window.location.href = '/treffpunkt/dashboard';
+                });
+            return;
+        }
+
         fetch('/user-dashboard/profile-info', {
             method: 'GET',
             headers: {
@@ -47,45 +113,28 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            currentUserData = data; // Mevcut verileri sakla
-            // Gelen verileri DOM'a yerleştir
-            nameSpan.textContent = data.name;
-            surnameSpan.textContent = data.surname;
-            emailSpan.textContent = data.email;
-            birthDateSpan.textContent = data.birthDate ? data.birthDate : '';
-            addressSpan.textContent = data.address;
-            
-            // Username'i email'den oluştur
-            const usernameSpan = document.getElementById('profile-username');
-            if (usernameSpan && data.email) {
-                usernameSpan.textContent = data.email.split('@')[0];
-            }
-
-            // Profile image (if present) — add cache-buster to ensure immediate reload after upload
-            if (data.profileImage) {
-                const sep = data.profileImage.includes('?') ? '&' : '?';
-                profileImg.src = data.profileImage + sep + 't=' + new Date().getTime();
-            } else {
-                profileImg.src = '/uploads/profile-images/default-avatar.png';
-            }
-            
-            // Event sayılarını getir
-            fetchEventStats();
-            
-            // Yükleniyor Placeholder'larını kaldır
-            nameSpan.classList.remove('loading-placeholder');
-            surnameSpan.classList.remove('loading-placeholder');
-            emailSpan.classList.remove('loading-placeholder');
-            birthDateSpan.classList.remove('loading-placeholder');
-            addressSpan.classList.remove('loading-placeholder');
+            populateProfile(data, false);
         })
         .catch(error => {
             
             console.error('Profil yüklenirken hata oluştu:', error.message);
             
-            // Hata oluşursa (özellikle 401/403) kullanıcıyı giriş sayfasına yönlendir
             window.location.href = '/treffpunkt/dashboard';
         });
+    }
+
+    function disableEditingUI() {
+        const editables = [editBtn, cancelBtn, editForm, logoutButton, changeImageBtn, profileFileInput];
+        editables.forEach(el => { if (el) el.style.display = 'none'; });
+        const backBtn = document.querySelector('.profile-back-button');
+        if (backBtn) backBtn.href = '/treffpunkt/dashboard';
+    }
+
+    function hideSensitiveFieldsForPublic() {
+        const items = [addressSpan, emailSpan, birthDateSpan]
+            .map(span => span ? span.closest('.profile-info-item') : null)
+            .filter(Boolean);
+        items.forEach(item => item.style.display = 'none');
     }
 
     // DÜZENLE BUTONU - Formu göster

@@ -12,10 +12,12 @@ public class UserProfileResponse {
     private java.time.LocalDate birthDate;
     private Double averageRating;
     private Long reviewCount;
+    private Integer createdCount;
+    private Integer participatedCount;
     private List<ReviewResponse> reviews;
 
     public UserProfileResponse(String name, String surname, String email, String address, String profileImage, java.time.LocalDate birthDate,
-                               Double averageRating, Long reviewCount, List<ReviewResponse> reviews) {
+                               Double averageRating, Long reviewCount, Integer createdCount, Integer participatedCount, List<ReviewResponse> reviews) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -24,6 +26,8 @@ public class UserProfileResponse {
         this.birthDate = birthDate;
         this.averageRating = averageRating;
         this.reviewCount = reviewCount;
+        this.createdCount = createdCount;
+        this.participatedCount = participatedCount;
         this.reviews = reviews;
     }
 
@@ -85,4 +89,12 @@ public class UserProfileResponse {
 
     public List<ReviewResponse> getReviews() { return reviews; }
     public void setReviews(List<ReviewResponse> reviews) { this.reviews = reviews; }
+
+    public Integer getCreatedCount() { return createdCount; }
+
+    public void setCreatedCount(Integer createdCount) { this.createdCount = createdCount; }
+
+    public Integer getParticipatedCount() { return participatedCount; }
+
+    public void setParticipatedCount(Integer participatedCount) { this.participatedCount = participatedCount; }
 }

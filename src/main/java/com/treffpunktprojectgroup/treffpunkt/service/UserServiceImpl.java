@@ -124,6 +124,9 @@ public class UserServiceImpl implements UserService{
 
         UserReviewSummaryResponse summary = reviewService.getReviewsForUser(user.getUserId());
 
+        int createdCount = activityRepository.findByCreator(user).size();
+        int participatedCount = activityRepository.findByParticipantsContains(user).size();
+
         return new UserProfileResponse(
                 user.getName(),
                 user.getSurname(),
@@ -132,9 +135,17 @@ public class UserServiceImpl implements UserService{
                 user.getProfileImage(),
                 user.getBirthDate(),
                 summary.getAverageRating(),
-                summary.getReviewCount(),
+            summary.getReviewCount(),
+            createdCount,
+            participatedCount,
                 summary.getReviews()
         );
+    }
+
+    @Override
+    public UserProfileResponse getPublicUserProfile(String email) {
+        // Reuse the same DTO; caller is responsible for showing it as read-only
+        return getUserProfileByEmail(email);
     }
 
     @Override
