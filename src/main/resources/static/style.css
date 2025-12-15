@@ -1216,21 +1216,25 @@ body.dashboard-body {
 
 .category-card {
     flex-shrink: 0;
-    width: 140px;
+    width: 156px;
     aspect-ratio: 1;
-    background: linear-gradient(135deg, #ffc966 0%, #ffb84d 100%);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 16px;
+    padding: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid transparent;
     font-weight: 600;
     font-size: 13px;
-    color: #666;
+    color: #fff; /* label over photo */
+    position: relative;
+    background-size: cover; /* photo fill */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #ddd; /* fallback if no photo */
 }
 
 .category-card:hover {
@@ -1242,6 +1246,41 @@ body.dashboard-body {
     border: 3px solid #667eea;
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
+
+/* Readability overlay over photos */
+.category-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.25);
+}
+.category-card-label {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    pointer-events: none;
+}
+
+/* Category image classes (JPG primary, SVG fallback) */
+.cat-sports-fitness { background-image: url('/uploads/category-images/sports.jpg'), url('/uploads/category-images/sports.svg'); }
+.cat-social-fun { background-image: url('/uploads/category-images/social.jpg'), url('/uploads/category-images/social.svg'); }
+.cat-arts-culture { background-image: url('/uploads/category-images/arts-culture.jpg'), url('/uploads/category-images/arts-culture.svg'); }
+.cat-gastronomy-cooking { background-image: url('/uploads/category-images/gastronomy.jpg'), url('/uploads/category-images/gastronomy.svg'); }
+.cat-nature-adventure { background-image: url('/uploads/category-images/nature.jpg'), url('/uploads/category-images/nature.svg'); }
+.cat-arts-crafts-diy { background-image: url('/uploads/category-images/crafts.jpg'), url('/uploads/category-images/crafts.svg'); }
+.cat-technology-innovation { background-image: url('/uploads/category-images/technology.jpg'), url('/uploads/category-images/technology.svg'); }
+.cat-volunteering-community { background-image: url('/uploads/category-images/volunteering.jpg'), url('/uploads/category-images/volunteering.svg'); }
+.cat-wellness-spirituality { background-image: url('/uploads/category-images/wellness.jpg'), url('/uploads/category-images/wellness.svg'); }
+.cat-gaming-competition { background-image: url('/uploads/category-images/gaming.jpg'), url('/uploads/category-images/gaming.svg'); }
+.cat-music-performance { background-image: url('/uploads/category-images/music.jpg'), url('/uploads/category-images/music.svg'); }
+.cat-family-kids { background-image: url('/uploads/category-images/family.jpg'), url('/uploads/category-images/family.svg'); }
+.cat-shopping-sustainability { background-image: url('/uploads/category-images/shopping.jpg'), url('/uploads/category-images/shopping.svg'); }
+.cat-diger { background-image: url('/uploads/category-images/other.jpg'), url('/uploads/category-images/other.svg'); }
+.cat-default { background-image: url('/uploads/category-images/default.jpg'), url('/uploads/category-images/default.svg'); }
 
 .carousel-btn {
     flex-shrink: 0;
@@ -1361,6 +1400,27 @@ body.dashboard-body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border-left: 5px solid transparent;
 }
+
+.event-card.has-bg {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+}
+.event-card.has-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.35);
+}
+.event-card.has-bg > * { position: relative; z-index: 1; }
+.event-card.has-bg .event-card-image { display: none; }
+.event-card.has-bg .event-card-title { color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.35); }
+.event-card.has-bg .event-card-footer { color: #f0f0f0; }
+.event-card.has-bg .event-card-footer-item i { color: #fff; }
+.event-card.has-bg .event-card-participants { color: #eaeaea; }
+.event-card.has-bg .event-host-name { color: #e0e0e0; }
 
 .event-card:hover {
     transform: translateY(-4px);
@@ -1570,7 +1630,8 @@ body.dashboard-body {
     }
 
     .category-card {
-        width: 120px;
+        width: 128px;
+        padding: 10px;
     }
 }
 
