@@ -30,11 +30,13 @@ public class NotificationServiceImpl implements NotificationService {
         if (activity.getParticipants() == null) return;
         String initiatorName = initiator != null ? (initiator.getName() != null ? initiator.getName() : initiator.getEmail()) : null;
         for (User u : activity.getParticipants()) {
-            String msg = initiatorName + " etkinlik '" + (activity.getName() != null ? activity.getName() : "etkinlik") + "' i sildi.";
+            String actName = (activity.getName() != null ? activity.getName() : "activity");
+            String byWho = (initiatorName != null ? initiatorName : "the host");
+            String msg = "'" + actName + "' activity was deleted by " + byWho + ".";
             Notification n = new Notification(u, "ACTIVITY_DELETED", activity, msg);
             notificationRepository.save(n);
             try {
-                messagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notifications", new NotificationDTO(n.getId(), n.getMessage(), activity.getActivityId(), activity.getName(), activity.getLocation(), initiatorName, n.getTimestamp(), n.getRead(), null));
+                messagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notifications", new NotificationDTO(n.getId(), n.getMessage(), n.getType(), activity.getActivityId(), activity.getName(), activity.getLocation(), initiatorName, n.getTimestamp(), n.getRead(), null));
             } catch (Exception ex) {
                 // ignore: user might be offline
             }
@@ -44,11 +46,14 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendRemovedFromActivityNotification(User user, Activity activity, User initiator, String reason) {
         String initiatorName = initiator != null ? (initiator.getName() != null ? initiator.getName() : initiator.getEmail()) : null;
-        String msg = initiatorName + " sizi '" + (activity.getName() != null ? activity.getName() : "etkinlik") + "' (" + (activity.getLocation() != null ? activity.getLocation() : "bilinmeyen konum") + ") etkinliğinden çıkardı.";
+        String actName = (activity.getName() != null ? activity.getName() : "activity");
+        String loc = (activity.getLocation() != null ? activity.getLocation() : null);
+        String byWho = (initiatorName != null ? initiatorName : "the host");
+        String msg = "You were removed from '" + actName + "'" + (loc != null ? " (" + loc + ")" : "") + " by " + byWho + ".";
         Notification n = new Notification(user, "REMOVED_FROM_ACTIVITY", activity, msg, reason);
         notificationRepository.save(n);
         try {
-            messagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/notifications", new NotificationDTO(n.getId(), n.getMessage(), activity.getActivityId(), activity.getName(), activity.getLocation(), initiatorName, n.getTimestamp(), n.getRead(), reason));
+            messagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/notifications", new NotificationDTO(n.getId(), n.getMessage(), n.getType(), activity.getActivityId(), activity.getName(), activity.getLocation(), initiatorName, n.getTimestamp(), n.getRead(), reason));
         } catch (Exception ex) {
             // offline
         }
@@ -63,6 +68,7 @@ public class NotificationServiceImpl implements NotificationService {
             .map(n -> new NotificationDTO(
                 n.getId(),
                 n.getMessage(),
+                n.getType(),
                 n.getActivity() != null ? n.getActivity().getActivityId() : null,
                 n.getActivity() != null ? n.getActivity().getName() : null,
                 n.getActivity() != null ? n.getActivity().getLocation() : null,

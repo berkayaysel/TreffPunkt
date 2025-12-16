@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class NotificationDTO {
     private Long id;
     private String message;
+    private String type;
     private Integer activityId;
     private String activityName;
     private String activityLocation;
@@ -15,9 +16,10 @@ public class NotificationDTO {
 
     public NotificationDTO() {}
 
-    public NotificationDTO(Long id, String message, Integer activityId, String activityName, String activityLocation, String initiatorName, LocalDateTime timestamp, Boolean read, String removalReason) {
+    public NotificationDTO(Long id, String message, String type, Integer activityId, String activityName, String activityLocation, String initiatorName, LocalDateTime timestamp, Boolean read, String removalReason) {
         this.id = id;
         this.message = message;
+        this.type = type;
         this.activityId = activityId;
         this.activityName = activityName;
         this.activityLocation = activityLocation;
@@ -29,6 +31,7 @@ public class NotificationDTO {
 
     public Long getId() { return id; }
     public String getMessage() { return message; }
+    public String getType() { return type; }
     public Integer getActivityId() { return activityId; }
     public String getActivityName() { return activityName; }
     public String getActivityLocation() { return activityLocation; }
