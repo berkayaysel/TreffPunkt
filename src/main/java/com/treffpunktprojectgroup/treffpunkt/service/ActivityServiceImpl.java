@@ -439,7 +439,7 @@ public class ActivityServiceImpl implements ActivityService{
         }
 
         try {
-            String folder = "src/main/resources/static/uploads/activity-images/";
+            String folder = "uploads/activity-images/";
             File directory = new File(folder);
             if (!directory.exists()) {
                 directory.mkdirs();

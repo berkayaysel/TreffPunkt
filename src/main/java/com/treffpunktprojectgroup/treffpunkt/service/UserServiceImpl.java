@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService{
 
         try {
             // Save uploaded images into the project's static resources so they are served
-            String folder = "src/main/resources/static/uploads/profile-images/";
+            String folder = "uploads/profile-images/";
             File directory = new File(folder);
             if (!directory.exists()) {
                 directory.mkdirs();
@@ -209,7 +209,7 @@ public class UserServiceImpl implements UserService{
 
             Files.write(path, file.getBytes());
 
-            // Public URL path served from classpath:/static
+            // Public URL path served via StaticResourceConfig
             String publicPath = "/uploads/profile-images/" + fileName;
             user.setProfileImage(publicPath);
             userRepository.save(user);

@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const publicEmail = urlParams.get('email');
+    const isPublicView = !!publicEmail;
     // HTML elemanlarını seçme
     const nameSpan = document.getElementById("profile-name");
     const surnameSpan = document.getElementById("profile-surname");
@@ -365,16 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function openReviewsModal() {
-        fetch('/reviews/me', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Reviews alınamadı');
-            return response.json();
-        })
-        .then(data => {
+        const handleData = (data) => {
             const reviewsList = document.getElementById('reviewsList');
             reviewsList.innerHTML = '';
 
@@ -415,7 +407,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             document.getElementById('reviewsModal').style.display = 'flex';
+        };
+
+        if (isPublicView) {
+            // Public profilde, veriler zaten currentUserData.reviews içinde var
+            handleData({ reviews: (currentUserData && currentUserData.reviews) ? currentUserData.reviews : [] });
+            return;
+        }
+
+        // Kendi profilimdeyken backend'den çek
+        fetch('/reviews/me', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         })
+        .then(response => {
+            if (!response.ok) throw new Error('Reviews alınamadı');
+            return response.json();
+        })
+        .then(handleData)
         .catch(error => {
             console.error('Reviews modal hatası:', error);
             alert('Yorumlar yüklenemedi.');
@@ -439,8 +449,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sayfa yüklendiğinde profil bilgilerini getir
     checkLoginStatusAndFetchProfile();
     
-    // Profil yüklendikten sonra rating'i de çek
+    // Kendi profilimdeysem rating'i ayrı endpointten yenile
     setTimeout(() => {
-        fetchUserRating();
+        if (!isPublicView) {
+            fetchUserRating();
+        }
     }, 500);
 });
